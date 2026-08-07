@@ -1,0 +1,2178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fed-Poster – Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      height: 100vh;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 240px;
+      background: #161b22;
+      border-right: 1px solid #30363d;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 0;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+    .sidebar .logo {
+      padding: 0 20px 20px 20px;
+      font-size: 22px;
+      font-weight: 700;
+      border-bottom: 1px solid #30363d;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sidebar .logo span { font-size: 24px; }
+    .sidebar .nav-item {
+      padding: 8px 20px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      font-size: 14px;
+      color: #8b949e;
+      border-left: 3px solid transparent;
+      transition: all 0.2s;
+    }
+    .sidebar .nav-item .nav-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sidebar .nav-item .nav-sub {
+      font-size: 10px;
+      color: #484f58;
+      margin-left: 28px;
+      margin-top: 2px;
+      letter-spacing: 0.3px;
+    }
+    .sidebar .nav-item:hover { background: #21262d; color: #c9d1d9; }
+    .sidebar .nav-item:hover .nav-sub { color: #8b949e; }
+    .sidebar .nav-item.active {
+      background: #21262d;
+      color: #e6edf3;
+      border-left-color: #238636;
+    }
+    .sidebar .nav-item.active .nav-sub { color: #8b949e; }
+    .sidebar .nav-item .badge {
+      font-size: 10px;
+      background: #21262d;
+      padding: 1px 8px;
+      border-radius: 10px;
+      color: #8b949e;
+      margin-left: auto;
+    }
+    .sidebar .nav-item .badge.proxy { background: #8b5cf6; color: white; }
+    .sidebar .nav-item .badge.buffer { background: #1a73e8; color: white; }
+    .sidebar .nav-item .badge.wordpress { background: #3858e9; color: white; }
+    .sidebar .nav-item .badge.other { background: #6e7681; }
+    .sidebar .nav-item .badge.both { background: #238636; }
+
+    .main {
+      flex: 1;
+      padding: 30px 40px;
+      overflow-y: auto;
+      min-width: 0;
+    }
+    .main .page-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .main .page-title .count-badge {
+      font-size: 14px;
+      color: #8b949e;
+      font-weight: 400;
+      background: #21262d;
+      padding: 2px 12px;
+      border-radius: 20px;
+      border: 1px solid #30363d;
+    }
+    .main .page-sub {
+      color: #8b949e;
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    .platform-section { display: none; max-width: 600px; }
+    .platform-section.active { display: block; }
+
+    .platform-section .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .platform-section .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .platform-section .card-header h2 { font-size: 17px; font-weight: 600; }
+    .platform-section .label-tag {
+      font-size: 10px;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      background: #21262d;
+      color: #8b949e;
+    }
+    .platform-section .label-tag.buffer { background: #1a73e8; color: white; }
+    .platform-section .label-tag.wordpress { background: #3858e9; color: white; }
+    .platform-section .label-tag.both { background: #238636; color: white; }
+    .platform-section .label-tag.other { background: #6e7681; color: white; }
+    .platform-section .label-tag.proxy { background: #8b5cf6; color: white; }
+
+    .platform-section .connect-info {
+      font-size: 12px;
+      color: #8b949e;
+      background: #0d1117;
+      padding: 6px 10px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      border-left: 3px solid #8b5cf6;
+    }
+    .platform-section .connect-info strong { color: #c9d1d9; }
+
+    .platform-section label {
+      font-size: 12px;
+      font-weight: 500;
+      display: block;
+      margin: 10px 0 3px;
+      color: #8b949e;
+    }
+    .platform-section input,
+    .platform-section textarea {
+      width: 100%;
+      padding: 8px 10px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      color: #e6edf3;
+      font-size: 13px;
+      font-family: inherit;
+    }
+    .platform-section input:focus,
+    .platform-section textarea:focus { outline: none; border-color: #58a6ff; }
+    .platform-section textarea { min-height: 60px; resize: vertical; }
+    .platform-section input[type="file"] { padding: 6px; cursor: pointer; background: #161b22; }
+    .platform-section .saved-note {
+      font-size: 10px;
+      color: #484f58;
+      margin-top: 2px;
+    }
+    .platform-section .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .platform-section .actions button {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 12px;
+      min-width: 70px;
+      transition: background 0.2s;
+    }
+    .platform-section .btn-primary {
+      background: #238636;
+      color: white;
+    }
+    .platform-section .btn-primary:hover { background: #2ea043; }
+    .platform-section .btn-primary:disabled {
+      background: #21262d;
+      color: #484f58;
+      cursor: not-allowed;
+    }
+    .platform-section .btn-secondary {
+      background: #21262d;
+      color: #c9d1d9;
+    }
+    .platform-section .btn-secondary:hover { background: #30363d; }
+
+    .platform-section .status {
+      margin-top: 10px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      display: none;
+    }
+    .platform-section .status.success {
+      display: block;
+      background: #0d2818;
+      color: #3fb950;
+      border: 1px solid #238636;
+    }
+    .platform-section .status.error {
+      display: block;
+      background: #2d0a0a;
+      color: #f85149;
+      border: 1px solid #da3633;
+    }
+    .platform-section .status.loading {
+      display: block;
+      background: #0d1f2d;
+      color: #58a6ff;
+      border: 1px solid #1f6feb;
+    }
+    .platform-section .status.info {
+      display: block;
+      background: #1c1b1a;
+      color: #d29922;
+      border: 1px solid #9e6a03;
+    }
+
+    .platform-section .file-info {
+      font-size: 11px;
+      color: #8b949e;
+      margin-top: 3px;
+    }
+    .platform-section .token-type {
+      font-size: 10px;
+      color: #8b949e;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .platform-section .token-type .classic-badge {
+      background: #f59e0b;
+      color: #0d1117;
+      padding: 1px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 10px;
+    }
+    .platform-section .token-type .fine-badge {
+      background: #8b5cf6;
+      color: white;
+      padding: 1px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 10px;
+    }
+
+    .da-connected {
+      background: #0d2818;
+      border: 1px solid #238636;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: #3fb950;
+    }
+    .da-disconnected {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: #8b949e;
+    }
+
+    .check-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 8px;
+      margin: 8px 0 10px;
+      background: #0d1117;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #21262d;
+    }
+    .check-group label {
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      color: #c9d1d9;
+      margin: 0;
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .check-group label:hover { background: #21262d; }
+    .check-group .label-tag { font-size: 8px; padding: 1px 6px; }
+    .verify-status { margin: 10px 0; font-size: 12px; }
+    .verify-status .v-item { padding: 3px 0; border-bottom: 1px solid #21262d; display: flex; gap: 8px; align-items: center; }
+    .unified-results { margin-top: 10px; font-size: 12px; }
+    .unified-results .result-item { padding: 3px 0; border-bottom: 1px solid #21262d; display: flex; gap: 8px; }
+
+    #da-token-input {
+      width: 100%;
+      padding: 8px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      color: #e6edf3;
+      font-size: 13px;
+      margin-top: 6px;
+    }
+    #da-token-submit { margin-top: 6px; }
+
+    @media (max-width: 700px) {
+      .sidebar { width: 180px; }
+      .main { padding: 20px; }
+      .platform-section .card { padding: 16px; }
+    }
+    @media (max-width: 500px) {
+      body { flex-direction: column; }
+      .sidebar {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+        border-right: none;
+        border-bottom: 1px solid #30363d;
+        padding: 10px 0;
+        height: auto;
+        gap: 6px;
+        flex-wrap: nowrap;
+      }
+      .sidebar .logo { display: none; }
+      .sidebar .nav-item { padding: 8px 14px; white-space: nowrap; border-left: none; border-bottom: 3px solid transparent; flex-direction: row; }
+      .sidebar .nav-item .nav-sub { display: none; }
+      .sidebar .nav-item.active { border-bottom-color: #238636; border-left-color: transparent; }
+      .sidebar .nav-item .badge { display: none; }
+      .main { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========== SIDEBAR ========== -->
+  <div class="sidebar">
+    <div class="logo"><span>📨</span> Fed-Poster</div>
+    <div class="nav-item active" data-target="unified">
+      <div class="nav-row">📤 Multi Platform Post <span class="badge both">All</span></div>
+    </div>
+    <div class="nav-item" data-target="telegram">
+      <div class="nav-row">📱 Telegram <span class="badge other">Other</span></div>
+    </div>
+    <div class="nav-item" data-target="bluesky">
+      <div class="nav-row">☁️ Bluesky <span class="badge both">Both</span></div>
+    </div>
+    <div class="nav-item" data-target="mastodon">
+      <div class="nav-row">🐘 Mastodon <span class="badge both">Both</span></div>
+    </div>
+    <div class="nav-item" data-target="discord">
+      <div class="nav-row">🎮 Discord <span class="badge other">Other</span></div>
+    </div>
+    <div class="nav-item" data-target="github-classic">
+      <div class="nav-row">📘 GitHub Classic <span class="badge other">Other</span></div>
+    </div>
+    <div class="nav-item" data-target="github-repo">
+      <div class="nav-row">📂 GitHub Repo <span class="badge other">Other</span></div>
+    </div>
+    <div class="nav-item" data-target="safew">
+      <div class="nav-row">🔐 SafeW <span class="badge other">Other</span></div>
+    </div>
+    <div class="nav-item" data-target="tumblr">
+      <div class="nav-row">📝 Tumblr <span class="badge both">Both</span></div>
+    </div>
+    <div class="nav-item" data-target="deviantart">
+      <div class="nav-row">🎨 DeviantArt <span class="badge other">Other</span></div>
+    </div>
+    <div class="nav-item" data-target="buffer">
+      <div class="nav-row">⏳ Buffer Proxy <span class="badge proxy">Proxy</span></div>
+      <div class="nav-sub">→ Twitter, LinkedIn, Facebook, Instagram</div>
+    </div>
+    <div class="nav-item" data-target="wordpress">
+      <div class="nav-row">📄 WordPress Jetpack <span class="badge proxy">Proxy</span></div>
+      <div class="nav-sub">→ Twitter, LinkedIn, Facebook, Tumblr</div>
+    </div>
+  </div>
+
+  <!-- ========== MAIN CONTENT ========== -->
+  <div class="main">
+    <div class="page-title" id="page-title">
+      Multi Platform Post
+      <span class="count-badge">🌐 12 Social Networks</span>
+    </div>
+    <div class="page-sub" id="page-sub">Post to all your connected platforms instantly.</div>
+
+    <!-- ====== MULTI PLATFORM POST ====== -->
+    <div class="platform-section active" id="section-unified">
+      <div class="card">
+        <div class="card-header">
+          <h2>📤 Multi Platform Post</h2>
+          <span class="label-tag both">All</span>
+        </div>
+        <label>Message / Content</label>
+        <textarea id="unified-msg" placeholder="Write once, post everywhere…"></textarea>
+        <label>Upload Image (shared)</label>
+        <input type="file" id="unified-file" accept="image/*,video/*,audio/*" />
+        <div class="file-info" id="unified-file-info">No file selected</div>
+        <div class="check-group">
+          <label><input type="checkbox" id="unified-tg" checked /> Telegram <span class="label-tag other">Other</span></label>
+          <label><input type="checkbox" id="unified-bsky" checked /> Bluesky <span class="label-tag both">Both</span></label>
+          <label><input type="checkbox" id="unified-mastodon" checked /> Mastodon <span class="label-tag both">Both</span></label>
+          <label><input type="checkbox" id="unified-discord" checked /> Discord <span class="label-tag other">Other</span></label>
+          <label><input type="checkbox" id="unified-github-classic" checked /> GitHub Classic <span class="label-tag other">Other</span></label>
+          <label><input type="checkbox" id="unified-github-repo" checked /> GitHub Repo <span class="label-tag other">Other</span></label>
+          <label><input type="checkbox" id="unified-safew" checked /> SafeW <span class="label-tag other">Other</span></label>
+          <label><input type="checkbox" id="unified-tumblr" checked /> Tumblr <span class="label-tag both">Both</span></label>
+        </div>
+        <div class="verify-status" id="verify-status">
+          <div class="v-item"><span>⏳</span> Click "Verify All" to check credentials (optional).</div>
+        </div>
+        <div class="actions">
+          <button class="btn-secondary" id="unified-verify">🔍 Verify All</button>
+          <button class="btn-primary" id="unified-send">🚀 Post All</button>
+        </div>
+        <div id="unified-status" class="status info">Select platforms, then hit Post All.</div>
+        <div id="unified-results" class="unified-results"></div>
+      </div>
+    </div>
+
+    <!-- ====== TELEGRAM ====== -->
+    <div class="platform-section" id="section-telegram">
+      <div class="card">
+        <div class="card-header">
+          <h2>📱 Telegram</h2>
+          <span class="label-tag other">Other</span>
+        </div>
+        <label>Bot Token</label>
+        <input id="tg-token" type="password" placeholder="Your bot token" />
+        <div class="saved-note">✅ Auto‑saved (hidden)</div>
+        <label>Channel / Chat ID</label>
+        <input id="tg-chat" type="text" placeholder="@channel or -100123456" />
+        <div class="saved-note">✅ Auto‑saved</div>
+        <label>Message</label>
+        <textarea id="tg-msg" placeholder="What to post?"></textarea>
+        <label>Upload Image / Video</label>
+        <input type="file" id="tg-file" accept="image/*,video/*" />
+        <div class="file-info" id="tg-file-info">No file selected</div>
+        <div class="actions">
+          <button class="btn-secondary" id="tg-test">🔍 Test</button>
+          <button class="btn-primary" id="tg-send">🚀 Send</button>
+        </div>
+        <div id="tg-status" class="status info">Ready.</div>
+      </div>
+    </div>
+
+    <!-- ====== BLUESKY ====== -->
+    <div class="platform-section" id="section-bluesky">
+      <div class="card">
+        <div class="card-header">
+          <h2>☁️ Bluesky</h2>
+          <span class="label-tag both">Both</span>
+        </div>
+        <label>Handle</label>
+        <input id="bsky-handle" type="text" placeholder="your-handle.bsky.social" />
+        <div class="saved-note">✅ Auto‑saved</div>
+        <label>App Password</label>
+        <input id="bsky-password" type="password" placeholder="xxxx-xxxx-xxxx-xxxx" />
+        <div class="saved-note">✅ Auto‑saved (hidden)</div>
+        <label>Message</label>
+        <textarea id="bsky-msg" placeholder="What to post?"></textarea>
+        <label>Upload Image</label>
+        <input type="file" id="bsky-file" accept="image/*" />
+        <div class="file-info" id="bsky-file-info">No file selected</div>
+        <div class="actions">
+          <button class="btn-secondary" id="bsky-test">🔍 Test</button>
+          <button class="btn-primary" id="bsky-send">🚀 Send</button>
+        </div>
+        <div id="bsky-status" class="status info">Ready.</div>
+      </div>
+    </div>
+
+    <!-- ====== MASTODON ====== -->
+    <div class="platform-section" id="section-mastodon">
+      <div class="card">
+        <div class="card-header">
+          <h2>🐘 Mastodon</h2>
+          <span class="label-tag both">Both</span>
+        </div>
+        <label>Instance URL</label>
+        <input id="mastodon-instance" type="text" placeholder="https://mastodon.social" />
+        <div class="saved-note">✅ Auto‑saved</div>
+        <label>Access Token</label>
+        <input id="mastodon-token" type="password" placeholder="Your access token" />
+        <div class="saved-note">✅ Auto‑saved (hidden)</div>
+        <label>Message</label>
+        <textarea id="mastodon-msg" placeholder="What to post?"></textarea>
+        <label>Upload Image / Video / Audio</label>
+        <input type="file" id="mastodon-file" accept="image/*,video/*,audio/*" />
+        <div class="file-info" id="mastodon-file-info">No file selected</div>
+        <div class="actions">
+          <button class="btn-secondary" id="mastodon-test">🔍 Test</button>
+          <button class="btn-primary" id="mastodon-send">🚀 Send</button>
+        </div>
+        <div id="mastodon-status" class="status info">Ready.</div>
+      </div>
+    </div>
+
+    <!-- ====== DISCORD ====== -->
+    <div class="platform-section" id="section-discord">
+      <div class="card">
+        <div class="card-header">
+          <h2>🎮 Discord</h2>
+          <span class="label-tag other">Other</span>
+        </div>
+        <label>Webhook URL</label>
+        <input id="discord-webhook" type="text" placeholder="https://discord.com/api/webhooks/..." />
+        <div class="saved-note">✅ Auto‑saved (hidden)</div>
+        <label>Message</label>
+        <textarea id="discord-msg" placeholder="What to post?"></textarea>
+        <div class="actions">
+          <button class="btn-secondary" id="discord-test">🔍 Test</button>
+          <button class="btn-primary" id="discord-send">🚀 Send</button>
+        </div>
+        <div id="discord-status" class="status info">Ready.</div>
+      </div>
+    </div>
+
+    <!-- ====== GITHUB CLASSIC ====== -->
+    <div class="platform-section" id="section-github-classic">
+      <div class="card">
+        <div class="card-header">
+          <h2>📘 GitHub Classic</h2>
+          <span class="label-tag other">Other</span>
+        </div>
+        <label>Token</label>
+        <input id="github-classic-token" type="password" placeholder="ghp_xxxx" />
+        <div class="token-type">✅ Auto‑saved · <span class="classic-badge">Classic</span> · gist scope</div>
+        <label>Filename</label>
+        <input id="github-classic-filename" type="text" placeholder="post.md" />
+        <label>Description</label>
+        <input id="github-classic-desc" type="text" placeholder="My Gist description" />
+        <label>Content</label>
+        <textarea id="github-classic-msg" placeholder="Write your Gist content…"></textarea>
+        <label style="display:flex; align-items:center; gap:8px; margin-top:6px; cursor:pointer;">
+          <input type="checkbox" id="github-classic-public" checked /> Public Gist
+        </label>
+        <div class="actions">
+          <button class="btn-secondary" id="github-classic-test">🔍 Test</button>
+          <button class="btn-primary" id="github-classic-send">🚀 Send</button>
+        </div>
+        <div id="github-classic-status" class="status info">Ready.</div>
+      </div>
+    </div>
+
+    <!-- ====== GITHUB REPO ====== -->
+    <div class="platform-section" id="section-github-repo">
+      <div class="card">
+        <div class="card-header">
+          <h2>📂 GitHub Repo</h2>
+          <span class="label-tag other">Other</span>
+        </div>
+        <label>Token</label>
+        <input id="github-repo-token" type="password" placeholder="github_pat_xxxx" />
+        <div class="token-type">✅ Auto‑saved · <span class="fine-badge">Fine-grained</span> · repo + code</div>
+        <label>Repository (owner/repo)</label>
+        <input id="github-repo-name" type="text" placeholder="username/repo" />
+        <label>File Path</label>
+        <input id="github-repo-path" type="text" placeholder="post.md" />
+        <label>Commit Message</label>
+        <input id="github-repo-msg" type="text" placeholder="Posted from Fed-Poster" />
+        <label>Branch</label>
+        <input id="github-repo-branch" type="text" placeholder="main" />
+        <label>Content</label>
+        <textarea id="github-repo-content" placeholder="Write your file content…"></textarea>
+        <div class="actions">
+          <button class="btn-secondary" id="github-repo-test">🔍 Test</button>
+          <button class="btn-primary" id="github-repo-send">🚀 Send</button>
+        </div>
+        <div id="github-repo-status" class="status info">Ready.</div>
+      </div>
+    </div>
+
+    <!-- ====== SAFEW ====== -->
+    <div class="platform-section" id="section-safew">
+      <div class="card">
+        <div class="card-header">
+          <h2>🔐 SafeW</h2>
+          <span class="label-tag other">Other</span>
+        </div>
+        <label>Bot Token</label>
+        <input id="safew-token" type="password" placeholder="Your bot token" />
+        <div class="saved-note">✅ Auto‑saved (hidden)</div>
+        <label>Chat ID</label>
+        <input id="safew-chat" type="text" placeholder="@username or chat_id" />
+        <div class="saved-note">✅ Auto‑saved</div>
+        <label>Message</label>
+        <textarea id="safew-msg" placeholder="What to post?"></textarea>
+        <div class="actions">
+          <button class="btn-secondary" id="safew-test">🔍 Test</button>
+          <button class="btn-primary" id="safew-send">🚀 Send</button>
+        </div>
+        <div id="safew-status" class="status info">Ready.</div>
+      </div>
+    </div>
+
+    <!-- ====== TUMBLR ====== -->
+    <div class="platform-section" id="section-tumblr">
+      <div class="card">
+        <div class="card-header">
+          <h2>📝 Tumblr</h2>
+          <span class="label-tag both">Both</span>
+        </div>
+        <label>Blog Name</label>
+        <input id="tumblr-blog" type="text" placeholder="yourblog.tumblr.com" />
+        <div class="saved-note">✅ Auto‑saved</div>
+        <label>Consumer Key</label>
+        <input id="tumblr-ckey" type="text" placeholder="Consumer Key" />
+        <div class="saved-note">✅ Auto‑saved</div>
+        <label>Consumer Secret</label>
+        <input id="tumblr-csecret" type="password" placeholder="Consumer Secret" />
+        <div class="saved-note">✅ Auto‑saved (hidden)</div>
+        <label>Access Token</label>
+        <input id="tumblr-atoken" type="text" placeholder="Access Token" />
+        <div class="saved-note">✅ Auto‑saved</div>
+        <label>Access Token Secret</label>
+        <input id="tumblr-asecret" type="password" placeholder="Access Token Secret" />
+        <div class="saved-note">✅ Auto‑saved (hidden)</div>
+        <label>Post Title</label>
+        <input id="tumblr-title" type="text" placeholder="Title" />
+        <div class="saved-note">✅ Auto‑saved</div>
+        <label>Content</label>
+        <textarea id="tumblr-msg" placeholder="Write your post…"></textarea>
+        <div class="actions">
+          <button class="btn-secondary" id="tumblr-test">🔍 Test</button>
+          <button class="btn-primary" id="tumblr-send">🚀 Send</button>
+        </div>
+        <div id="tumblr-status" class="status info">Ready.</div>
+      </div>
+    </div>
+
+    <!-- ====== DEVIANTART ====== -->
+    <div class="platform-section" id="section-deviantart">
+      <div class="card">
+        <div class="card-header">
+          <h2>🎨 DeviantArt</h2>
+          <span class="label-tag other">Other</span>
+        </div>
+        <div id="deviantart-status-display" class="da-disconnected">
+          ⚠️ Not connected. Click "Connect" to authorize.
+        </div>
+        <div class="actions" style="margin-bottom:10px;">
+          <button class="btn-secondary" id="deviantart-connect">🔑 Connect</button>
+          <button class="btn-secondary" id="deviantart-disconnect">🚪 Disconnect</button>
+        </div>
+        <label>Title</label>
+        <input id="deviantart-title" type="text" placeholder="Artwork title" />
+        <div class="saved-note">✅ Auto‑saved</div>
+        <label>Description</label>
+        <textarea id="deviantart-desc" placeholder="Artist comments…"></textarea>
+        <div class="saved-note">✅ Auto‑saved</div>
+        <label>Tags (comma separated)</label>
+        <input id="deviantart-tags" type="text" placeholder="digital art, fanart" />
+        <div class="saved-note">✅ Auto‑saved</div>
+        <label>Upload Image</label>
+        <input type="file" id="deviantart-file" accept="image/*" />
+        <div class="file-info" id="deviantart-file-info">No file selected</div>
+        <div class="actions">
+          <button class="btn-primary" id="deviantart-send" disabled>🚀 Send</button>
+        </div>
+        <div id="deviantart-status" class="status info">Connect your account to send.</div>
+      </div>
+    </div>
+
+    <!-- ====== BUFFER PROXY ====== -->
+    <div class="platform-section" id="section-buffer">
+      <div class="card">
+        <div class="card-header">
+          <h2>⏳ Buffer Proxy</h2>
+          <span class="label-tag proxy">Proxy</span>
+        </div>
+        <div class="connect-info">
+          🔗 <strong>Connects to:</strong> Twitter, LinkedIn, Facebook, Instagram
+        </div>
+        <div style="font-size: 11px; color: #8b949e; margin-bottom: 10px; background: #0d1117; padding: 6px 10px; border-radius: 4px;">
+          ⚡ Sends via Buffer API – Buffer pays the platform fees
+        </div>
+        <label>Access Token</label>
+        <input id="buffer-token" type="password" placeholder="Your Buffer access token" />
+        <div class="saved-note">✅ Auto‑saved (hidden)</div>
+        <label>Profile IDs (comma separated – find in Buffer URL)</label>
+        <input id="buffer-profiles" type="text" placeholder="12345, 67890" />
+        <div class="saved-note">💡 Go to Buffer dashboard → click a profile → copy number from URL</div>
+        <label>Message</label>
+        <textarea id="buffer-msg" placeholder="What to post?"></textarea>
+        <div class="actions">
+          <button class="btn-secondary" id="buffer-test">🔍 Test</button>
+          <button class="btn-primary" id="buffer-send">🚀 Send</button>
+        </div>
+        <div id="buffer-status" class="status info">Ready.</div>
+      </div>
+    </div>
+
+    <!-- ====== WORDPRESS JETPACK ====== -->
+    <div class="platform-section" id="section-wordpress">
+      <div class="card">
+        <div class="card-header">
+          <h2>📄 WordPress Jetpack</h2>
+          <span class="label-tag proxy">Proxy</span>
+        </div>
+        <div class="connect-info">
+          🔗 <strong>Connects to:</strong> Twitter, LinkedIn, Facebook, Tumblr (via Jetpack Social)
+        </div>
+        <div style="font-size: 11px; color: #8b949e; margin-bottom: 10px; background: #0d1117; padding: 6px 10px; border-radius: 4px;">
+          ✍️ Creates a post → Jetpack auto‑shares to connected social accounts
+        </div>
+        <label>WP Site URL</label>
+        <input id="wp-url" type="text" placeholder="https://your-site.com" />
+        <label>Application Password</label>
+        <input id="wp-password" type="password" placeholder="xxxx xxxx xxxx xxxx" />
+        <label>Post Title</label>
+        <input id="wp-title" type="text" placeholder="My Post Title" />
+        <label>Post Content (supports HTML)</label>
+        <textarea id="wp-content" placeholder="Write your blog post..."></textarea>
+        <label style="display:flex; align-items:center; gap:8px; margin-top:6px; cursor:pointer;">
+          <input type="checkbox" id="wp-publicize" checked /> Auto-share to connected social accounts (Jetpack)
+        </label>
+        <div class="actions">
+          <button class="btn-secondary" id="wp-test">🔍 Test</button>
+          <button class="btn-primary" id="wp-send">🚀 Publish</button>
+        </div>
+        <div id="wp-status" class="status info">Ready.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ================================================================
+    // SIDEBAR NAVIGATION
+    // ================================================================
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', function() {
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        this.classList.add('active');
+
+        const target = this.dataset.target;
+        document.querySelectorAll('.platform-section').forEach(s => s.classList.remove('active'));
+        const section = document.getElementById('section-' + target);
+        if (section) section.classList.add('active');
+
+        const titleMap = {
+          unified: 'Multi Platform Post',
+          telegram: 'Telegram',
+          bluesky: 'Bluesky',
+          mastodon: 'Mastodon',
+          discord: 'Discord',
+          'github-classic': 'GitHub Classic',
+          'github-repo': 'GitHub Repo',
+          safew: 'SafeW',
+          tumblr: 'Tumblr',
+          deviantart: 'DeviantArt',
+          buffer: 'Buffer Proxy',
+          wordpress: 'WordPress Jetpack'
+        };
+        document.getElementById('page-title').innerHTML = titleMap[target] || target + ' <span class="count-badge">🌐 12 Social Networks</span>';
+        document.getElementById('page-sub').textContent = `Configure and send to ${titleMap[target] || target}`;
+      });
+    });
+
+    // ================================================================
+    // CONFIG (Supabase keys – these are public and needed for Edge Functions)
+    // ================================================================
+    const SUPABASE_URL = 'https://hzdpomwaqobceldgdzfl.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_-Zq7X1XmZOTt4mP3yD8TyA_a69kCBOV';
+
+    // ================================================================
+    // HELPERS
+    // ================================================================
+    function getFileData(fileInput) {
+      if (!fileInput || !fileInput.files || fileInput.files.length === 0) return null;
+      return fileInput.files[0];
+    }
+    function updateFileInfo(fileInput, infoEl) {
+      const file = getFileData(fileInput);
+      infoEl.textContent = file ? `📎 ${file.name} (${(file.size / 1024).toFixed(1)} KB)` : 'No file selected';
+    }
+
+    // ================================================================
+    // TELEGRAM
+    // ================================================================
+    const tgToken = document.getElementById('tg-token');
+    const tgChat = document.getElementById('tg-chat');
+    const tgMsg = document.getElementById('tg-msg');
+    const tgFile = document.getElementById('tg-file');
+    const tgFileInfo = document.getElementById('tg-file-info');
+    const tgStatus = document.getElementById('tg-status');
+
+    tgFile.addEventListener('change', () => updateFileInfo(tgFile, tgFileInfo));
+
+    function saveTgToken(t) { localStorage.setItem('tg_token', t); }
+    function loadTgToken() { return localStorage.getItem('tg_token') || ''; }
+    function saveTgChat(c) { localStorage.setItem('tg_chat', c); }
+    function loadTgChat() { return localStorage.getItem('tg_chat') || ''; }
+
+    tgToken.value = loadTgToken();
+    tgChat.value = loadTgChat();
+    tgToken.addEventListener('input', () => saveTgToken(tgToken.value));
+    tgChat.addEventListener('input', () => saveTgChat(tgChat.value));
+
+    function setTgStatus(msg, type) {
+      tgStatus.textContent = msg;
+      tgStatus.className = 'status ' + (type || 'info');
+    }
+
+    document.getElementById('tg-test').addEventListener('click', async function() {
+      const token = tgToken.value.trim();
+      if (!token) { setTgStatus('❌ Enter a bot token.', 'error'); return; }
+      setTgStatus('⏳ Testing...', 'loading');
+      try {
+        const res = await fetch(`https://api.telegram.org/bot${token}/getMe`);
+        const data = await res.json();
+        if (data.ok) setTgStatus(`✅ Connected: @${data.result.username}`, 'success');
+        else setTgStatus(`❌ ${data.description}`, 'error');
+      } catch (err) { setTgStatus(`❌ ${err.message}`, 'error'); }
+    });
+
+    document.getElementById('tg-send').addEventListener('click', async function() {
+      const token = tgToken.value.trim();
+      const chat = tgChat.value.trim();
+      const text = tgMsg.value.trim();
+      const file = getFileData(tgFile);
+      if (!token) { setTgStatus('❌ Enter bot token.', 'error'); return; }
+      if (!chat) { setTgStatus('❌ Enter channel ID.', 'error'); return; }
+      setTgStatus('⏳ Sending...', 'loading');
+      this.disabled = true;
+      try {
+        if (file) {
+          const formData = new FormData();
+          formData.append('chat_id', chat);
+          formData.append('caption', text || '');
+          formData.append('parse_mode', 'HTML');
+          const isVideo = file.type.startsWith('video/');
+          if (isVideo) {
+            formData.append('video', file);
+            const res = await fetch(`https://api.telegram.org/bot${token}/sendVideo`, { method: 'POST', body: formData });
+            const data = await res.json();
+            if (data.ok) { setTgStatus('✅ Video sent!', 'success'); tgFile.value = ''; updateFileInfo(tgFile, tgFileInfo); } else { setTgStatus(`❌ ${data.description}`, 'error'); }
+          } else {
+            formData.append('photo', file);
+            const res = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, { method: 'POST', body: formData });
+            const data = await res.json();
+            if (data.ok) { setTgStatus('✅ Image sent!', 'success'); tgFile.value = ''; updateFileInfo(tgFile, tgFileInfo); } else { setTgStatus(`❌ ${data.description}`, 'error'); }
+          }
+          tgMsg.value = '';
+        } else {
+          const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: chat, text: text || 'Hello!', parse_mode: 'HTML' })
+          });
+          const data = await res.json();
+          if (data.ok) { setTgStatus('✅ Sent!', 'success'); tgMsg.value = ''; } else { setTgStatus(`❌ ${data.description}`, 'error'); }
+        }
+      } catch (err) { setTgStatus(`❌ ${err.message}`, 'error'); } finally { this.disabled = false; }
+    });
+
+    // ================================================================
+    // BLUESKY
+    // ================================================================
+    const bskyHandle = document.getElementById('bsky-handle');
+    const bskyPassword = document.getElementById('bsky-password');
+    const bskyMsg = document.getElementById('bsky-msg');
+    const bskyFile = document.getElementById('bsky-file');
+    const bskyFileInfo = document.getElementById('bsky-file-info');
+    const bskyStatus = document.getElementById('bsky-status');
+
+    bskyFile.addEventListener('change', () => updateFileInfo(bskyFile, bskyFileInfo));
+
+    function saveBskyHandle(h) { localStorage.setItem('bsky_handle', h); }
+    function loadBskyHandle() { return localStorage.getItem('bsky_handle') || ''; }
+    function saveBskyPassword(p) { localStorage.setItem('bsky_password', p); }
+    function loadBskyPassword() { return localStorage.getItem('bsky_password') || ''; }
+
+    bskyHandle.value = loadBskyHandle();
+    bskyPassword.value = loadBskyPassword();
+    bskyHandle.addEventListener('input', () => saveBskyHandle(bskyHandle.value));
+    bskyPassword.addEventListener('input', () => saveBskyPassword(bskyPassword.value));
+
+    function setBskyStatus(msg, type) {
+      bskyStatus.textContent = msg;
+      bskyStatus.className = 'status ' + (type || 'info');
+    }
+
+    document.getElementById('bsky-test').addEventListener('click', async function() {
+      const handle = bskyHandle.value.trim();
+      const password = bskyPassword.value.trim();
+      if (!handle || !password) { setBskyStatus('❌ Enter handle and app password.', 'error'); return; }
+      setBskyStatus('⏳ Testing...', 'loading');
+      try {
+        const res = await fetch('https://bsky.social/xrpc/com.atproto.server.createSession', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identifier: handle, password })
+        });
+        const data = await res.json();
+        if (res.ok) setBskyStatus(`✅ Connected as ${data.handle}`, 'success');
+        else setBskyStatus(`❌ ${data.message || 'Invalid'}`, 'error');
+      } catch (err) { setBskyStatus(`❌ ${err.message}`, 'error'); }
+    });
+
+    async function uploadToBluesky(file, accessJwt) {
+      const arrayBuffer = await file.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
+      const mimeType = file.type || 'image/png';
+      const res = await fetch('https://bsky.social/xrpc/com.atproto.repo.uploadBlob', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${accessJwt}`, 'Content-Type': mimeType },
+        body: uint8Array.buffer
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(`Upload failed: ${data.message || 'Unknown'}`);
+      return data.blob;
+    }
+
+    document.getElementById('bsky-send').addEventListener('click', async function() {
+      const handle = bskyHandle.value.trim();
+      const password = bskyPassword.value.trim();
+      const text = bskyMsg.value.trim();
+      const file = getFileData(bskyFile);
+      if (!handle || !password) { setBskyStatus('❌ Enter handle and app password.', 'error'); return; }
+      setBskyStatus('⏳ Sending...', 'loading');
+      this.disabled = true;
+      try {
+        const loginRes = await fetch('https://bsky.social/xrpc/com.atproto.server.createSession', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identifier: handle, password })
+        });
+        const session = await loginRes.json();
+        if (!loginRes.ok) throw new Error(`Login failed: ${session.message}`);
+        const record = { text: text || 'Hello!', createdAt: new Date().toISOString() };
+        if (file) {
+          const blob = await uploadToBluesky(file, session.accessJwt);
+          if (!blob.mimeType) blob.mimeType = file.type || 'image/png';
+          record.embed = {
+            '$type': 'app.bsky.embed.images',
+            images: [{ image: blob, alt: text || 'Image' }]
+          };
+        }
+        const postRes = await fetch('https://bsky.social/xrpc/com.atproto.repo.createRecord', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.accessJwt}` },
+          body: JSON.stringify({ repo: session.did, collection: 'app.bsky.feed.post', record })
+        });
+        const result = await postRes.json();
+        if (!postRes.ok) throw new Error(`Post failed: ${result.message}`);
+        setBskyStatus('✅ Sent!', 'success');
+        bskyMsg.value = ''; bskyFile.value = ''; updateFileInfo(bskyFile, bskyFileInfo);
+      } catch (err) { setBskyStatus(`❌ ${err.message}`, 'error'); } finally { this.disabled = false; }
+    });
+
+    // ================================================================
+    // MASTODON
+    // ================================================================
+    const mastodonInstance = document.getElementById('mastodon-instance');
+    const mastodonToken = document.getElementById('mastodon-token');
+    const mastodonMsg = document.getElementById('mastodon-msg');
+    const mastodonFile = document.getElementById('mastodon-file');
+    const mastodonFileInfo = document.getElementById('mastodon-file-info');
+    const mastodonStatus = document.getElementById('mastodon-status');
+
+    mastodonFile.addEventListener('change', () => updateFileInfo(mastodonFile, mastodonFileInfo));
+
+    function saveMastodonInstance(i) { localStorage.setItem('mastodon_instance', i); }
+    function loadMastodonInstance() { return localStorage.getItem('mastodon_instance') || ''; }
+    function saveMastodonToken(t) { localStorage.setItem('mastodon_token', t); }
+    function loadMastodonToken() { return localStorage.getItem('mastodon_token') || ''; }
+
+    mastodonInstance.value = loadMastodonInstance();
+    mastodonToken.value = loadMastodonToken();
+    mastodonInstance.addEventListener('input', () => saveMastodonInstance(mastodonInstance.value));
+    mastodonToken.addEventListener('input', () => saveMastodonToken(mastodonToken.value));
+
+    function setMastodonStatus(msg, type) {
+      mastodonStatus.textContent = msg;
+      mastodonStatus.className = 'status ' + (type || 'info');
+    }
+
+    document.getElementById('mastodon-test').addEventListener('click', async function() {
+      const instance = mastodonInstance.value.trim();
+      const token = mastodonToken.value.trim();
+      if (!instance || !token) { setMastodonStatus('❌ Enter instance URL and token.', 'error'); return; }
+      setMastodonStatus('⏳ Testing...', 'loading');
+      try {
+        const res = await fetch(`${instance}/api/v1/accounts/verify_credentials`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (res.ok) setMastodonStatus(`✅ Connected as ${data.username}`, 'success');
+        else setMastodonStatus(`❌ ${data.error || 'Invalid'}`, 'error');
+      } catch (err) { setMastodonStatus(`❌ ${err.message}`, 'error'); }
+    });
+
+    async function uploadToMastodon(file, instance, token) {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch(`${instance}/api/v2/media`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(`Upload failed: ${data.error || 'Unknown'}`);
+      return data.id;
+    }
+
+    document.getElementById('mastodon-send').addEventListener('click', async function() {
+      const instance = mastodonInstance.value.trim();
+      const token = mastodonToken.value.trim();
+      const text = mastodonMsg.value.trim();
+      const file = getFileData(mastodonFile);
+      if (!instance || !token) { setMastodonStatus('❌ Enter instance and token.', 'error'); return; }
+      setMastodonStatus('⏳ Sending...', 'loading');
+      this.disabled = true;
+      try {
+        let mediaIds = [];
+        if (file) { const id = await uploadToMastodon(file, instance, token); mediaIds.push(id); }
+        const statusData = { status: text || 'Hello!', visibility: 'public' };
+        if (mediaIds.length) statusData.media_ids = mediaIds;
+        const res = await fetch(`${instance}/api/v1/statuses`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify(statusData)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(`Post failed: ${data.error || 'Unknown'}`);
+        setMastodonStatus('✅ Sent!', 'success');
+        mastodonMsg.value = ''; mastodonFile.value = ''; updateFileInfo(mastodonFile, mastodonFileInfo);
+      } catch (err) { setMastodonStatus(`❌ ${err.message}`, 'error'); } finally { this.disabled = false; }
+    });
+
+    // ================================================================
+    // DISCORD
+    // ================================================================
+    const discordWebhook = document.getElementById('discord-webhook');
+    const discordMsg = document.getElementById('discord-msg');
+    const discordStatus = document.getElementById('discord-status');
+
+    function saveDiscordWebhook(u) { localStorage.setItem('discord_webhook', u); }
+    function loadDiscordWebhook() { return localStorage.getItem('discord_webhook') || ''; }
+
+    discordWebhook.value = loadDiscordWebhook();
+    discordWebhook.addEventListener('input', () => saveDiscordWebhook(discordWebhook.value));
+
+    function setDiscordStatus(msg, type) {
+      discordStatus.textContent = msg;
+      discordStatus.className = 'status ' + (type || 'info');
+    }
+
+    document.getElementById('discord-test').addEventListener('click', async function() {
+      const url = discordWebhook.value.trim();
+      if (!url) { setDiscordStatus('❌ Enter a webhook URL.', 'error'); return; }
+      setDiscordStatus('⏳ Testing...', 'loading');
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: 'Test message from Fed-Poster' })
+        });
+        if (res.ok) setDiscordStatus('✅ Webhook works!', 'success');
+        else setDiscordStatus(`❌ ${res.status} – Invalid webhook`, 'error');
+      } catch (err) { setDiscordStatus(`❌ ${err.message}`, 'error'); }
+    });
+
+    document.getElementById('discord-send').addEventListener('click', async function() {
+      const url = discordWebhook.value.trim();
+      const text = discordMsg.value.trim() || 'Hello from Discord!';
+      if (!url) { setDiscordStatus('❌ Enter a webhook URL.', 'error'); return; }
+      setDiscordStatus('⏳ Sending...', 'loading');
+      this.disabled = true;
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: text })
+        });
+        if (res.ok) { setDiscordStatus('✅ Sent!', 'success'); discordMsg.value = ''; }
+        else setDiscordStatus(`❌ ${res.status}`, 'error');
+      } catch (err) { setDiscordStatus(`❌ ${err.message}`, 'error'); } finally { this.disabled = false; }
+    });
+
+    // ================================================================
+    // GITHUB CLASSIC
+    // ================================================================
+    const githubClassicToken = document.getElementById('github-classic-token');
+    const githubClassicFilename = document.getElementById('github-classic-filename');
+    const githubClassicDesc = document.getElementById('github-classic-desc');
+    const githubClassicMsg = document.getElementById('github-classic-msg');
+    const githubClassicPublic = document.getElementById('github-classic-public');
+    const githubClassicStatus = document.getElementById('github-classic-status');
+
+    function saveGithubClassicToken(t) { localStorage.setItem('github_classic_token', t); }
+    function loadGithubClassicToken() { return localStorage.getItem('github_classic_token') || ''; }
+    function saveGithubClassicFilename(f) { localStorage.setItem('github_classic_filename', f); }
+    function loadGithubClassicFilename() { return localStorage.getItem('github_classic_filename') || ''; }
+    function saveGithubClassicDesc(d) { localStorage.setItem('github_classic_desc', d); }
+    function loadGithubClassicDesc() { return localStorage.getItem('github_classic_desc') || ''; }
+
+    githubClassicToken.value = loadGithubClassicToken();
+    githubClassicFilename.value = loadGithubClassicFilename();
+    githubClassicDesc.value = loadGithubClassicDesc();
+    githubClassicToken.addEventListener('input', () => saveGithubClassicToken(githubClassicToken.value));
+    githubClassicFilename.addEventListener('input', () => saveGithubClassicFilename(githubClassicFilename.value));
+    githubClassicDesc.addEventListener('input', () => saveGithubClassicDesc(githubClassicDesc.value));
+
+    function setGithubClassicStatus(msg, type) {
+      githubClassicStatus.textContent = msg;
+      githubClassicStatus.className = 'status ' + (type || 'info');
+    }
+
+    document.getElementById('github-classic-test').addEventListener('click', async function() {
+      const token = githubClassicToken.value.trim();
+      if (!token) { setGithubClassicStatus('❌ Enter a token.', 'error'); return; }
+      setGithubClassicStatus('⏳ Testing...', 'loading');
+      try {
+        const res = await fetch('https://api.github.com/user', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setGithubClassicStatus(`✅ Connected as ${data.login}`, 'success');
+        } else {
+          setGithubClassicStatus(`❌ ${res.status} – Invalid token`, 'error');
+        }
+      } catch (err) { setGithubClassicStatus(`❌ ${err.message}`, 'error'); }
+    });
+
+    document.getElementById('github-classic-send').addEventListener('click', async function() {
+      const token = githubClassicToken.value.trim();
+      const filename = githubClassicFilename.value.trim() || 'post.md';
+      const description = githubClassicDesc.value.trim() || 'Posted from Fed-Poster';
+      const content = githubClassicMsg.value.trim() || 'Hello from GitHub Classic!';
+      const isPublic = githubClassicPublic.checked;
+      if (!token) { setGithubClassicStatus('❌ Enter a token.', 'error'); return; }
+      if (!content) { setGithubClassicStatus('❌ Write some content.', 'error'); return; }
+      setGithubClassicStatus('⏳ Creating Gist...', 'loading');
+      this.disabled = true;
+      try {
+        const res = await fetch('https://api.github.com/gists', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            description: description,
+            public: isPublic,
+            files: { [filename]: { content: content } }
+          })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setGithubClassicStatus(`✅ Gist created! ${data.html_url}`, 'success');
+          githubClassicMsg.value = '';
+        } else {
+          setGithubClassicStatus(`❌ ${data.message || 'Unknown error'}`, 'error');
+        }
+      } catch (err) { setGithubClassicStatus(`❌ ${err.message}`, 'error'); } finally { this.disabled = false; }
+    });
+
+    // ================================================================
+    // GITHUB REPO
+    // ================================================================
+    const githubRepotoken = document.getElementById('github-repo-token');
+    const githubRepoName = document.getElementById('github-repo-name');
+    const githubRepoPath = document.getElementById('github-repo-path');
+    const githubRepoMsg = document.getElementById('github-repo-msg');
+    const githubRepoBranch = document.getElementById('github-repo-branch');
+    const githubRepoContent = document.getElementById('github-repo-content');
+    const githubRepoStatus = document.getElementById('github-repo-status');
+
+    function saveGithubRepoToken(t) { localStorage.setItem('github_repo_token', t); }
+    function loadGithubRepoToken() { return localStorage.getItem('github_repo_token') || ''; }
+    function saveGithubRepoName(n) { localStorage.setItem('github_repo_name', n); }
+    function loadGithubRepoName() { return localStorage.getItem('github_repo_name') || ''; }
+    function saveGithubRepoPath(p) { localStorage.setItem('github_repo_path', p); }
+    function loadGithubRepoPath() { return localStorage.getItem('github_repo_path') || ''; }
+    function saveGithubRepoMsg(m) { localStorage.setItem('github_repo_msg', m); }
+    function loadGithubRepoMsg() { return localStorage.getItem('github_repo_msg') || ''; }
+    function saveGithubRepoBranch(b) { localStorage.setItem('github_repo_branch', b); }
+    function loadGithubRepoBranch() { return localStorage.getItem('github_repo_branch') || ''; }
+
+    githubRepotoken.value = loadGithubRepoToken();
+    githubRepoName.value = loadGithubRepoName();
+    githubRepoPath.value = loadGithubRepoPath();
+    githubRepoMsg.value = loadGithubRepoMsg();
+    githubRepoBranch.value = loadGithubRepoBranch();
+    githubRepotoken.addEventListener('input', () => saveGithubRepoToken(githubRepotoken.value));
+    githubRepoName.addEventListener('input', () => saveGithubRepoName(githubRepoName.value));
+    githubRepoPath.addEventListener('input', () => saveGithubRepoPath(githubRepoPath.value));
+    githubRepoMsg.addEventListener('input', () => saveGithubRepoMsg(githubRepoMsg.value));
+    githubRepoBranch.addEventListener('input', () => saveGithubRepoBranch(githubRepoBranch.value));
+
+    function setGithubRepoStatus(msg, type) {
+      githubRepoStatus.textContent = msg;
+      githubRepoStatus.className = 'status ' + (type || 'info');
+    }
+
+    document.getElementById('github-repo-test').addEventListener('click', async function() {
+      const token = githubRepotoken.value.trim();
+      if (!token) { setGithubRepoStatus('❌ Enter a token.', 'error'); return; }
+      setGithubRepoStatus('⏳ Testing...', 'loading');
+      try {
+        const res = await fetch('https://api.github.com/user', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setGithubRepoStatus(`✅ Connected as ${data.login}`, 'success');
+        } else {
+          setGithubRepoStatus(`❌ ${res.status} – Invalid token`, 'error');
+        }
+      } catch (err) { setGithubRepoStatus(`❌ ${err.message}`, 'error'); }
+    });
+
+    document.getElementById('github-repo-send').addEventListener('click', async function() {
+      const token = githubRepotoken.value.trim();
+      const repo = githubRepoName.value.trim();
+      const path = githubRepoPath.value.trim() || 'post.md';
+      const message = githubRepoMsg.value.trim() || 'Posted from Fed-Poster';
+      const branch = githubRepoBranch.value.trim() || 'main';
+      const content = githubRepoContent.value.trim() || 'Hello from GitHub Repo!';
+      if (!token) { setGithubRepoStatus('❌ Enter a token.', 'error'); return; }
+      if (!repo) { setGithubRepoStatus('❌ Enter repository name (owner/repo).', 'error'); return; }
+      if (!content) { setGithubRepoStatus('❌ Write some content.', 'error'); return; }
+      setGithubRepoStatus('⏳ Creating/Updating file...', 'loading');
+      this.disabled = true;
+      try {
+        let sha = null;
+        const getRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (getRes.ok) { const data = await getRes.json(); sha = data.sha; }
+        else if (getRes.status !== 404) { throw new Error(`Failed to check file existence: ${getRes.status}`); }
+        const body = { message, content: btoa(content), branch };
+        if (sha) body.sha = sha;
+        const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setGithubRepoStatus(`✅ File ${sha ? 'updated' : 'created'}! ${data.content?.html_url || data.commit?.html_url || ''}`, 'success');
+          githubRepoContent.value = '';
+        } else {
+          setGithubRepoStatus(`❌ ${data.message || 'Unknown error'}`, 'error');
+        }
+      } catch (err) { setGithubRepoStatus(`❌ ${err.message}`, 'error'); } finally { this.disabled = false; }
+    });
+
+    // ================================================================
+    // SAFEW
+    // ================================================================
+    const safewToken = document.getElementById('safew-token');
+    const safewChat = document.getElementById('safew-chat');
+    const safewMsg = document.getElementById('safew-msg');
+    const safewStatus = document.getElementById('safew-status');
+    let activeSafeWRequest = false;
+
+    function saveSafewToken(t) { localStorage.setItem('safew_token', t); }
+    function loadSafewToken() { return localStorage.getItem('safew_token') || ''; }
+    function saveSafewChat(c) { localStorage.setItem('safew_chat', c); }
+    function loadSafewChat() { return localStorage.getItem('safew_chat') || ''; }
+
+    safewToken.value = loadSafewToken();
+    safewChat.value = loadSafewChat();
+    safewToken.addEventListener('input', () => saveSafewToken(safewToken.value));
+    safewChat.addEventListener('input', () => saveSafewChat(safewChat.value));
+
+    function setSafewStatus(msg, type) {
+      safewStatus.textContent = msg;
+      safewStatus.className = 'status ' + (type || 'info');
+    }
+
+    document.getElementById('safew-test').addEventListener('click', async function() {
+      const token = safewToken.value.trim();
+      if (!token) { setSafewStatus('❌ Enter a bot token.', 'error'); return; }
+      setSafewStatus('⏳ Testing via Edge...', 'loading');
+      try {
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/smart-function-safew`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'apikey': SUPABASE_ANON_KEY,
+          },
+          body: JSON.stringify({ token, test: true }),
+        });
+        const data = await res.json();
+        if (res.ok) setSafewStatus(`✅ Connected: @${data.username}`, 'success');
+        else setSafewStatus(`❌ ${data.error || 'Invalid token'}`, 'error');
+      } catch (err) { setSafewStatus(`❌ ${err.message}`, 'error'); }
+    });
+
+    document.getElementById('safew-send').addEventListener('click', async function() {
+      if (activeSafeWRequest) { setSafewStatus('⏳ Already sending...', 'info'); return; }
+      activeSafeWRequest = true;
+      this.disabled = true;
+      const token = safewToken.value.trim();
+      const chatId = safewChat.value.trim();
+      const text = safewMsg.value.trim() || 'Hello from SafeW!';
+      if (!token) { setSafewStatus('❌ Enter a bot token.', 'error'); activeSafeWRequest = false; this.disabled = false; return; }
+      if (!chatId) { setSafewStatus('❌ Enter a chat ID.', 'error'); activeSafeWRequest = false; this.disabled = false; return; }
+      setSafewStatus('⏳ Sending via Edge...', 'loading');
+      try {
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/smart-function-safew`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'apikey': SUPABASE_ANON_KEY,
+          },
+          body: JSON.stringify({ token, chatId, text }),
+        });
+        const data = await res.json();
+        if (res.ok) { setSafewStatus('✅ Sent!', 'success'); safewMsg.value = ''; }
+        else setSafewStatus(`❌ ${data.error || 'Unknown error'}`, 'error');
+      } catch (err) { setSafewStatus(`❌ ${err.message}`, 'error'); } finally { activeSafeWRequest = false; this.disabled = false; }
+    });
+
+    // ================================================================
+    // TUMBLR
+    // ================================================================
+    const tumblrBlog = document.getElementById('tumblr-blog');
+    const tumblrCkey = document.getElementById('tumblr-ckey');
+    const tumblrCsecret = document.getElementById('tumblr-csecret');
+    const tumblrAtoken = document.getElementById('tumblr-atoken');
+    const tumblrAsecret = document.getElementById('tumblr-asecret');
+    const tumblrTitle = document.getElementById('tumblr-title');
+    const tumblrMsg = document.getElementById('tumblr-msg');
+    const tumblrStatus = document.getElementById('tumblr-status');
+
+    function saveTumblr(key, val) { localStorage.setItem('tumblr_' + key, val); }
+    function loadTumblr(key) { return localStorage.getItem('tumblr_' + key) || ''; }
+
+    tumblrBlog.value = loadTumblr('blog');
+    tumblrCkey.value = loadTumblr('ckey');
+    tumblrCsecret.value = loadTumblr('csecret');
+    tumblrAtoken.value = loadTumblr('atoken');
+    tumblrAsecret.value = loadTumblr('asecret');
+    tumblrTitle.value = loadTumblr('title');
+    tumblrBlog.addEventListener('input', () => saveTumblr('blog', tumblrBlog.value));
+    tumblrCkey.addEventListener('input', () => saveTumblr('ckey', tumblrCkey.value));
+    tumblrCsecret.addEventListener('input', () => saveTumblr('csecret', tumblrCsecret.value));
+    tumblrAtoken.addEventListener('input', () => saveTumblr('atoken', tumblrAtoken.value));
+    tumblrAsecret.addEventListener('input', () => saveTumblr('asecret', tumblrAsecret.value));
+    tumblrTitle.addEventListener('input', () => saveTumblr('title', tumblrTitle.value));
+
+    function setTumblrStatus(msg, type) {
+      tumblrStatus.textContent = msg;
+      tumblrStatus.className = 'status ' + (type || 'info');
+    }
+
+    document.getElementById('tumblr-test').addEventListener('click', async function() {
+      const blog = tumblrBlog.value.trim();
+      const consumerKey = tumblrCkey.value.trim();
+      const consumerSecret = tumblrCsecret.value.trim();
+      const token = tumblrAtoken.value.trim();
+      const tokenSecret = tumblrAsecret.value.trim();
+      if (!blog || !consumerKey || !consumerSecret || !token || !tokenSecret) {
+        setTumblrStatus('❌ Fill in all fields.', 'error');
+        return;
+      }
+      setTumblrStatus('⏳ Testing via Edge...', 'loading');
+      try {
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/super-responder-tumblr`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'apikey': SUPABASE_ANON_KEY,
+          },
+          body: JSON.stringify({ consumerKey, consumerSecret, token, tokenSecret, blog, test: true }),
+        });
+        const data = await res.json();
+        if (res.ok) setTumblrStatus('✅ Blog found!', 'success');
+        else setTumblrStatus(`❌ ${data.error || 'Not found'}`, 'error');
+      } catch (err) { setTumblrStatus(`❌ ${err.message}`, 'error'); }
+    });
+
+    document.getElementById('tumblr-send').addEventListener('click', async function() {
+      const blog = tumblrBlog.value.trim();
+      const consumerKey = tumblrCkey.value.trim();
+      const consumerSecret = tumblrCsecret.value.trim();
+      const token = tumblrAtoken.value.trim();
+      const tokenSecret = tumblrAsecret.value.trim();
+      const title = tumblrTitle.value.trim() || 'Untitled';
+      const content = tumblrMsg.value.trim() || 'Hello from Tumblr!';
+      if (!blog || !consumerKey || !consumerSecret || !token || !tokenSecret) {
+        setTumblrStatus('❌ Fill in all fields.', 'error');
+        return;
+      }
+      setTumblrStatus('⏳ Sending via Edge...', 'loading');
+      this.disabled = true;
+      try {
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/super-responder-tumblr`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'apikey': SUPABASE_ANON_KEY,
+          },
+          body: JSON.stringify({ consumerKey, consumerSecret, token, tokenSecret, blog, title, content }),
+        });
+        const data = await res.json();
+        if (res.ok) { setTumblrStatus('✅ Sent!', 'success'); tumblrMsg.value = ''; }
+        else setTumblrStatus(`❌ ${data.error || 'Unknown error'}`, 'error');
+      } catch (err) { setTumblrStatus(`❌ ${err.message}`, 'error'); } finally { this.disabled = false; }
+    });
+
+    // ================================================================
+    // DEVIANTART
+    // ================================================================
+    const deviantartConnect = document.getElementById('deviantart-connect');
+    const deviantartDisconnect = document.getElementById('deviantart-disconnect');
+    const deviantartSend = document.getElementById('deviantart-send');
+    const deviantartStatus = document.getElementById('deviantart-status');
+    const deviantartStatusDisplay = document.getElementById('deviantart-status-display');
+    const deviantartTitle = document.getElementById('deviantart-title');
+    const deviantartDesc = document.getElementById('deviantart-desc');
+    const deviantartTags = document.getElementById('deviantart-tags');
+    const deviantartFile = document.getElementById('deviantart-file');
+    const deviantartFileInfo = document.getElementById('deviantart-file-info');
+
+    function loadDeviantartFields() {
+      deviantartTitle.value = localStorage.getItem('deviantart_title') || '';
+      deviantartDesc.value = localStorage.getItem('deviantart_desc') || '';
+      deviantartTags.value = localStorage.getItem('deviantart_tags') || '';
+    }
+    loadDeviantartFields();
+
+    deviantartTitle.addEventListener('input', () => localStorage.setItem('deviantart_title', deviantartTitle.value));
+    deviantartDesc.addEventListener('input', () => localStorage.setItem('deviantart_desc', deviantartDesc.value));
+    deviantartTags.addEventListener('input', () => localStorage.setItem('deviantart_tags', deviantartTags.value));
+    deviantartFile.addEventListener('change', () => updateFileInfo(deviantartFile, deviantartFileInfo));
+
+    let daAccessToken = localStorage.getItem('deviantart_access_token') || null;
+    let daRefreshToken = localStorage.getItem('deviantart_refresh_token') || null;
+    let daUsername = localStorage.getItem('deviantart_username') || null;
+
+    function updateDeviantartUI() {
+      if (daAccessToken) {
+        deviantartStatusDisplay.className = 'da-connected';
+        deviantartStatusDisplay.innerHTML = `✅ Connected as <strong>${daUsername || 'DeviantArt user'}</strong>`;
+        deviantartSend.disabled = false;
+        deviantartStatus.className = 'status info';
+        deviantartStatus.textContent = 'Ready to send.';
+      } else {
+        deviantartStatusDisplay.className = 'da-disconnected';
+        deviantartStatusDisplay.innerHTML = '⚠️ Not connected. Click "Connect" to authorize.';
+        deviantartSend.disabled = true;
+        deviantartStatus.className = 'status info';
+        deviantartStatus.textContent = 'Connect your account to send.';
+      }
+    }
+    updateDeviantartUI();
+
+    deviantartConnect.addEventListener('click', async function() {
+      this.disabled = true;
+      try {
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/deviantart-oauth/auth`, {
+          headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'apikey': SUPABASE_ANON_KEY }
+        });
+        const data = await res.json();
+        if (data.authUrl) {
+          const popup = window.open(data.authUrl, '_blank', 'width=600,height=700');
+          if (!popup) throw new Error('Popup blocked. Please allow popups for this site.');
+          const manualDiv = document.createElement('div');
+          manualDiv.id = 'da-manual-input';
+          manualDiv.innerHTML = `
+            <label style="margin-top:10px;font-size:12px;color:#8b949e;">After authorizing, copy the <code>access_token</code> from the URL and paste it below:</label>
+            <input id="da-token-input" type="text" placeholder="Paste access_token here" />
+            <button id="da-token-submit" class="btn-primary" style="margin-top:8px;">✅ Save Token</button>
+          `;
+          deviantartStatusDisplay.parentNode.insertBefore(manualDiv, deviantartStatusDisplay.nextSibling);
+          document.getElementById('da-token-submit').addEventListener('click', function() {
+            const token = document.getElementById('da-token-input').value.trim();
+            if (token) {
+              daAccessToken = token;
+              localStorage.setItem('deviantart_access_token', token);
+              localStorage.setItem('deviantart_username', 'User');
+              daUsername = 'User';
+              updateDeviantartUI();
+              const el = document.getElementById('da-manual-input');
+              if (el) el.remove();
+              deviantartStatus.className = 'status success';
+              deviantartStatus.textContent = '✅ Token saved! You can now send.';
+            }
+          });
+          deviantartStatus.className = 'status info';
+          deviantartStatus.textContent = '🔑 Authorize in the popup, then paste the token above.';
+        } else {
+          throw new Error('No auth URL received');
+        }
+      } catch (err) {
+        deviantartStatus.className = 'status error';
+        deviantartStatus.textContent = `❌ ${err.message}`;
+      } finally { this.disabled = false; }
+    });
+
+    deviantartDisconnect.addEventListener('click', function() {
+      daAccessToken = null;
+      daRefreshToken = null;
+      daUsername = null;
+      localStorage.removeItem('deviantart_access_token');
+      localStorage.removeItem('deviantart_refresh_token');
+      localStorage.removeItem('deviantart_username');
+      updateDeviantartUI();
+      deviantartStatus.className = 'status info';
+      deviantartStatus.textContent = 'Disconnected.';
+      const el = document.getElementById('da-manual-input');
+      if (el) el.remove();
+    });
+
+    deviantartSend.addEventListener('click', async function() {
+      const file = getFileData(deviantartFile);
+      const title = deviantartTitle.value.trim() || 'Untitled';
+      const description = deviantartDesc.value.trim() || '';
+      const tags = deviantartTags.value.trim() || '';
+      if (!daAccessToken) {
+        deviantartStatus.className = 'status error';
+        deviantartStatus.textContent = '❌ Connect your account first.';
+        return;
+      }
+      if (!file) {
+        deviantartStatus.className = 'status error';
+        deviantartStatus.textContent = '❌ Please select an image.';
+        return;
+      }
+      this.disabled = true;
+      deviantartStatus.className = 'status loading';
+      deviantartStatus.textContent = '⏳ Uploading to Sta.sh and publishing...';
+      try {
+        const formData = new FormData();
+        formData.append('access_token', daAccessToken);
+        formData.append('file', file);
+        formData.append('title', title);
+        formData.append('description', description);
+        formData.append('tags', tags);
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/deviantart-oauth/send`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'apikey': SUPABASE_ANON_KEY },
+          body: formData,
+        });
+        const data = await res.json();
+        if (res.ok) {
+          deviantartStatus.className = 'status success';
+          deviantartStatus.textContent = `✅ Published! ${data.deviantart_url || data.url || 'View your gallery'}`;
+          deviantartFile.value = '';
+          updateFileInfo(deviantartFile, deviantartFileInfo);
+        } else {
+          throw new Error(data.error || 'Upload failed');
+        }
+      } catch (err) {
+        deviantartStatus.className = 'status error';
+        deviantartStatus.textContent = `❌ ${err.message}`;
+      } finally { this.disabled = false; }
+    });
+
+    // ================================================================
+    // BUFFER PROXY
+    // ================================================================
+    const bufferToken = document.getElementById('buffer-token');
+    const bufferProfiles = document.getElementById('buffer-profiles');
+    const bufferMsg = document.getElementById('buffer-msg');
+    const bufferStatus = document.getElementById('buffer-status');
+
+    function saveBufferToken(t) { localStorage.setItem('buffer_token', t); }
+    function loadBufferToken() { return localStorage.getItem('buffer_token') || ''; }
+    function saveBufferProfiles(p) { localStorage.setItem('buffer_profiles', p); }
+    function loadBufferProfiles() { return localStorage.getItem('buffer_profiles') || ''; }
+
+    bufferToken.value = loadBufferToken();
+    bufferProfiles.value = loadBufferProfiles();
+    bufferToken.addEventListener('input', () => saveBufferToken(bufferToken.value));
+    bufferProfiles.addEventListener('input', () => saveBufferProfiles(bufferProfiles.value));
+
+    function setBufferStatus(msg, type) {
+      bufferStatus.textContent = msg;
+      bufferStatus.className = 'status ' + (type || 'info');
+    }
+
+    document.getElementById('buffer-test').addEventListener('click', async function() {
+      const token = bufferToken.value.trim();
+      if (!token) { setBufferStatus('❌ Enter a Buffer token.', 'error'); return; }
+      setBufferStatus('⏳ Testing...', 'loading');
+      try {
+        const res = await fetch(`https://api.bufferapp.com/1/user.json?access_token=${token}`);
+        const data = await res.json();
+        if (res.ok) setBufferStatus(`✅ Connected to Buffer (${data.name || 'OK'})`, 'success');
+        else setBufferStatus(`❌ ${data.message || 'Invalid token'}`, 'error');
+      } catch (err) { setBufferStatus(`❌ ${err.message}`, 'error'); }
+    });
+
+    document.getElementById('buffer-send').addEventListener('click', async function() {
+      const token = bufferToken.value.trim();
+      const profiles = bufferProfiles.value.split(',').map(s => s.trim()).filter(Boolean);
+      const text = bufferMsg.value.trim() || 'Hello from Buffer Proxy!';
+      if (!token) { setBufferStatus('❌ Enter a Buffer token.', 'error'); return; }
+      if (profiles.length === 0) { setBufferStatus('❌ Enter at least 1 Profile ID.', 'error'); return; }
+      setBufferStatus('⏳ Sending via Buffer...', 'loading');
+      this.disabled = true;
+      try {
+        const res = await fetch(`https://api.bufferapp.com/1/updates/create.json?access_token=${token}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text, profile_ids: profiles, shorten: true })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setBufferStatus(`✅ Sent to ${data.profile_ids?.length || profiles.length} profile(s)!`, 'success');
+          bufferMsg.value = '';
+        } else {
+          setBufferStatus(`❌ Buffer Error: ${data.message || 'Unknown'}`, 'error');
+        }
+      } catch (err) { setBufferStatus(`❌ ${err.message}`, 'error'); } finally { this.disabled = false; }
+    });
+
+    // ================================================================
+    // WORDPRESS JETPACK
+    // ================================================================
+    const wpUrl = document.getElementById('wp-url');
+    const wpPassword = document.getElementById('wp-password');
+    const wpTitle = document.getElementById('wp-title');
+    const wpContent = document.getElementById('wp-content');
+    const wpPublicize = document.getElementById('wp-publicize');
+    const wpStatus = document.getElementById('wp-status');
+
+    function saveWpUrl(u) { localStorage.setItem('wp_url', u); }
+    function loadWpUrl() { return localStorage.getItem('wp_url') || ''; }
+    function saveWpPassword(p) { localStorage.setItem('wp_password', p); }
+    function loadWpPassword() { return localStorage.getItem('wp_password') || ''; }
+
+    wpUrl.value = loadWpUrl();
+    wpPassword.value = loadWpPassword();
+    wpUrl.addEventListener('input', () => saveWpUrl(wpUrl.value));
+    wpPassword.addEventListener('input', () => saveWpPassword(wpPassword.value));
+
+    function setWpStatus(msg, type) {
+      wpStatus.textContent = msg;
+      wpStatus.className = 'status ' + (type || 'info');
+    }
+
+    document.getElementById('wp-test').addEventListener('click', async function() {
+      const url = wpUrl.value.trim();
+      const pass = wpPassword.value.trim();
+      if (!url || !pass) { setWpStatus('❌ Enter URL and App Password.', 'error'); return; }
+      setWpStatus('⏳ Testing...', 'loading');
+      try {
+        const res = await fetch(`${url}/wp-json/wp/v2/users/me`, {
+          headers: { 'Authorization': 'Basic ' + btoa('admin:' + pass) }
+        });
+        if (res.ok) setWpStatus('✅ Connected to WordPress!', 'success');
+        else setWpStatus(`❌ ${res.status} – Check URL/Password`, 'error');
+      } catch (err) { setWpStatus(`❌ ${err.message}`, 'error'); }
+    });
+
+    document.getElementById('wp-send').addEventListener('click', async function() {
+      const url = wpUrl.value.trim();
+      const pass = wpPassword.value.trim();
+      const title = wpTitle.value.trim() || 'Post from Fed-Poster';
+      const content = wpContent.value.trim() || 'Hello from WordPress Proxy!';
+      const share = wpPublicize.checked;
+      if (!url || !pass) { setWpStatus('❌ Enter URL and App Password.', 'error'); return; }
+      setWpStatus('⏳ Creating post & triggering shares...', 'loading');
+      this.disabled = true;
+      try {
+        const payload = {
+          title,
+          content,
+          status: 'publish',
+          jetpack_publicize_connections: share ? null : [],
+        };
+        const res = await fetch(`${url}/wp-json/wp/v2/posts`, {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Basic ' + btoa('admin:' + pass),
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setWpStatus(`✅ Post published! ${data.link} ${share ? '→ Shared to social!' : '(Sharing disabled)'}`, 'success');
+          wpContent.value = '';
+          wpTitle.value = '';
+        } else {
+          setWpStatus(`❌ WP Error: ${data.message || JSON.stringify(data)}`, 'error');
+        }
+      } catch (err) { setWpStatus(`❌ ${err.message}`, 'error'); } finally { this.disabled = false; }
+    });
+
+    // ================================================================
+    // MULTI PLATFORM POST (INSTANT – no verification required)
+    // ================================================================
+    const unifiedMsg = document.getElementById('unified-msg');
+    const unifiedFile = document.getElementById('unified-file');
+    const unifiedFileInfo = document.getElementById('unified-file-info');
+    const unifiedStatus = document.getElementById('unified-status');
+    const unifiedResults = document.getElementById('unified-results');
+    const unifiedSend = document.getElementById('unified-send');
+    const unifiedVerify = document.getElementById('unified-verify');
+    const verifyStatus = document.getElementById('verify-status');
+
+    unifiedFile.addEventListener('change', () => updateFileInfo(unifiedFile, unifiedFileInfo));
+
+    const savedUnified = localStorage.getItem('unified_msg') || '';
+    if (savedUnified) unifiedMsg.value = savedUnified;
+    unifiedMsg.addEventListener('input', () => {
+      localStorage.setItem('unified_msg', unifiedMsg.value);
+    });
+
+    // "Verify All" – optional, just tests credentials
+    async function verifyAll() {
+      const useTg = document.getElementById('unified-tg').checked;
+      const useBsky = document.getElementById('unified-bsky').checked;
+      const useMasto = document.getElementById('unified-mastodon').checked;
+      const useDiscord = document.getElementById('unified-discord').checked;
+      const useGithubClassic = document.getElementById('unified-github-classic').checked;
+      const useGithubRepo = document.getElementById('unified-github-repo').checked;
+      const useSafew = document.getElementById('unified-safew').checked;
+      const useTumblr = document.getElementById('unified-tumblr').checked;
+
+      const results = [];
+      let allPassed = true;
+
+      if (useTg) {
+        const token = tgToken.value.trim();
+        const chat = tgChat.value.trim();
+        if (!token || !chat) { results.push({ platform: 'Telegram', status: '❌', msg: 'Missing creds' }); allPassed = false; }
+        else {
+          try {
+            const res = await fetch(`https://api.telegram.org/bot${token}/getMe`);
+            const data = await res.json();
+            if (data.ok) results.push({ platform: 'Telegram', status: '✅', msg: `@${data.result.username}` });
+            else { results.push({ platform: 'Telegram', status: '❌', msg: data.description }); allPassed = false; }
+          } catch (e) { results.push({ platform: 'Telegram', status: '❌', msg: e.message }); allPassed = false; }
+        }
+      }
+      if (useBsky) {
+        const handle = bskyHandle.value.trim();
+        const pass = bskyPassword.value.trim();
+        if (!handle || !pass) { results.push({ platform: 'Bluesky', status: '❌', msg: 'Missing creds' }); allPassed = false; }
+        else {
+          try {
+            const res = await fetch('https://bsky.social/xrpc/com.atproto.server.createSession', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ identifier: handle, password: pass })
+            });
+            const data = await res.json();
+            if (res.ok) results.push({ platform: 'Bluesky', status: '✅', msg: data.handle });
+            else { results.push({ platform: 'Bluesky', status: '❌', msg: data.message || 'Invalid' }); allPassed = false; }
+          } catch (e) { results.push({ platform: 'Bluesky', status: '❌', msg: e.message }); allPassed = false; }
+        }
+      }
+      if (useMasto) {
+        const instance = mastodonInstance.value.trim();
+        const token = mastodonToken.value.trim();
+        if (!instance || !token) { results.push({ platform: 'Mastodon', status: '❌', msg: 'Missing creds' }); allPassed = false; }
+        else {
+          try {
+            const res = await fetch(`${instance}/api/v1/accounts/verify_credentials`, {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (res.ok) results.push({ platform: 'Mastodon', status: '✅', msg: data.username });
+            else { results.push({ platform: 'Mastodon', status: '❌', msg: data.error || 'Invalid' }); allPassed = false; }
+          } catch (e) { results.push({ platform: 'Mastodon', status: '❌', msg: e.message }); allPassed = false; }
+        }
+      }
+      if (useDiscord) {
+        const url = discordWebhook.value.trim();
+        if (!url) { results.push({ platform: 'Discord', status: '❌', msg: 'Missing webhook' }); allPassed = false; }
+        else {
+          try {
+            const res = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ content: 'Test from Fed-Poster' })
+            });
+            if (res.ok) results.push({ platform: 'Discord', status: '✅', msg: 'Valid' });
+            else { results.push({ platform: 'Discord', status: '❌', msg: 'Invalid webhook' }); allPassed = false; }
+          } catch (e) { results.push({ platform: 'Discord', status: '❌', msg: e.message }); allPassed = false; }
+        }
+      }
+      if (useGithubClassic) {
+        const token = githubClassicToken.value.trim();
+        if (!token) { results.push({ platform: 'GitHub Classic', status: '❌', msg: 'Missing token' }); allPassed = false; }
+        else {
+          try {
+            const res = await fetch('https://api.github.com/user', {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) results.push({ platform: 'GitHub Classic', status: '✅', msg: 'Valid' });
+            else { results.push({ platform: 'GitHub Classic', status: '❌', msg: 'Invalid token' }); allPassed = false; }
+          } catch (e) { results.push({ platform: 'GitHub Classic', status: '❌', msg: e.message }); allPassed = false; }
+        }
+      }
+      if (useGithubRepo) {
+        const token = githubRepotoken.value.trim();
+        const repo = githubRepoName.value.trim();
+        if (!token || !repo) { results.push({ platform: 'GitHub Repo', status: '❌', msg: 'Missing token or repo' }); allPassed = false; }
+        else {
+          try {
+            const res = await fetch('https://api.github.com/user', {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) results.push({ platform: 'GitHub Repo', status: '✅', msg: 'Valid' });
+            else { results.push({ platform: 'GitHub Repo', status: '❌', msg: 'Invalid token' }); allPassed = false; }
+          } catch (e) { results.push({ platform: 'GitHub Repo', status: '❌', msg: e.message }); allPassed = false; }
+        }
+      }
+      if (useSafew) {
+        const token = safewToken.value.trim();
+        if (!token) { results.push({ platform: 'SafeW', status: '❌', msg: 'Missing token' }); allPassed = false; }
+        else {
+          try {
+            const res = await fetch(`${SUPABASE_URL}/functions/v1/smart-function-safew`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'apikey': SUPABASE_ANON_KEY,
+              },
+              body: JSON.stringify({ token, test: true }),
+            });
+            if (res.ok) results.push({ platform: 'SafeW', status: '✅', msg: 'Valid' });
+            else { results.push({ platform: 'SafeW', status: '❌', msg: 'Invalid token' }); allPassed = false; }
+          } catch (e) { results.push({ platform: 'SafeW', status: '❌', msg: e.message }); allPassed = false; }
+        }
+      }
+      if (useTumblr) {
+        const blog = tumblrBlog.value.trim();
+        const consumerKey = tumblrCkey.value.trim();
+        const consumerSecret = tumblrCsecret.value.trim();
+        const token = tumblrAtoken.value.trim();
+        const tokenSecret = tumblrAsecret.value.trim();
+        if (!blog || !consumerKey || !consumerSecret || !token || !tokenSecret) {
+          results.push({ platform: 'Tumblr', status: '❌', msg: 'Missing creds' });
+          allPassed = false;
+        } else {
+          try {
+            const res = await fetch(`${SUPABASE_URL}/functions/v1/super-responder-tumblr`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'apikey': SUPABASE_ANON_KEY,
+              },
+              body: JSON.stringify({ consumerKey, consumerSecret, token, tokenSecret, blog, test: true }),
+            });
+            if (res.ok) results.push({ platform: 'Tumblr', status: '✅', msg: 'Connected' });
+            else { results.push({ platform: 'Tumblr', status: '❌', msg: 'Invalid credentials' }); allPassed = false; }
+          } catch (e) { results.push({ platform: 'Tumblr', status: '❌', msg: e.message }); allPassed = false; }
+        }
+      }
+
+      let html = '';
+      results.forEach(r => html += `<div class="v-item"><span>${r.status}</span> ${r.platform}: ${r.msg}</div>`);
+      if (results.length === 0) { html = '<div class="v-item">⚠️ No platforms selected.</div>'; allPassed = false; }
+      verifyStatus.innerHTML = html;
+      return { allPassed, results };
+    }
+
+    unifiedVerify.addEventListener('click', async function() {
+      unifiedStatus.className = 'status loading';
+      unifiedStatus.textContent = '⏳ Verifying... (optional)';
+      this.disabled = true;
+      const { allPassed } = await verifyAll();
+      if (allPassed) {
+        unifiedStatus.className = 'status success';
+        unifiedStatus.textContent = '✅ All selected credentials look good!';
+      } else {
+        unifiedStatus.className = 'status error';
+        unifiedStatus.textContent = '❌ Some failed. Check below.';
+      }
+      this.disabled = false;
+    });
+
+    // ========== INSTANT POST – no verification required ==========
+    unifiedSend.addEventListener('click', async function() {
+      const text = unifiedMsg.value.trim();
+      const file = getFileData(unifiedFile);
+      if (!text && !file) {
+        unifiedStatus.className = 'status error';
+        unifiedStatus.textContent = '❌ Write a message or select a file.';
+        return;
+      }
+
+      unifiedStatus.className = 'status loading';
+      unifiedStatus.textContent = '⏳ Sending to selected platforms...';
+      this.disabled = true;
+
+      const useTg = document.getElementById('unified-tg').checked;
+      const useBsky = document.getElementById('unified-bsky').checked;
+      const useMasto = document.getElementById('unified-mastodon').checked;
+      const useDiscord = document.getElementById('unified-discord').checked;
+      const useGithubClassic = document.getElementById('unified-github-classic').checked;
+      const useGithubRepo = document.getElementById('unified-github-repo').checked;
+      const useSafew = document.getElementById('unified-safew').checked;
+      const useTumblr = document.getElementById('unified-tumblr').checked;
+
+      const sendResults = [];
+
+      // Telegram
+      if (useTg) {
+        const token = tgToken.value.trim();
+        const chat = tgChat.value.trim();
+        if (token && chat) {
+          try {
+            if (file) {
+              const formData = new FormData();
+              formData.append('chat_id', chat);
+              formData.append('caption', text || '');
+              formData.append('parse_mode', 'HTML');
+              const isVideo = file.type.startsWith('video/');
+              const url = isVideo ? `https://api.telegram.org/bot${token}/sendVideo` : `https://api.telegram.org/bot${token}/sendPhoto`;
+              formData.append(isVideo ? 'video' : 'photo', file);
+              const res = await fetch(url, { method: 'POST', body: formData });
+              const data = await res.json();
+              sendResults.push({ platform: 'Telegram', ok: data.ok, msg: data.ok ? '✅ Sent' : '❌ ' + data.description });
+            } else {
+              const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: chat, text: text || 'Hello!', parse_mode: 'HTML' })
+              });
+              const data = await res.json();
+              sendResults.push({ platform: 'Telegram', ok: data.ok, msg: data.ok ? '✅ Sent' : '❌ ' + data.description });
+            }
+          } catch (e) { sendResults.push({ platform: 'Telegram', ok: false, msg: '❌ ' + e.message }); }
+        } else { sendResults.push({ platform: 'Telegram', ok: false, msg: '❌ Missing creds' }); }
+      }
+
+      // Bluesky
+      if (useBsky) {
+        const handle = bskyHandle.value.trim();
+        const pass = bskyPassword.value.trim();
+        if (handle && pass) {
+          try {
+            const loginRes = await fetch('https://bsky.social/xrpc/com.atproto.server.createSession', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ identifier: handle, password: pass })
+            });
+            const session = await loginRes.json();
+            if (!loginRes.ok) throw new Error(`Login failed: ${session.message}`);
+            const record = { text: text || 'Hello!', createdAt: new Date().toISOString() };
+            if (file) {
+              const blob = await uploadToBluesky(file, session.accessJwt);
+              if (!blob.mimeType) blob.mimeType = file.type || 'image/png';
+              record.embed = {
+                '$type': 'app.bsky.embed.images',
+                images: [{ image: blob, alt: text || 'Image' }]
+              };
+            }
+            const postRes = await fetch('https://bsky.social/xrpc/com.atproto.repo.createRecord', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.accessJwt}` },
+              body: JSON.stringify({ repo: session.did, collection: 'app.bsky.feed.post', record })
+            });
+            const result = await postRes.json();
+            if (!postRes.ok) throw new Error(`Post failed: ${result.message}`);
+            sendResults.push({ platform: 'Bluesky', ok: true, msg: '✅ Sent' });
+          } catch (e) { sendResults.push({ platform: 'Bluesky', ok: false, msg: '❌ ' + e.message }); }
+        } else { sendResults.push({ platform: 'Bluesky', ok: false, msg: '❌ Missing creds' }); }
+      }
+
+      // Mastodon
+      if (useMasto) {
+        const instance = mastodonInstance.value.trim();
+        const token = mastodonToken.value.trim();
+        if (instance && token) {
+          try {
+            let mediaIds = [];
+            if (file) { const id = await uploadToMastodon(file, instance, token); mediaIds.push(id); }
+            const statusData = { status: text || 'Hello!', visibility: 'public' };
+            if (mediaIds.length) statusData.media_ids = mediaIds;
+            const res = await fetch(`${instance}/api/v1/statuses`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify(statusData)
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(`Post failed: ${data.error || 'Unknown'}`);
+            sendResults.push({ platform: 'Mastodon', ok: true, msg: '✅ Sent' });
+          } catch (e) { sendResults.push({ platform: 'Mastodon', ok: false, msg: '❌ ' + e.message }); }
+        } else { sendResults.push({ platform: 'Mastodon', ok: false, msg: '❌ Missing creds' }); }
+      }
+
+      // Discord
+      if (useDiscord) {
+        const url = discordWebhook.value.trim();
+        if (url) {
+          try {
+            const res = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ content: text || 'Hello from Fed-Poster!' })
+            });
+            if (res.ok) sendResults.push({ platform: 'Discord', ok: true, msg: '✅ Sent' });
+            else sendResults.push({ platform: 'Discord', ok: false, msg: '❌ ' + res.status });
+          } catch (e) { sendResults.push({ platform: 'Discord', ok: false, msg: '❌ ' + e.message }); }
+        } else { sendResults.push({ platform: 'Discord', ok: false, msg: '❌ Missing webhook' }); }
+      }
+
+      // GitHub Classic
+      if (useGithubClassic) {
+        const token = githubClassicToken.value.trim();
+        if (token) {
+          try {
+            const filename = githubClassicFilename.value.trim() || 'post.md';
+            const description = githubClassicDesc.value.trim() || 'Posted from Fed-Poster';
+            const content = text || 'Hello from GitHub Classic!';
+            const isPublic = githubClassicPublic.checked;
+            const res = await fetch('https://api.github.com/gists', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                description: description,
+                public: isPublic,
+                files: { [filename]: { content: content } }
+              })
+            });
+            const data = await res.json();
+            if (res.ok) sendResults.push({ platform: 'GitHub Classic', ok: true, msg: '✅ Sent' });
+            else sendResults.push({ platform: 'GitHub Classic', ok: false, msg: '❌ ' + (data.message || 'Unknown') });
+          } catch (e) { sendResults.push({ platform: 'GitHub Classic', ok: false, msg: '❌ ' + e.message }); }
+        } else { sendResults.push({ platform: 'GitHub Classic', ok: false, msg: '❌ Missing token' }); }
+      }
+
+      // GitHub Repo
+      if (useGithubRepo) {
+        const token = githubRepotoken.value.trim();
+        const repo = githubRepoName.value.trim();
+        if (token && repo) {
+          try {
+            const path = githubRepoPath.value.trim() || 'post.md';
+            const message = githubRepoMsg.value.trim() || 'Posted from Fed-Poster';
+            const branch = githubRepoBranch.value.trim() || 'main';
+            const content = text || 'Hello from GitHub Repo!';
+            let sha = null;
+            const getRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`, {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (getRes.ok) { const data = await getRes.json(); sha = data.sha; }
+            else if (getRes.status !== 404) { throw new Error(`Failed to check file existence: ${getRes.status}`); }
+            const body = { message, content: btoa(content), branch };
+            if (sha) body.sha = sha;
+            const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+              method: 'PUT',
+              headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify(body)
+            });
+            const data = await res.json();
+            if (res.ok) sendResults.push({ platform: 'GitHub Repo', ok: true, msg: '✅ Sent' });
+            else sendResults.push({ platform: 'GitHub Repo', ok: false, msg: '❌ ' + (data.message || 'Unknown') });
+          } catch (e) { sendResults.push({ platform: 'GitHub Repo', ok: false, msg: '❌ ' + e.message }); }
+        } else { sendResults.push({ platform: 'GitHub Repo', ok: false, msg: '❌ Missing token or repo' }); }
+      }
+
+      // SafeW
+      if (useSafew) {
+        if (activeSafeWRequest) {
+          sendResults.push({ platform: 'SafeW', ok: false, msg: '⏳ Already sending' });
+        } else {
+          activeSafeWRequest = true;
+          const token = safewToken.value.trim();
+          const chatId = safewChat.value.trim();
+          if (token && chatId) {
+            try {
+              const res = await fetch(`${SUPABASE_URL}/functions/v1/smart-function-safew`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                  'apikey': SUPABASE_ANON_KEY,
+                },
+                body: JSON.stringify({ token, chatId, text: text || 'Hello from SafeW!' }),
+              });
+              const data = await res.json();
+              if (res.ok) sendResults.push({ platform: 'SafeW', ok: true, msg: '✅ Sent' });
+              else sendResults.push({ platform: 'SafeW', ok: false, msg: '❌ ' + (data.error || 'Unknown') });
+            } catch (e) { sendResults.push({ platform: 'SafeW', ok: false, msg: '❌ ' + e.message }); }
+          } else { sendResults.push({ platform: 'SafeW', ok: false, msg: '❌ Missing creds' }); }
+          activeSafeWRequest = false;
+        }
+      }
+
+      // Tumblr
+      if (useTumblr) {
+        const blog = tumblrBlog.value.trim();
+        const consumerKey = tumblrCkey.value.trim();
+        const consumerSecret = tumblrCsecret.value.trim();
+        const token = tumblrAtoken.value.trim();
+        const tokenSecret = tumblrAsecret.value.trim();
+        if (blog && consumerKey && consumerSecret && token && tokenSecret) {
+          try {
+            const title = tumblrTitle.value.trim() || 'Untitled';
+            const content = text || 'Hello from Tumblr!';
+            const res = await fetch(`${SUPABASE_URL}/functions/v1/super-responder-tumblr`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'apikey': SUPABASE_ANON_KEY,
+              },
+              body: JSON.stringify({ consumerKey, consumerSecret, token, tokenSecret, blog, title, content }),
+            });
+            const data = await res.json();
+            if (res.ok) sendResults.push({ platform: 'Tumblr', ok: true, msg: '✅ Sent' });
+            else sendResults.push({ platform: 'Tumblr', ok: false, msg: '❌ ' + (data.error || 'Unknown') });
+          } catch (e) { sendResults.push({ platform: 'Tumblr', ok: false, msg: '❌ ' + e.message }); }
+        } else { sendResults.push({ platform: 'Tumblr', ok: false, msg: '❌ Missing creds' }); }
+      }
+
+      let html = '<div style="margin-top:6px;"><strong>Results:</strong></div>';
+      sendResults.forEach(r => html += `<div class="result-item"><span>${r.platform}:</span> ${r.msg}</div>`);
+      unifiedResults.innerHTML = html;
+
+      const allSent = sendResults.every(r => r.ok);
+      if (allSent) {
+        unifiedStatus.className = 'status success';
+        unifiedStatus.textContent = '✅ All sent!';
+        unifiedFile.value = ''; updateFileInfo(unifiedFile, unifiedFileInfo);
+      } else {
+        unifiedStatus.className = 'status error';
+        unifiedStatus.textContent = '⚠️ Some failed. Check below.';
+      }
+      this.disabled = false;
+    });
+
+    document.querySelectorAll('#unified-tg, #unified-bsky, #unified-mastodon, #unified-discord, #unified-github-classic, #unified-github-repo, #unified-safew, #unified-tumblr').forEach(cb => {
+      cb.addEventListener('change', () => {
+        unifiedStatus.className = 'status info';
+        unifiedStatus.textContent = 'Selection changed – hit Post All to send.';
+      });
+    });
+
+    console.log('✅ Fed-Poster loaded – fill in your credentials and start posting.');
+  </script>
+</body>
+</html>
