@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fed-Poster – Dashboard</title>
 
-  <!-- ====== DONATION SCRIPTS (public keys only – safe to keep) ====== -->
+  <!-- ====== DONATION SCRIPTS ====== -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://www.paypal.com/sdk/js?client-id=AZ9PGqfwfBFyHG_XK-wBvAfw2r-m6CkFWjQaEkI_NRDN76vf4g6EbfkM1rWXpyYnZGUej1KNKGxjWT3G&currency=USD&intent=capture"></script>
+  <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD&intent=capture"></script>
 
   <style>
     /* ====== Full styles (unchanged) ====== */
@@ -75,6 +75,7 @@
     .sidebar .nav-item .badge.stoat { background: #5865f2; color: white; }
     .sidebar .nav-item .badge.patreon { background: #ff424d; color: white; }
     .sidebar .nav-item .badge.about { background: #1f6feb; color: white; }
+    .sidebar .nav-item .badge.whop { background: #00b4d8; color: white; }
 
     .main {
       flex: 1;
@@ -144,6 +145,7 @@
     .platform-section .label-tag.stoat { background: #5865f2; color: white; }
     .platform-section .label-tag.patreon { background: #ff424d; color: white; }
     .platform-section .label-tag.about { background: #1f6feb; color: white; }
+    .platform-section .label-tag.whop { background: #00b4d8; color: white; }
 
     .platform-section .connect-info {
       font-size: 12px;
@@ -291,7 +293,6 @@
       display: inline-block;
       width: 40px;
       height: 22px;
-      cursor: pointer;
     }
     .settings-card .toggle-switch input { opacity: 0; width: 0; height: 0; }
     .settings-card .toggle-slider {
@@ -367,19 +368,21 @@
     <div class="nav-item active" data-target="unified">
       <div class="nav-row">📤 Multi Platform Post <span class="badge both">All</span></div>
     </div>
-    <div class="nav-item" data-target="telegram"><div class="nav-row">📱 Telegram <span class="badge other">Other</span></div></div>
-    <div class="nav-item" data-target="bluesky"><div class="nav-row">☁️ Bluesky <span class="badge both">Social</span></div></div>
-    <div class="nav-item" data-target="mastodon"><div class="nav-row">🐘 Mastodon <span class="badge both">Social</span></div></div>
-    <div class="nav-item" data-target="discord"><div class="nav-row">🎮 Discord <span class="badge other">Other</span></div></div>
-    <div class="nav-item" data-target="github-classic"><div class="nav-row">📘 GitHub Gist <span class="badge other">Other</span></div></div>
-    <div class="nav-item" data-target="github-repo"><div class="nav-row">📂 GitHub Repo <span class="badge other">Other</span></div></div>
-    <div class="nav-item" data-target="safew"><div class="nav-row">🔐 SafeW <span class="badge other">Other</span></div></div>
-    <div class="nav-item" data-target="tumblr"><div class="nav-row">📝 Tumblr <span class="badge both">Social</span></div></div>
-    <div class="nav-item" data-target="patreon"><div class="nav-row">📰 Patreon <span class="badge patreon">Patreon</span></div></div>
-    <div class="nav-item" data-target="deviantart"><div class="nav-row">🎨 DeviantArt <span class="badge other">Other</span></div></div>
+    <div class="nav-item" data-target="telegram"><div class="nav-row">📱 Telegram <span class="badge other">online</span></div></div>
+    <div class="nav-item" data-target="bluesky"><div class="nav-row">☁️ Bluesky <span class="badge both">social</span></div></div>
+    <div class="nav-item" data-target="mastodon"><div class="nav-row">🐘 Mastodon <span class="badge both">social</span></div></div>
+    <div class="nav-item" data-target="discord"><div class="nav-row">🎮 Discord <span class="badge other">online</span></div></div>
+    <div class="nav-item" data-target="github-classic"><div class="nav-row">📘 GitHub Gist <span class="badge other">online</span></div></div>
+    <div class="nav-item" data-target="github-repo"><div class="nav-row">📂 GitHub Repo <span class="badge other">online</span></div></div>
+    <div class="nav-item" data-target="safew"><div class="nav-row">🔐 SafeW <span class="badge other">online</span></div></div>
+    <div class="nav-item" data-target="tumblr"><div class="nav-row">📝 Tumblr <span class="badge both">social</span></div></div>
+    <div class="nav-item" data-target="patreon"><div class="nav-row">📰 Patreon <span class="badge patreon">paid</span></div></div>
+    <div class="nav-item" data-target="deviantart"><div class="nav-row">🎨 DeviantArt <span class="badge other">online</span></div></div>
     <div class="nav-item" data-target="buffer"><div class="nav-row">⏳ Buffer Proxy <span class="badge proxy">Proxy</span></div><div class="nav-sub">→ Twitter, LinkedIn, FB, IG</div></div>
     <div class="nav-item" data-target="wordpress"><div class="nav-row">📄 WordPress Jetpack <span class="badge proxy">Proxy</span></div><div class="nav-sub">→ Twitter, LinkedIn, FB, Tumblr</div></div>
     <div class="nav-item" data-target="stoat"><div class="nav-row">💬 Stoat <span class="badge stoat">Chat</span></div></div>
+    <!-- NEW: Whop -->
+    <div class="nav-item" data-target="whop"><div class="nav-row">💳 Whop <span class="badge whop">Payments</span></div></div>
     <div class="nav-item" data-target="zapier"><div class="nav-row">⚡ Zapier <span class="badge zapier">Connect</span></div></div>
     <div class="nav-item" data-target="about"><div class="nav-row">ℹ️ About <span class="badge about">Info</span></div></div>
     <div class="nav-item" data-target="donate"><div class="nav-row">💝 Donate <span class="badge donate">Support</span></div></div>
@@ -397,23 +400,23 @@
     <!-- ====== MULTI PLATFORM POST ====== -->
     <div class="platform-section active" id="section-unified">
       <div class="card">
-        <div class="card-header"><h2>📤 Multi Platform Post</h2><span class="label-tag both">All</span></div>
+        <div class="card-header"><h2>📤 Multi Platform Post</h2><span class="label-tag both">social</span></div>
         <label>Message / Content</label>
-        <textarea id="unified-msg" placeholder="Write once, post everywhere…"></textarea>
+        <textarea id="unified-msg" placeholder="Write once, post everywhere…">Hello from Fed-Poster! 🚀</textarea>
         <label>Upload Image (shared – works with Telegram, Bluesky, Mastodon, DeviantArt)</label>
         <input type="file" id="unified-file" accept="image/*,video/*,audio/*" />
         <div class="file-info" id="unified-file-info">No file selected</div>
         <div class="check-group">
-          <label><input type="checkbox" id="unified-tg" checked /> Telegram <span class="label-tag other">Other</span></label>
-          <label><input type="checkbox" id="unified-bsky" checked /> Bluesky <span class="label-tag both">Social</span></label>
-          <label><input type="checkbox" id="unified-mastodon" checked /> Mastodon <span class="label-tag both">Social</span></label>
-          <label><input type="checkbox" id="unified-discord" checked /> Discord <span class="label-tag other">Other</span></label>
-          <label><input type="checkbox" id="unified-github-classic" checked /> GitHub Gist <span class="label-tag other">Other</span></label>
-          <label><input type="checkbox" id="unified-github-repo" checked /> GitHub Repo <span class="label-tag other">Other</span></label>
-          <label><input type="checkbox" id="unified-safew" checked /> SafeW <span class="label-tag other">Other</span></label>
-          <label><input type="checkbox" id="unified-tumblr" checked /> Tumblr <span class="label-tag both">Social</span></label>
-          <label><input type="checkbox" id="unified-patreon" checked /> Patreon <span class="label-tag patreon">Patreon</span></label>
-          <label><input type="checkbox" id="unified-deviantart" checked /> DeviantArt <span class="label-tag other">Other</span></label>
+          <label><input type="checkbox" id="unified-tg" checked /> Telegram <span class="label-tag other">online</span></label>
+          <label><input type="checkbox" id="unified-bsky" checked /> Bluesky <span class="label-tag both">social</span></label>
+          <label><input type="checkbox" id="unified-mastodon" checked /> Mastodon <span class="label-tag both">social</span></label>
+          <label><input type="checkbox" id="unified-discord" checked /> Discord <span class="label-tag other">online</span></label>
+          <label><input type="checkbox" id="unified-github-classic" checked /> GitHub Gist <span class="label-tag other">online</span></label>
+          <label><input type="checkbox" id="unified-github-repo" checked /> GitHub Repo <span class="label-tag other">online</span></label>
+          <label><input type="checkbox" id="unified-safew" checked /> SafeW <span class="label-tag other">online</span></label>
+          <label><input type="checkbox" id="unified-tumblr" checked /> Tumblr <span class="label-tag both">social</span></label>
+          <label><input type="checkbox" id="unified-patreon" checked /> Patreon <span class="label-tag patreon">paid</span></label>
+          <label><input type="checkbox" id="unified-deviantart" checked /> DeviantArt <span class="label-tag other">online</span></label>
           <label><input type="checkbox" id="unified-buffer" checked /> Buffer Proxy <span class="label-tag proxy">Proxy</span></label>
           <label><input type="checkbox" id="unified-wordpress" checked /> WordPress Jetpack <span class="label-tag proxy">Proxy</span></label>
           <label><input type="checkbox" id="unified-stoat" checked /> Stoat <span class="label-tag stoat">Chat</span></label>
@@ -432,9 +435,9 @@
 
     <!-- ====== TELEGRAM ====== -->
     <div class="platform-section" id="section-telegram">
-      <div class="card"><div class="card-header"><h2>📱 Telegram</h2><span class="label-tag other">Other</span></div>
-        <label>Bot Token</label><input id="tg-token" type="password" placeholder="Your bot token" /><div class="saved-note">✅ Auto‑saved (hidden)</div>
-        <label>Channel / Chat ID</label><input id="tg-chat" type="text" placeholder="@channel or -100123456" /><div class="saved-note">✅ Auto‑saved</div>
+      <div class="card"><div class="card-header"><h2>📱 Telegram</h2><span class="label-tag other">online</span></div>
+        <label>Bot Token</label><input id="tg-token" type="password" placeholder="YOUR_TELEGRAM_BOT_TOKEN" /><div class="saved-note">✅ Auto‑saved (hidden)</div>
+        <label>Channel / Chat ID</label><input id="tg-chat" type="text" placeholder="YOUR_CHANNEL_ID" /><div class="saved-note">✅ Auto‑saved</div>
         <label>Message</label><textarea id="tg-msg" placeholder="What to post?"></textarea>
         <label>Upload Image / Video</label><input type="file" id="tg-file" accept="image/*,video/*" /><div class="file-info" id="tg-file-info">No file selected</div>
         <div class="actions"><button class="btn-secondary" id="tg-test">🔍 Test</button><button class="btn-primary" id="tg-send">🚀 Send</button></div>
@@ -444,9 +447,9 @@
 
     <!-- ====== BLUESKY ====== -->
     <div class="platform-section" id="section-bluesky">
-      <div class="card"><div class="card-header"><h2>☁️ Bluesky</h2><span class="label-tag both">Social</span></div>
+      <div class="card"><div class="card-header"><h2>☁️ Bluesky</h2><span class="label-tag both">social</span></div>
         <label>Handle</label><input id="bsky-handle" type="text" placeholder="your-handle.bsky.social" /><div class="saved-note">✅ Auto‑saved</div>
-        <label>App Password</label><input id="bsky-password" type="password" placeholder="xxxx-xxxx-xxxx-xxxx" /><div class="saved-note">✅ Auto‑saved (hidden)</div>
+        <label>App Password</label><input id="bsky-password" type="password" placeholder="YOUR_BLUESKY_APP_PASSWORD" /><div class="saved-note">✅ Auto‑saved (hidden)</div>
         <label>Message</label><textarea id="bsky-msg" placeholder="What to post?"></textarea>
         <label>Upload Image</label><input type="file" id="bsky-file" accept="image/*" /><div class="file-info" id="bsky-file-info">No file selected</div>
         <div class="actions"><button class="btn-secondary" id="bsky-test">🔍 Test</button><button class="btn-primary" id="bsky-send">🚀 Send</button></div>
@@ -456,9 +459,9 @@
 
     <!-- ====== MASTODON ====== -->
     <div class="platform-section" id="section-mastodon">
-      <div class="card"><div class="card-header"><h2>🐘 Mastodon</h2><span class="label-tag both">Social</span></div>
+      <div class="card"><div class="card-header"><h2>🐘 Mastodon</h2><span class="label-tag both">social</span></div>
         <label>Instance URL</label><input id="mastodon-instance" type="text" placeholder="https://mastodon.social" /><div class="saved-note">✅ Auto‑saved</div>
-        <label>Access Token</label><input id="mastodon-token" type="password" placeholder="Your access token" /><div class="saved-note">✅ Auto‑saved (hidden)</div>
+        <label>Access Token</label><input id="mastodon-token" type="password" placeholder="YOUR_MASTODON_ACCESS_TOKEN" /><div class="saved-note">✅ Auto‑saved (hidden)</div>
         <label>Message</label><textarea id="mastodon-msg" placeholder="What to post?"></textarea>
         <label>Upload Image / Video / Audio</label><input type="file" id="mastodon-file" accept="image/*,video/*,audio/*" /><div class="file-info" id="mastodon-file-info">No file selected</div>
         <div class="actions"><button class="btn-secondary" id="mastodon-test">🔍 Test</button><button class="btn-primary" id="mastodon-send">🚀 Send</button></div>
@@ -468,8 +471,8 @@
 
     <!-- ====== DISCORD ====== -->
     <div class="platform-section" id="section-discord">
-      <div class="card"><div class="card-header"><h2>🎮 Discord</h2><span class="label-tag other">Other</span></div>
-        <label>Webhook URL</label><input id="discord-webhook" type="text" placeholder="https://discord.com/api/webhooks/..." /><div class="saved-note">✅ Auto‑saved (hidden)</div>
+      <div class="card"><div class="card-header"><h2>🎮 Discord</h2><span class="label-tag other">online</span></div>
+        <label>Webhook URL</label><input id="discord-webhook" type="text" placeholder="YOUR_DISCORD_WEBHOOK_URL" /><div class="saved-note">✅ Auto‑saved (hidden)</div>
         <label>Message</label><textarea id="discord-msg" placeholder="What to post?"></textarea>
         <div class="actions"><button class="btn-secondary" id="discord-test">🔍 Test</button><button class="btn-primary" id="discord-send">🚀 Send</button></div>
         <div id="discord-status" class="status info">Ready.</div>
@@ -478,8 +481,8 @@
 
     <!-- ====== GITHUB GIST ====== -->
     <div class="platform-section" id="section-github-classic">
-      <div class="card"><div class="card-header"><h2>📘 GitHub Gist</h2><span class="label-tag other">Other</span></div>
-        <label>Token</label><input id="github-classic-token" type="password" placeholder="ghp_xxxx" /><div class="token-type">✅ Auto‑saved · <span class="classic-badge">Classic</span> · gist scope</div>
+      <div class="card"><div class="card-header"><h2>📘 GitHub Gist</h2><span class="label-tag other">online</span></div>
+        <label>Token</label><input id="github-classic-token" type="password" placeholder="YOUR_GITHUB_CLASSIC_TOKEN" /><div class="token-type">✅ Auto‑saved · <span class="classic-badge">Classic</span> · gist scope</div>
         <label>Filename</label><input id="github-classic-filename" type="text" placeholder="post.md" />
         <label>Description</label><input id="github-classic-desc" type="text" placeholder="My Gist description" />
         <label>Content</label><textarea id="github-classic-msg" placeholder="Write your Gist content…"></textarea>
@@ -491,9 +494,9 @@
 
     <!-- ====== GITHUB REPO ====== -->
     <div class="platform-section" id="section-github-repo">
-      <div class="card"><div class="card-header"><h2>📂 GitHub Repo</h2><span class="label-tag other">Other</span></div>
-        <label>Token</label><input id="github-repo-token" type="password" placeholder="github_pat_xxxx" /><div class="token-type">✅ Auto‑saved · <span class="fine-badge">Fine-grained</span> · repo + code</div>
-        <label>Repository (owner/repo)</label><input id="github-repo-name" type="text" placeholder="username/repo" />
+      <div class="card"><div class="card-header"><h2>📂 GitHub Repo</h2><span class="label-tag other">online</span></div>
+        <label>Token</label><input id="github-repo-token" type="password" placeholder="YOUR_GITHUB_REPO_TOKEN" /><div class="token-type">✅ Auto‑saved · <span class="fine-badge">Fine-grained</span> · repo + code</div>
+        <label>Repository (owner/repo)</label><input id="github-repo-name" type="text" placeholder="your-username/your-repo" />
         <label>File Path</label><input id="github-repo-path" type="text" placeholder="post.md" />
         <label>Commit Message</label><input id="github-repo-msg" type="text" placeholder="Posted from Fed-Poster" />
         <label>Branch</label><input id="github-repo-branch" type="text" placeholder="main" />
@@ -505,9 +508,9 @@
 
     <!-- ====== SAFEW ====== -->
     <div class="platform-section" id="section-safew">
-      <div class="card"><div class="card-header"><h2>🔐 SafeW</h2><span class="label-tag other">Other</span></div>
-        <label>Bot Token</label><input id="safew-token" type="password" placeholder="Your bot token" /><div class="saved-note">✅ Auto‑saved (hidden)</div>
-        <label>Chat ID</label><input id="safew-chat" type="text" placeholder="@username or chat_id" /><div class="saved-note">✅ Auto‑saved</div>
+      <div class="card"><div class="card-header"><h2>🔐 SafeW</h2><span class="label-tag other">online</span></div>
+        <label>Bot Token</label><input id="safew-token" type="password" placeholder="YOUR_SAFEW_BOT_TOKEN" /><div class="saved-note">✅ Auto‑saved (hidden)</div>
+        <label>Chat ID</label><input id="safew-chat" type="text" placeholder="YOUR_SAFEW_CHAT_ID" /><div class="saved-note">✅ Auto‑saved</div>
         <label>Message</label><textarea id="safew-msg" placeholder="What to post?"></textarea>
         <div class="actions"><button class="btn-secondary" id="safew-test">🔍 Test</button><button class="btn-primary" id="safew-send">🚀 Send</button></div>
         <div id="safew-status" class="status info">Ready.</div>
@@ -516,12 +519,12 @@
 
     <!-- ====== TUMBLR ====== -->
     <div class="platform-section" id="section-tumblr">
-      <div class="card"><div class="card-header"><h2>📝 Tumblr</h2><span class="label-tag both">Social</span></div>
+      <div class="card"><div class="card-header"><h2>📝 Tumblr</h2><span class="label-tag both">social</span></div>
         <label>Blog Name</label><input id="tumblr-blog" type="text" placeholder="yourblog.tumblr.com" /><div class="saved-note">✅ Auto‑saved</div>
-        <label>Consumer Key</label><input id="tumblr-ckey" type="text" placeholder="Consumer Key" /><div class="saved-note">✅ Auto‑saved</div>
-        <label>Consumer Secret</label><input id="tumblr-csecret" type="password" placeholder="Consumer Secret" /><div class="saved-note">✅ Auto‑saved (hidden)</div>
-        <label>Access Token</label><input id="tumblr-atoken" type="text" placeholder="Access Token" /><div class="saved-note">✅ Auto‑saved</div>
-        <label>Access Token Secret</label><input id="tumblr-asecret" type="password" placeholder="Access Token Secret" /><div class="saved-note">✅ Auto‑saved (hidden)</div>
+        <label>Consumer Key</label><input id="tumblr-ckey" type="text" placeholder="YOUR_TUMBLR_CONSUMER_KEY" /><div class="saved-note">✅ Auto‑saved</div>
+        <label>Consumer Secret</label><input id="tumblr-csecret" type="password" placeholder="YOUR_TUMBLR_CONSUMER_SECRET" /><div class="saved-note">✅ Auto‑saved (hidden)</div>
+        <label>Access Token</label><input id="tumblr-atoken" type="text" placeholder="YOUR_TUMBLR_ACCESS_TOKEN" /><div class="saved-note">✅ Auto‑saved</div>
+        <label>Access Token Secret</label><input id="tumblr-asecret" type="password" placeholder="YOUR_TUMBLR_ACCESS_TOKEN_SECRET" /><div class="saved-note">✅ Auto‑saved (hidden)</div>
         <label>Post Title</label><input id="tumblr-title" type="text" placeholder="Title" /><div class="saved-note">✅ Auto‑saved</div>
         <label>Content</label><textarea id="tumblr-msg" placeholder="Write your post…"></textarea>
         <div class="actions"><button class="btn-secondary" id="tumblr-test">🔍 Test</button><button class="btn-primary" id="tumblr-send">🚀 Send</button></div>
@@ -532,19 +535,19 @@
     <!-- ====== PATREON ====== -->
     <div class="platform-section" id="section-patreon">
       <div class="card">
-        <div class="card-header"><h2>📰 Patreon</h2><span class="label-tag patreon">Patreon</span></div>
+        <div class="card-header"><h2>📰 Patreon</h2><span class="label-tag patreon">paid</span></div>
         <div style="font-size: 11px; color: #8b949e; margin-bottom: 10px; background: #0d1117; padding: 6px 10px; border-radius: 4px;">📌 Creates a new post on your Patreon campaign.</div>
         <label>Client ID</label>
-        <input id="patreon-client-id" type="text" placeholder="Your Client ID" />
+        <input id="patreon-client-id" type="text" placeholder="YOUR_PATREON_CLIENT_ID" />
         <div class="saved-note">✅ Auto‑saved</div>
         <label>Client Secret</label>
-        <input id="patreon-client-secret" type="password" placeholder="Your Client Secret" />
+        <input id="patreon-client-secret" type="password" placeholder="YOUR_PATREON_CLIENT_SECRET" />
         <div class="saved-note">✅ Auto‑saved (hidden)</div>
         <label>Access Token</label>
-        <input id="patreon-access-token" type="password" placeholder="Your Access Token" />
+        <input id="patreon-access-token" type="password" placeholder="YOUR_PATREON_ACCESS_TOKEN" />
         <div class="saved-note">✅ Auto‑saved (hidden)</div>
         <label>Refresh Token</label>
-        <input id="patreon-refresh-token" type="password" placeholder="Your Refresh Token" />
+        <input id="patreon-refresh-token" type="password" placeholder="YOUR_PATREON_REFRESH_TOKEN" />
         <div class="saved-note">✅ Auto‑saved (hidden)</div>
         <label>Campaign ID</label>
         <input id="patreon-campaign-id" type="text" placeholder="Your campaign ID (e.g., 1234567)" />
@@ -568,7 +571,7 @@
 
     <!-- ====== DEVIANTART ====== -->
     <div class="platform-section" id="section-deviantart">
-      <div class="card"><div class="card-header"><h2>🎨 DeviantArt</h2><span class="label-tag other">Other</span></div>
+      <div class="card"><div class="card-header"><h2>🎨 DeviantArt</h2><span class="label-tag other">online</span></div>
         <div id="deviantart-status-display" class="da-disconnected">⚠️ Not connected. Click "Connect" to authorize.</div>
         <div class="actions" style="margin-bottom:10px;"><button class="btn-secondary" id="deviantart-connect">🔑 Connect</button><button class="btn-secondary" id="deviantart-disconnect">🚪 Disconnect</button></div>
         <label>Title</label><input id="deviantart-title" type="text" placeholder="Artwork title" /><div class="saved-note">✅ Auto‑saved</div>
@@ -586,7 +589,7 @@
         <div class="connect-info">🔗 <strong>Connects to:</strong> Twitter, LinkedIn, Facebook, Instagram</div>
         <div style="font-size: 11px; color: #8b949e; margin-bottom: 10px; background: #0d1117; padding: 6px 10px; border-radius: 4px;">⚡ Sends via Buffer API – Buffer pays the platform fees</div>
         <label>Access Token</label>
-        <input id="buffer-token" type="password" placeholder="Your Buffer access token" />
+        <input id="buffer-token" type="password" placeholder="YOUR_BUFFER_ACCESS_TOKEN" />
         <div class="saved-note">✅ Auto‑saved (hidden)</div>
         <label>Profile IDs (comma separated)</label>
         <input id="buffer-profiles" type="text" placeholder="12345, 67890" />
@@ -618,13 +621,13 @@
         <div class="card-header"><h2>💬 Stoat</h2><span class="label-tag stoat">Chat</span></div>
         <div style="font-size: 11px; color: #8b949e; margin-bottom: 10px; background: #0d1117; padding: 6px 10px; border-radius: 4px;">🗨️ Send messages to your Stoat channels.</div>
         <label>Bot Token</label>
-        <input id="stoat-token" type="password" placeholder="Your Stoat bot token" />
+        <input id="stoat-token" type="password" placeholder="YOUR_STOAT_BOT_TOKEN" />
         <div class="saved-note">✅ Auto‑saved (hidden)</div>
         <label>Server ID</label>
-        <input id="stoat-server" type="text" placeholder="Your server ID (from URL)" />
+        <input id="stoat-server" type="text" placeholder="YOUR_STOAT_SERVER_ID" />
         <div class="saved-note">✅ Auto‑saved – find in server URL</div>
         <label>Channel ID</label>
-        <input id="stoat-channel" type="text" placeholder="Your channel ID (from URL)" />
+        <input id="stoat-channel" type="text" placeholder="YOUR_STOAT_CHANNEL_ID" />
         <div class="saved-note">✅ Auto‑saved – find in channel URL</div>
         <label>Message</label>
         <textarea id="stoat-msg" placeholder="What to post?"></textarea>
@@ -636,6 +639,41 @@
       </div>
     </div>
 
+    <!-- ====== NEW: WHOP ====== -->
+    <div class="platform-section" id="section-whop">
+      <div class="card">
+        <div class="card-header"><h2>💳 Whop</h2><span class="label-tag whop">Payments</span></div>
+        <div style="font-size: 11px; color: #8b949e; margin-bottom: 10px; background: #0d1117; padding: 6px 10px; border-radius: 4px;">
+          🔑 Manage your Whop API credentials and test your connection. Use these keys to authenticate OAuth logins and verify webhooks.
+        </div>
+        <label>App ID (Public)</label>
+        <input id="whop-app-id" type="text" placeholder="app_..." value="" />
+        <div class="saved-note">✅ Auto‑saved – used for OAuth login button on frontend</div>
+
+        <label>API Key (Secret – starts with apik_)</label>
+        <input id="whop-api-key" type="password" placeholder="apik_..." value="" />
+        <div class="saved-note">✅ Auto‑saved (hidden) – used for server-side API calls</div>
+
+        <label>Webhook Secret (starts with ws_)</label>
+        <input id="whop-webhook-secret" type="password" placeholder="ws_..." value="" />
+        <div class="saved-note">✅ Auto‑saved (hidden) – used to verify incoming webhooks</div>
+
+        <label>Webhook ID (optional, starts with hook_)</label>
+        <input id="whop-webhook-id" type="text" placeholder="hook_..." value="" />
+        <div class="saved-note">ℹ️ Only needed if you want to update/delete this webhook via the API.</div>
+
+        <div style="margin-top: 10px; background: #0d1117; padding: 8px 12px; border-radius: 6px; border-left: 3px solid #00b4d8;">
+          <strong>Your API Base URL:</strong> <code>https://api.whop.com/api/v1</code>
+        </div>
+
+        <div class="actions">
+          <button class="btn-secondary" id="whop-test">🔍 Test Connection</button>
+          <button class="btn-primary" id="whop-save">💾 Save Credentials</button>
+        </div>
+        <div id="whop-status" class="status info">Enter your credentials and click Test.</div>
+      </div>
+    </div>
+
     <!-- ====== ZAPIER TAB ====== -->
     <div class="platform-section zapier-card" id="section-zapier">
       <div class="card"><div class="card-header"><h2>⚡ Zapier Integration</h2><span class="label-tag zapier">Connect</span></div>
@@ -643,7 +681,7 @@
         <p style="color: #8b949e; margin-bottom: 1rem; background: #0d1117; padding: 8px 12px; border-radius: 6px; border-left: 3px solid #ff4a00;"><strong>⚡ How it works:</strong> Create a Zap in Zapier. Use <strong>Webhooks by Zapier</strong> as the Trigger or Action. Enter the URL below. Fed-Poster receives the data and posts to your selected networks.</p>
         <label>Your Webhook URL</label>
         <div style="display: flex; align-items: center; gap: 8px;">
-          <div class="webhook-url-display" id="webhookUrlDisplay">https://hzdpomwaqobceldgdzfl.supabase.co/functions/v1/zapier-webhook</div>
+          <div class="webhook-url-display" id="webhookUrlDisplay">YOUR_ZAPIER_WEBHOOK_URL</div>
           <button class="copy-btn" id="copyWebhookUrlBtn">📋 Copy</button>
         </div>
         <div class="saved-note">🔗 Send POST requests here. Requires an API key in the <code>X-API-Key</code> header.</div>
@@ -754,7 +792,7 @@
 
         <div class="toggle-row" style="margin-top: 16px;">
           <label for="autoVerifyToggle">✅ Auto-verify before posting</label>
-          <div class="toggle-switch" id="autoVerifyToggleWrapper">
+          <div class="toggle-switch">
             <input type="checkbox" id="autoVerifyToggle" />
             <span class="toggle-slider"></span>
           </div>
@@ -763,7 +801,7 @@
 
         <div class="toggle-row" style="margin-top: 8px;">
           <label for="showBadgesToggle">🏷️ Show platform badges</label>
-          <div class="toggle-switch" id="showBadgesToggleWrapper">
+          <div class="toggle-switch">
             <input type="checkbox" id="showBadgesToggle" checked />
             <span class="toggle-slider"></span>
           </div>
@@ -857,26 +895,17 @@
         setTimeout(() => { settingsStatus.style.display = 'none'; }, 2000);
       });
 
-      // ====== FIX: make toggle sliders clickable ======
-      document.querySelectorAll('.toggle-switch').forEach(function(wrapper) {
-        wrapper.addEventListener('click', function(e) {
-          // If the click is directly on the wrapper or the slider, toggle the input
-          if (e.target === this || e.target.classList.contains('toggle-slider')) {
-            const input = this.querySelector('input');
-            if (input) {
-              input.checked = !input.checked;
-              input.dispatchEvent(new Event('change'));
-            }
-          }
-        });
-      });
-
       resetBtn.addEventListener('click', function() {
         if (confirm('Reset all settings to default?')) {
           localStorage.removeItem('fed_poster_theme');
           localStorage.removeItem('fed_poster_auto_verify');
           localStorage.removeItem('fed_poster_show_badges');
           localStorage.removeItem('fed_poster_zapier_key');
+          // Also remove Whop settings
+          localStorage.removeItem('whop_app_id');
+          localStorage.removeItem('whop_api_key');
+          localStorage.removeItem('whop_webhook_secret');
+          localStorage.removeItem('whop_webhook_id');
           location.reload();
         }
       });
@@ -908,15 +937,78 @@
           buffer: 'Buffer Proxy',
           wordpress: 'WordPress Jetpack',
           stoat: '💬 Stoat',
+          whop: '💳 Whop',
           zapier: '⚡ Zapier Integration',
           about: 'ℹ️ About',
           donate: '💝 Donate',
           settings: '⚙️ Settings'
         };
-        document.getElementById('page-title').innerHTML = (titleMap[target] || target) + ' <span class="count-badge">' + (target === 'settings' ? 'Customize' : target === 'about' ? 'About Fed-Poster' : target === 'zapier' ? '🤖 Connect Everything' : '🌐 21 Platforms Total') + '</span>';
-        document.getElementById('page-sub').textContent = target === 'settings' ? 'Change the look and feel of your dashboard.' : target === 'about' ? 'Learn more about Fed-Poster.' : target === 'zapier' ? 'Connect Fed-Poster to 5,000+ apps via Zapier.' : (target === 'donate' ? 'Support the project and unlock exclusive content.' : `Configure and send to ${titleMap[target] || target}`);
+        const badgeText = target === 'settings' ? 'Customize' : target === 'about' ? 'About Fed-Poster' : target === 'zapier' ? '🤖 Connect Everything' : target === 'whop' ? 'Payments & OAuth' : '🌐 21 Platforms Total';
+        document.getElementById('page-title').innerHTML = (titleMap[target] || target) + ` <span class="count-badge">${badgeText}</span>`;
+        document.getElementById('page-sub').textContent = target === 'settings' ? 'Change the look and feel of your dashboard.' :
+          target === 'about' ? 'Learn more about Fed-Poster.' :
+          target === 'zapier' ? 'Connect Fed-Poster to 5,000+ apps via Zapier.' :
+          target === 'whop' ? 'Manage your Whop payment integration.' :
+          target === 'donate' ? 'Support the project and unlock exclusive content.' :
+          `Configure and send to ${titleMap[target] || target}`;
       });
     });
+
+    // ================================================================
+    // WHOP LOGIC (NEW)
+    // ================================================================
+    (function() {
+      const appIdInput = document.getElementById('whop-app-id');
+      const apiKeyInput = document.getElementById('whop-api-key');
+      const webhookSecretInput = document.getElementById('whop-webhook-secret');
+      const webhookIdInput = document.getElementById('whop-webhook-id');
+      const whopStatus = document.getElementById('whop-status');
+      const testBtn = document.getElementById('whop-test');
+      const saveBtn = document.getElementById('whop-save');
+
+      // Load saved values
+      appIdInput.value = localStorage.getItem('whop_app_id') || '';
+      apiKeyInput.value = localStorage.getItem('whop_api_key') || '';
+      webhookSecretInput.value = localStorage.getItem('whop_webhook_secret') || '';
+      webhookIdInput.value = localStorage.getItem('whop_webhook_id') || '';
+
+      function setWhopStatus(msg, type) {
+        whopStatus.textContent = msg;
+        whopStatus.className = 'status ' + (type || 'info');
+      }
+
+      saveBtn.addEventListener('click', function() {
+        localStorage.setItem('whop_app_id', appIdInput.value.trim());
+        localStorage.setItem('whop_api_key', apiKeyInput.value.trim());
+        localStorage.setItem('whop_webhook_secret', webhookSecretInput.value.trim());
+        localStorage.setItem('whop_webhook_id', webhookIdInput.value.trim());
+        setWhopStatus('✅ Credentials saved locally.', 'success');
+        setTimeout(() => setWhopStatus('Ready.', 'info'), 2000);
+      });
+
+      testBtn.addEventListener('click', async function() {
+        const apiKey = apiKeyInput.value.trim();
+        if (!apiKey) {
+          setWhopStatus('❌ Please enter your API Key (apik_...).', 'error');
+          return;
+        }
+        setWhopStatus('⏳ Testing connection to Whop API...', 'loading');
+        try {
+          const res = await fetch('https://api.whop.com/api/v1/accounts/me', {
+            headers: { 'Authorization': `Bearer ${apiKey}` }
+          });
+          const data = await res.json();
+          if (res.ok) {
+            const email = data.email || 'Account';
+            setWhopStatus(`✅ Connected! Account: ${email}`, 'success');
+          } else {
+            setWhopStatus(`❌ API error (${res.status}): ${data.message || data.error || 'Invalid key'}`, 'error');
+          }
+        } catch (err) {
+          setWhopStatus(`❌ Network error: ${err.message}`, 'error');
+        }
+      });
+    })();
 
     // ================================================================
     // ZAPIER TAB LOGIC
@@ -1006,10 +1098,10 @@
     })();
 
     // ================================================================
-    // CONFIG – public Supabase keys (needed for Edge Functions)
+    // CONFIG – Public Supabase keys (replace with your own)
     // ================================================================
-    const SUPABASE_URL = 'https://hzdpomwaqobceldgdzfl.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_-Zq7X1XmZOTt4mP3yD8TyA_a69kCBOV';
+    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
 
     // ================================================================
     // HELPERS
@@ -1018,7 +1110,7 @@
     function updateFileInfo(fileInput, infoEl) { const file = getFileData(fileInput); infoEl.textContent = file ? `📎 ${file.name} (${(file.size / 1024).toFixed(1)} KB)` : 'No file selected'; }
 
     // ================================================================
-    // TELEGRAM (full handlers – no default tokens)
+    // TELEGRAM (full handlers)
     // ================================================================
     const tgToken = document.getElementById('tg-token');
     const tgChat = document.getElementById('tg-chat');
@@ -1097,7 +1189,7 @@
     });
 
     // ================================================================
-    // BLUESKY (full handler – no defaults)
+    // BLUESKY (full handler)
     // ================================================================
     const bskyHandle = document.getElementById('bsky-handle');
     const bskyPassword = document.getElementById('bsky-password');
@@ -1192,7 +1284,7 @@
     });
 
     // ================================================================
-    // MASTODON (full handler – no defaults)
+    // MASTODON (full handler)
     // ================================================================
     const mastodonInstance = document.getElementById('mastodon-instance');
     const mastodonToken = document.getElementById('mastodon-token');
@@ -1272,7 +1364,7 @@
     });
 
     // ================================================================
-    // DISCORD (full handler – no defaults)
+    // DISCORD (full handler)
     // ================================================================
     const discordWebhook = document.getElementById('discord-webhook');
     const discordMsg = document.getElementById('discord-msg');
@@ -1322,7 +1414,7 @@
     });
 
     // ================================================================
-    // GITHUB GIST (full handler – no defaults)
+    // GITHUB GIST (full handler)
     // ================================================================
     const githubClassicToken = document.getElementById('github-classic-token');
     const githubClassicFilename = document.getElementById('github-classic-filename');
@@ -1398,7 +1490,7 @@
     });
 
     // ================================================================
-    // GITHUB REPO (full handler – no defaults)
+    // GITHUB REPO (full handler)
     // ================================================================
     const githubRepotoken = document.getElementById('github-repo-token');
     const githubRepoName = document.getElementById('github-repo-name');
@@ -1489,7 +1581,7 @@
     });
 
     // ================================================================
-    // SAFEW (full handler – no defaults)
+    // SAFEW (full handler)
     // ================================================================
     const safewToken = document.getElementById('safew-token');
     const safewChat = document.getElementById('safew-chat');
@@ -1559,7 +1651,7 @@
     });
 
     // ================================================================
-    // TUMBLR (full handler – no defaults)
+    // TUMBLR (full handler)
     // ================================================================
     const tumblrBlog = document.getElementById('tumblr-blog');
     const tumblrCkey = document.getElementById('tumblr-ckey');
@@ -1649,7 +1741,7 @@
     });
 
     // ================================================================
-    // PATREON (full handler – no defaults)
+    // PATREON (full handler)
     // ================================================================
     const patreonClientId = document.getElementById('patreon-client-id');
     const patreonClientSecret = document.getElementById('patreon-client-secret');
@@ -1765,7 +1857,7 @@
     });
 
     // ================================================================
-    // DEVIANTART (full handler – no defaults)
+    // DEVIANTART (full handler)
     // ================================================================
     const deviantartConnect = document.getElementById('deviantart-connect');
     const deviantartDisconnect = document.getElementById('deviantart-disconnect');
@@ -1916,7 +2008,7 @@
     });
 
     // ================================================================
-    // BUFFER PROXY (full handler – no defaults)
+    // BUFFER PROXY (full handler)
     // ================================================================
     const bufferToken = document.getElementById('buffer-token');
     const bufferProfiles = document.getElementById('buffer-profiles');
@@ -1994,7 +2086,7 @@
     });
 
     // ================================================================
-    // WORDPRESS JETPACK (full handler – no defaults)
+    // WORDPRESS JETPACK (full handler)
     // ================================================================
     const wpUrl = document.getElementById('wp-url');
     const wpPassword = document.getElementById('wp-password');
@@ -2072,7 +2164,7 @@
     });
 
     // ================================================================
-    // STOAT (full handler – no defaults)
+    // STOAT (full handler)
     // ================================================================
     const stoatToken = document.getElementById('stoat-token');
     const stoatServer = document.getElementById('stoat-server');
@@ -2163,7 +2255,7 @@
     });
 
     // ================================================================
-    // VERIFY EMBEDS
+    // VERIFY EMBEDS (full handler)
     // ================================================================
     document.getElementById('unified-verify-embeds').addEventListener('click', function() {
       const status = document.getElementById('unified-status');
@@ -2226,8 +2318,40 @@
     });
 
     // ================================================================
-    // TEST ALL PLATFORMS (connectivity check)
+    // TEST ALL PLATFORMS (connectivity, no message sent)
     // ================================================================
+    async function testAllPlatforms() {
+      // Placeholder – will be implemented
+    }
+
+    // ================================================================
+    // SEND TEST MESSAGE (sends a test post)
+    // ================================================================
+    async function sendTestMessages() {
+      // Placeholder – will be implemented
+    }
+
+    // ================================================================
+    // MULTI PLATFORM POST (ALL 13 INTEGRATED)
+    // ================================================================
+    const unifiedMsg = document.getElementById('unified-msg');
+    const unifiedFile = document.getElementById('unified-file');
+    const unifiedFileInfo = document.getElementById('unified-file-info');
+    const unifiedStatus = document.getElementById('unified-status');
+    const unifiedResults = document.getElementById('unified-results');
+    const unifiedSend = document.getElementById('unified-send');
+    const unifiedVerify = document.getElementById('unified-test'); // renamed button
+    const verifyStatus = document.getElementById('verify-status');
+
+    unifiedFile.addEventListener('change', () => updateFileInfo(unifiedFile, unifiedFileInfo));
+
+    const savedUnified = localStorage.getItem('unified_msg') || '';
+    if (savedUnified) unifiedMsg.value = savedUnified;
+    unifiedMsg.addEventListener('input', () => {
+      localStorage.setItem('unified_msg', unifiedMsg.value);
+    });
+
+    // -------- VERIFY ALL (connectivity check, auto-uncheck) --------
     async function verifyAll() {
       const useTg = document.getElementById('unified-tg').checked;
       const useBsky = document.getElementById('unified-bsky').checked;
@@ -2562,57 +2686,14 @@
       this.disabled = false;
     });
 
-    // ========== Send Test Message (now fully functional) ==========
+    // Send Test Message button (placeholder – to be implemented)
     document.getElementById('unified-send-test').addEventListener('click', async function() {
-      const testMessage = `🧪 Test message from Fed-Poster at ${new Date().toLocaleString()}`;
-      // Temporarily save the current message, set test message, then restore
-      const originalMsg = unifiedMsg.value;
-      unifiedMsg.value = testMessage;
-      // Disable button to prevent double-click
-      this.disabled = true;
-      try {
-        // Trigger the "Post All" logic but with our test message
-        // We'll simulate a click on the unified-send button, but we need to override the text check.
-        // Instead, we'll call the same sending logic as unifiedSend but with a fixed message.
-        // We'll reuse the code from unifiedSend's click handler.
-        // To avoid duplication, we'll dispatch a click event on unifiedSend but with a modified message.
-        // However, the unifiedSend listener reads from unifiedMsg.value, so we can just set it and then call the handler.
-        // But we need to pass the context. We'll just call the function.
-        // We'll create a function that does the sending with a given text and file.
-        // For simplicity, we'll trigger the click event of unifiedSend.
-        const sendButton = document.getElementById('unified-send');
-        // But we need to bypass the "auto-verify" maybe, but we can just call the handler.
-        // We'll copy the code from the unifiedSend listener into a separate function and call it.
-        // But that would be a lot of code duplication. Since we already have the unifiedSend listener,
-        // we can just set the message and call the handler.
-        // However, the handler checks for text and file, and also auto-verify. It will work.
-        // So we just set the message and click the button.
-        // We'll simulate a click.
-        // But we want to ensure the test message is used, not the original.
-        // We already set unifiedMsg.value to testMessage, so it will use that.
-        // We'll also clear any file (we don't want to send a file for test).
-        const fileInput = document.getElementById('unified-file');
-        const originalFile = fileInput.files.length > 0 ? fileInput.files[0] : null;
-        fileInput.value = ''; // clear file
-        // Now click the send button.
-        await sendButton.click();
-        // Restore original message and file
-        unifiedMsg.value = originalMsg;
-        if (originalFile) {
-          // Can't restore file easily, but we can just leave it cleared.
-        }
-        // The status will be set by the unifiedSend handler.
-      } catch (err) {
-        unifiedStatus.className = 'status error';
-        unifiedStatus.textContent = '❌ Test send failed: ' + err.message;
-      } finally {
-        this.disabled = false;
-        // Restore original message (already done)
-        unifiedMsg.value = originalMsg;
-      }
+      // TODO: Implement sending a test message to selected platforms.
+      unifiedStatus.className = 'status info';
+      unifiedStatus.textContent = '📤 Send Test Message – to be implemented.';
     });
 
-    // ========== POST ALL (unchanged) ==========
+    // ========== POST ALL ==========
     unifiedSend.addEventListener('click', async function() {
       const text = unifiedMsg.value.trim();
       const file = getFileData(unifiedFile);
@@ -3013,8 +3094,8 @@
     // DONATION SCRIPT (fully isolated – unchanged)
     // ================================================================
     (function() {
-      const SUPABASE_URL_DONATE = 'https://udblpaojoqwtqdryejgi.supabase.co';
-      const SUPABASE_ANON_KEY_DONATE = 'sb_publishable_w0yGrrpWfuJqQFzNXXHM7g_cogUGoeq';
+      const SUPABASE_URL_DONATE = 'YOUR_DONATION_SUPABASE_URL';
+      const SUPABASE_ANON_KEY_DONATE = 'YOUR_DONATION_SUPABASE_ANON_KEY';
       const supabase = window.supabase.createClient(SUPABASE_URL_DONATE, SUPABASE_ANON_KEY_DONATE);
       const FUNCTION_NAMES = { create: 'create-paypal-order', capture: 'capture-paypal-order' };
 
@@ -3056,7 +3137,7 @@
       async function pingFunctions() {
         try {
           debugInfo.innerHTML = `<pre>Pinging create-paypal-order...</pre>`;
-          const url = `https://udblpaojoqwtqdryejgi.supabase.co/functions/v1/create-paypal-order?ping=true`;
+          const url = `${SUPABASE_URL_DONATE}/functions/v1/create-paypal-order?ping=true`;
           const resp = await fetch(url);
           const text = await resp.text();
           debugInfo.innerHTML = `<pre>Ping response (status ${resp.status}):\n${text}</pre>`;
@@ -3156,7 +3237,7 @@
       updateUI();
     })();
 
-    console.log('✅ Fed-Poster loaded – all buttons, toggles, and settings now work.');
+    console.log('✅ Fed-Poster loaded – 21 platforms total + Whop.');
   </script>
 </body>
 </html>
