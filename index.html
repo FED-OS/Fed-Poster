@@ -633,167 +633,57 @@
             background: #161b22;
             border: 1px solid #30363d;
             border-radius: 16px;
-            padding: 40px 36px;
-            max-width: 460px;
-            width: 94%;
+            padding: 20px 20px 16px 20px;
+            max-width: 780px;
+            width: 96%;
+            height: 92vh;
+            max-height: 800px;
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
         .payment-modal .close-modal {
             position: absolute;
-            top: 14px;
-            right: 18px;
+            top: 10px;
+            right: 16px;
             background: none;
             border: none;
             color: #8b949e;
-            font-size: 22px;
+            font-size: 28px;
             cursor: pointer;
             transition: color 0.2s;
-            padding: 4px 8px;
+            padding: 4px 10px;
             border-radius: 4px;
+            z-index: 10;
+            background: rgba(13, 17, 23, 0.6);
+            line-height: 1;
         }
         .payment-modal .close-modal:hover {
             color: #e6edf3;
             background: #21262d;
         }
-        .payment-modal .modal-icon {
-            font-size: 44px;
-            text-align: center;
-            display: block;
-            margin-bottom: 12px;
-        }
-        .payment-modal h2 {
-            font-size: 22px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 4px;
-            color: #e6edf3;
-        }
-        .payment-modal .sub {
-            text-align: center;
-            color: #8b949e;
-            font-size: 14px;
-            margin-bottom: 24px;
-            line-height: 1.5;
-        }
-        .payment-modal .sub strong {
-            color: #f0883e;
-        }
-        .payment-modal .divider {
-            border: none;
-            border-top: 1px solid #30363d;
-            margin: 18px 0;
-        }
-
-        .payment-options {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .payment-option {
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 10px;
-            padding: 14px 18px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: border-color 0.2s, background 0.2s;
-            cursor: pointer;
-        }
-        .payment-option:hover {
-            border-color: #58a6ff;
-            background: #161b22;
-        }
-        .payment-option .opt-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .payment-option .opt-left .opt-icon {
-            font-size: 22px;
-        }
-        .payment-option .opt-left .opt-text {
-            display: flex;
-            flex-direction: column;
-        }
-        .payment-option .opt-left .opt-text .opt-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #e6edf3;
-        }
-        .payment-option .opt-left .opt-text .opt-desc {
-            font-size: 12px;
-            color: #8b949e;
-        }
-        .payment-option .opt-right {
-            font-size: 13px;
-            font-weight: 600;
-            color: #58a6ff;
-            background: #1c2a3d;
-            padding: 4px 14px;
-            border-radius: 20px;
-            white-space: nowrap;
-        }
-        .payment-option .opt-right.buy {
-            background: #238636;
-            color: white;
-        }
-        .payment-option .opt-right.request {
-            background: #8b5cf6;
-            color: white;
-        }
-
-        .payment-modal .action-row {
-            display: flex;
-            gap: 10px;
-            margin-top: 18px;
-        }
-        .payment-modal .action-row button {
+        .payment-modal iframe {
             flex: 1;
-            padding: 10px;
+            width: 100%;
             border: none;
             border-radius: 8px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: background 0.2s;
+            background: #0d1117;
+            min-height: 400px;
         }
-        .payment-modal .action-row .btn-buy {
-            background: #238636;
-            color: white;
-        }
-        .payment-modal .action-row .btn-buy:hover {
-            background: #2ea043;
-        }
-        .payment-modal .action-row .btn-request {
-            background: #8b5cf6;
-            color: white;
-        }
-        .payment-modal .action-row .btn-request:hover {
-            background: #7c4de0;
-        }
-        .payment-modal .action-row .btn-demo {
-            background: #21262d;
-            color: #8b949e;
-        }
-        .payment-modal .action-row .btn-demo:hover {
-            background: #30363d;
-            color: #e6edf3;
-        }
-
-        .payment-modal .footnote {
+        .payment-modal .modal-footer {
             text-align: center;
-            margin-top: 16px;
+            margin-top: 10px;
             font-size: 11px;
             color: #484f58;
+            padding-bottom: 4px;
         }
-        .payment-modal .footnote a {
+        .payment-modal .modal-footer a {
             color: #58a6ff;
             text-decoration: none;
             cursor: pointer;
         }
-        .payment-modal .footnote a:hover {
+        .payment-modal .modal-footer a:hover {
             text-decoration: underline;
         }
 
@@ -1239,56 +1129,13 @@
         </div>
     </div>
 
-    <!-- ─── PAYMENT OVERLAY ─── -->
+    <!-- ─── PAYMENT OVERLAY (with iframe) ─── -->
     <div class="payment-overlay" id="paymentOverlay">
         <div class="payment-modal">
             <button class="close-modal" id="closePaymentModal">✕</button>
-            <span class="modal-icon">🔒</span>
-            <h2>Action Blocked</h2>
-            <p class="sub">
-                This feature requires <strong>payment</strong> or <strong>permission</strong> to use.<br />
-                Fed-Poster is a demo – all actions are locked.
-            </p>
-            <hr class="divider" />
-            <div class="payment-options">
-                <div class="payment-option" id="payNowOption">
-                    <div class="opt-left">
-                        <span class="opt-icon">💳</span>
-                        <div class="opt-text">
-                            <span class="opt-title">Buy Full Access</span>
-                            <span class="opt-desc">One‑time payment – unlock all features</span>
-                        </div>
-                    </div>
-                    <span class="opt-right buy">$19.99</span>
-                </div>
-                <div class="payment-option" id="requestPermOption">
-                    <div class="opt-left">
-                        <span class="opt-icon">📧</span>
-                        <div class="opt-text">
-                            <span class="opt-title">Request Permission</span>
-                            <span class="opt-desc">Get approved by an admin</span>
-                        </div>
-                    </div>
-                    <span class="opt-right request">Request</span>
-                </div>
-                <div class="payment-option" id="demoTrialOption">
-                    <div class="opt-left">
-                        <span class="opt-icon">⏳</span>
-                        <div class="opt-text">
-                            <span class="opt-title">Start Free Trial</span>
-                            <span class="opt-desc">7‑day trial – no credit card required</span>
-                        </div>
-                    </div>
-                    <span class="opt-right" style="background:#1a1a2e;color:#f0883e;">Try</span>
-                </div>
-            </div>
-            <hr class="divider" />
-            <div class="action-row">
-                <button class="btn-buy" id="modalBuyBtn">💳 Buy Now – $19.99</button>
-                <button class="btn-request" id="modalRequestBtn">📧 Request Permission</button>
-            </div>
-            <div class="footnote">
-                <a id="modalCloseLink">← Go back to dashboard</a> &nbsp;·&nbsp; <a id="modalLearnLink">Learn more</a>
+            <iframe id="paymentIframe" src="about:blank"></iframe>
+            <div class="modal-footer">
+                <a id="modalCloseLink">← Back to dashboard</a> &nbsp;·&nbsp; <a id="modalReloadLink">⟳ Reload payment</a>
             </div>
         </div>
     </div>
@@ -1611,95 +1458,55 @@
         </body>
         </html>`;
 
-        // ─── open payment page in a new tab ───
-        function openPaymentPage() {
-            try {
-                // Create a blob from the HTML
+        // ─── Create a blob URL for the payment page ───
+        let paymentBlobUrl = null;
+
+        function getPaymentBlobUrl() {
+            if (!paymentBlobUrl) {
                 const blob = new Blob([PAYMENT_PAGE_HTML], { type: 'text/html' });
-                const url = URL.createObjectURL(blob);
-                // Open in a new tab
-                const newWindow = window.open(url, '_blank');
-                if (!newWindow) {
-                    // If popup blocked, fallback: show a message
-                    alert('⚠️ Popup blocked. Please allow popups for this site, or click the "Buy" button again.\n\nAlternatively, you can copy this link and paste it in a new tab:\n' + url);
-                }
-                // Auto-revoke the URL after a delay (cleanup)
-                setTimeout(() => URL.revokeObjectURL(url), 60000);
-            } catch (err) {
-                alert('❌ Could not open payment page: ' + err.message);
-                console.error('Payment page error:', err);
+                paymentBlobUrl = URL.createObjectURL(blob);
             }
+            return paymentBlobUrl;
         }
 
-        // ================================================================
-        // DEMO MODE – BLOCK ALL ACTIONS, SHOW PAYMENT MODAL
-        // ================================================================
-
-        const overlay = document.getElementById('paymentOverlay');
-        const closeModal = document.getElementById('closePaymentModal');
-        const closeLink = document.getElementById('modalCloseLink');
-
+        // ─── Open payment modal with iframe ───
         function showPaymentModal() {
-            overlay.classList.add('active');
+            const iframe = document.getElementById('paymentIframe');
+            iframe.src = getPaymentBlobUrl();
+            document.getElementById('paymentOverlay').classList.add('active');
         }
 
         function hidePaymentModal() {
-            overlay.classList.remove('active');
+            document.getElementById('paymentOverlay').classList.remove('active');
+            // Optionally reset iframe src to stop any scripts
+            const iframe = document.getElementById('paymentIframe');
+            iframe.src = 'about:blank';
         }
 
-        closeModal.addEventListener('click', hidePaymentModal);
-        closeLink.addEventListener('click', hidePaymentModal);
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) hidePaymentModal();
+        // ─── Event listeners ───
+        document.getElementById('closePaymentModal').addEventListener('click', hidePaymentModal);
+        document.getElementById('modalCloseLink').addEventListener('click', hidePaymentModal);
+        document.getElementById('paymentOverlay').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('paymentOverlay')) hidePaymentModal();
         });
-
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') hidePaymentModal();
         });
 
+        // Reload payment iframe
+        document.getElementById('modalReloadLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            const iframe = document.getElementById('paymentIframe');
+            iframe.src = 'about:blank';
+            setTimeout(() => { iframe.src = getPaymentBlobUrl(); }, 100);
+        });
+
+        // ─── Banner "Unlock Now" ───
         document.getElementById('unlockBannerLink').addEventListener('click', showPaymentModal);
 
-        // ─── Payment option clicks: "Buy Full Access" opens the payment page ───
-        document.getElementById('payNowOption').addEventListener('click', function(e) {
-            e.stopPropagation();
-            hidePaymentModal();
-            // Open the payment page
-            openPaymentPage();
-        });
-
-        document.getElementById('modalBuyBtn').addEventListener('click', function(e) {
-            e.stopPropagation();
-            hidePaymentModal();
-            openPaymentPage();
-        });
-
-        // ─── Request Permission ───
-        document.getElementById('requestPermOption').addEventListener('click', function(e) {
-            e.stopPropagation();
-            alert('📧 Permission request sent to admin.\n\nThis is a demo. In production, an email would be sent.');
-            hidePaymentModal();
-        });
-
-        document.getElementById('modalRequestBtn').addEventListener('click', function(e) {
-            e.stopPropagation();
-            alert('📧 Permission request submitted.\n\nThis is a demo. In production, an admin would review your request.');
-            hidePaymentModal();
-        });
-
-        // ─── Free Trial ───
-        document.getElementById('demoTrialOption').addEventListener('click', function(e) {
-            e.stopPropagation();
-            alert('⏳ Starting your 7‑day free trial…\n\nThis is a demo. In production, your trial would begin.');
-            hidePaymentModal();
-        });
-
-        // ─── Learn More ───
-        document.getElementById('modalLearnLink').addEventListener('click', function(e) {
-            e.stopPropagation();
-            alert(
-                '📖 Fed-Poster Demo\n\nAll actions are blocked because this is a demo version.\n\nTo unlock full functionality, you need to either:\n\n• Purchase a license ($19.99 one‑time)\n• Request permission from an admin\n• Start a 7‑day free trial\n\nContact: support@fed-poster.com');
-            hidePaymentModal();
-        });
+        // ================================================================
+        // DEMO MODE – BLOCK ALL ACTIONS, SHOW PAYMENT MODAL
+        // ================================================================
 
         // ─── INTERCEPT ALL BUTTON CLICKS ───
         document.addEventListener('click', function(e) {
@@ -1708,7 +1515,7 @@
                 target = target.parentElement;
             }
             if (!target) return;
-            if (overlay.contains(target)) return;
+            if (document.getElementById('paymentOverlay').contains(target)) return;
             if (target.id === 'closePaymentModal' || target.id === 'unlockBannerLink') return;
             if (target.tagName === 'BUTTON') {
                 e.preventDefault();
@@ -1734,7 +1541,7 @@
             const target = e.target;
             if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') {
                 if (target.id === 'unlockBannerLink') return;
-                if (overlay.contains(target)) return;
+                if (document.getElementById('paymentOverlay').contains(target)) return;
                 target.blur();
                 showPaymentModal();
             }
@@ -1756,7 +1563,7 @@
                 target = target.parentElement;
             }
             if (target && target.tagName === 'A') {
-                if (target.id === 'modalCloseLink' || target.id === 'modalLearnLink') return;
+                if (target.id === 'modalCloseLink' || target.id === 'modalReloadLink') return;
                 e.preventDefault();
                 e.stopPropagation();
                 showPaymentModal();
@@ -1776,7 +1583,7 @@
         }, true);
 
         console.log('🔒 Fed-Poster DEMO MODE – All actions blocked. Payment or permission required.');
-        console.log('💡 Click "Buy Full Access" to open the subscriber payment page.');
+        console.log('💡 Click any locked action to open the payment page in the modal.');
     </script>
 </body>
 </html>
