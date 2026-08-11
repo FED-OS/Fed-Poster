@@ -70,4 +70,20 @@ Upload images, videos, or audio files and attach them to your posts on supported
 
 ---
 
+## 💰 Pricing
+
+Post to 500+ platforms. One dashboard. No contract.
+
+| Plan | Price | What You Get |
+|------|-------|--------------|
+| **Starter** | **$27/month** | 500+ platforms, unlimited posts, schedule posts, analytics, 24/7 support |
+| **Growth** | **$147/month** | Everything in Starter + done-for-you content + AI image/video generation + priority support |
+| **Agency** | **$497/month** | Everything in Growth + white-label rights + unlimited client accounts + API access + dedicated manager |
+
+**Free Trial:** 7 days. No credit card required. One post to all 500+ platforms.
+
+[**View full pricing breakdown →**](PRICING.md)
+
+---
+
 ## 📦 Tech Stack
