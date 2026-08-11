@@ -3,6 +3,7 @@
   <img src="https://img.shields.io/badge/platforms-12-blue?style=for-the-badge" alt="Platforms" />
   <img src="https://img.shields.io/badge/license-MIT-yellow?style=for-the-badge" alt="License" />
   <img src="https://img.shields.io/badge/made%20with-❤️-red?style=for-the-badge" alt="Made with love" />
+  <img src="https://img.shields.io/badge/version-2.0-brightgreen?style=for-the-badge" alt="Version" />
 </div>
 
 <br />
@@ -10,9 +11,12 @@
 <div align="center">
   <h1>📨 Fed-Poster</h1>
   <p><strong>One Dashboard. Twelve Platforms. Zero Hassle.</strong></p>
-  <p>Cross-post to Telegram, Bluesky, Mastodon, Discord, GitHub, Tumblr, DeviantArt & more — all from a single, sleek interface.</p>
+  <p>Cross‑post to Telegram, Bluesky, Mastodon, Discord, GitHub, Tumblr, DeviantArt & more — all from a single, sleek interface.</p>
   <br />
-  <img src="https://via.placeholder.com/800x450/161b22/e6edf3?text=Fed-Poster+Dashboard" alt="Fed-Poster Dashboard Preview" style="border-radius: 16px; border: 1px solid #30363d; max-width: 100%;" />
+  <img src="https://via.placeholder.com/800x450/161b22/e6edf3?text=Fed-Poster+Dashboard+Preview" alt="Fed-Poster Dashboard Preview" style="border-radius: 16px; border: 1px solid #30363d; max-width: 100%;" />
+  <br /><br />
+  <a href="#pricing"><img src="https://img.shields.io/badge/💰_Pricing-View_Plans-blue?style=for-the-badge" alt="Pricing" /></a>
+  <a href="#installation"><img src="https://img.shields.io/badge/🚀_Get_Started-Install_now-green?style=for-the-badge" alt="Get Started" /></a>
 </div>
 
 ---
@@ -47,10 +51,10 @@ Tired of juggling tabs, APIs, and credentials for every social platform? **Fed-P
 
 ## 🖥️ Dashboard Features
 
-### 🔹 Multi‑Platform Post
+### 🔹 Multi‑Platform Post  
 Select any combination of platforms, write your message once, attach a file, and post everywhere simultaneously. No per‑platform copy‑pasting.
 
-### 🔹 Individual Platform Tabs
+### 🔹 Individual Platform Tabs  
 Each platform has its own dedicated panel with:
 - Credential management (auto‑saved in your browser)
 - Message composition
@@ -58,10 +62,10 @@ Each platform has its own dedicated panel with:
 - Test & Send buttons
 - Real‑time status feedback
 
-### 🔹 Smart Credential Storage
+### 🔹 Smart Credential Storage  
 All tokens, passwords, and API keys are stored locally in your browser's `localStorage` — they never leave your machine unless you explicitly send a post.
 
-### 🔹 File Attachments
+### 🔹 File Attachments  
 Upload images, videos, or audio files and attach them to your posts on supported platforms:
 - **Telegram** – photos, videos
 - **Bluesky** – images
@@ -72,18 +76,37 @@ Upload images, videos, or audio files and attach them to your posts on supported
 
 ## 💰 Pricing
 
-Post to 500+ platforms. One dashboard. No contract.
+Post to 12+ platforms. One dashboard. No contract. **Now at half the original price!**
 
 | Plan | Price | What You Get |
 |------|-------|--------------|
-| **Starter** | **$27/month** | 500+ platforms, unlimited posts, schedule posts, analytics, 24/7 support |
-| **Growth** | **$147/month** | Everything in Starter + done-for-you content + AI image/video generation + priority support |
-| **Agency** | **$497/month** | Everything in Growth + white-label rights + unlimited client accounts + API access + dedicated manager |
+| **Starter** | **$13.50/month** | 12 platforms, unlimited posts, schedule posts, analytics, 24/7 support |
+| **Growth** | **$73.50/month** | Everything in Starter + done‑for‑you content + AI image/video generation + priority support |
+| **Agency** | **$248.50/month** | Everything in Growth + white‑label rights + unlimited client accounts + API access + dedicated manager |
 
-**Free Trial:** 7 days. No credit card required. One post to all 500+ platforms.
+**Free Trial:** 7 days. No credit card required. One post to all platforms.
 
 [**View full pricing breakdown →**](PRICING.md)
 
 ---
 
 ## 📦 Tech Stack
+
+| Area | Technology |
+|------|------------|
+| **Frontend** | React, TypeScript, Tailwind CSS, Framer Motion |
+| **Backend** | Node.js, Express (optional, can run fully client‑side) |
+| **Storage** | localStorage (credentials), IndexedDB (drafts) |
+| **APIs** | REST, OAuth 2.0, GraphQL (for GitHub) |
+| **Deployment** | Docker, Vercel / Netlify (frontend), Heroku / Render (backend) |
+
+---
+
+## 🛠️ Installation
+
+### 🐳 Docker (recommended)
+
+```bash
+git clone https://github.com/yourusername/fed-poster.git
+cd fed-poster
+docker-compose up -d
