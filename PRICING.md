@@ -67,7 +67,7 @@
 - No credit card required
 - Cancel anytime before the trial ends
 
-**[Start Your Free Trial →](https://fedpromptly.com/trial)**
+**[Start Your Free Trial →](https://fedpromptly.com/)**
 
 ---
 
@@ -111,13 +111,13 @@ Yes. We use enterprise-grade encryption and never sell your data. [Read our Priv
 
 ## 📞 Need Help Choosing?
 
-[Book a 15-minute call →](https://fedpromptly.com/call)
+[Book a 15-minute call →](https://fedpromptly.com)
 
 ---
 
 ## 🚀 Start Posting Today
 
-**[Get Started with Fed-Poster →](https://fedpromptly.com/trial)**
+**[Get Started with Fed-Poster →](https://fedpromptly.com)**
 
 ---
 
