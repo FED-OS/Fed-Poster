@@ -3,1138 +3,1468 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FED-OS</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <title>Fed-Poster – Demo (Locked)</title>
     <style>
-        /* ───────────── RESET & BASE ───────────── */
+        /* ─── base ─── */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
-        :root {
-            --bg-primary: #0a0c14;
-            --bg-secondary: #11141f;
-            --bg-card: #171b29;
-            --bg-card-hover: #1f2437;
-            --text-primary: #eff1fa;
-            --text-secondary: #8f95b3;
-            --accent-1: #7c5cfc;
-            --accent-2: #5b8def;
-            --accent-3: #f472b6;
-            --gradient-main: linear-gradient(135deg, #7c5cfc, #5b8def, #f472b6);
-            --radius: 18px;
-            --radius-sm: 10px;
-            --shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            --transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0d1117;
+            color: #e6edf3;
+            height: 100vh;
+            display: flex;
+            position: relative;
         }
 
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 28px;
+        /* ─── DEMO BANNER ─── */
+        .demo-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: #1a1a2e;
+            border-bottom: 2px solid #f0883e;
+            padding: 6px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #f0883e;
+            letter-spacing: 0.3px;
+            flex-wrap: wrap;
+        }
+        .demo-banner .badge-locked {
+            background: #f0883e;
+            color: #0d1117;
+            padding: 1px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+        .demo-banner .badge-locked span {
+            font-size: 14px;
+        }
+        .demo-banner .unlock-link {
+            color: #58a6ff;
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .demo-banner .unlock-link:hover {
+            color: #79c0ff;
         }
 
-        /* ───────────── SCROLLBAR ───────────── */
+        /* ─── sidebar ─── */
+        .sidebar {
+            width: 240px;
+            background: #161b22;
+            border-right: 1px solid #30363d;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            flex-shrink: 0;
+            overflow-y: auto;
+            margin-top: 42px;
+        }
+        .sidebar .logo {
+            padding: 0 20px 20px 20px;
+            font-size: 22px;
+            font-weight: 700;
+            border-bottom: 1px solid #30363d;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sidebar .logo span {
+            font-size: 24px;
+        }
+        .sidebar .logo .demo-tag {
+            font-size: 9px;
+            background: #21262d;
+            color: #8b949e;
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-weight: 400;
+            margin-left: 4px;
+            border: 1px solid #30363d;
+        }
+        .sidebar .nav-item {
+            padding: 8px 20px;
+            cursor: not-allowed;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+            color: #484f58;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .sidebar .nav-item .nav-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .sidebar .nav-item .nav-sub {
+            font-size: 10px;
+            color: #484f58;
+            margin-left: 28px;
+            margin-top: 2px;
+            letter-spacing: 0.3px;
+        }
+        .sidebar .nav-item.active {
+            background: #21262d;
+            color: #e6edf3;
+            border-left-color: #f0883e;
+            opacity: 0.8;
+        }
+        .sidebar .nav-item.active .nav-sub {
+            color: #8b949e;
+        }
+        .sidebar .nav-item .badge {
+            font-size: 10px;
+            background: #21262d;
+            padding: 1px 8px;
+            border-radius: 10px;
+            color: #8b949e;
+            margin-left: auto;
+        }
+        .sidebar .nav-item .badge.proxy {
+            background: #8b5cf6;
+            color: white;
+        }
+        .sidebar .nav-item .badge.buffer {
+            background: #1a73e8;
+            color: white;
+        }
+        .sidebar .nav-item .badge.wordpress {
+            background: #3858e9;
+            color: white;
+        }
+        .sidebar .nav-item .badge.other {
+            background: #6e7681;
+        }
+        .sidebar .nav-item .badge.both {
+            background: #238636;
+        }
+        .sidebar .nav-item .lock-icon {
+            font-size: 12px;
+            margin-left: 6px;
+            color: #f0883e;
+        }
+
+        /* ─── main ─── */
+        .main {
+            flex: 1;
+            padding: 30px 40px;
+            overflow-y: auto;
+            min-width: 0;
+            margin-top: 42px;
+        }
+        .main .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .main .page-title .count-badge {
+            font-size: 14px;
+            color: #8b949e;
+            font-weight: 400;
+            background: #21262d;
+            padding: 2px 12px;
+            border-radius: 20px;
+            border: 1px solid #30363d;
+        }
+        .main .page-title .lock-badge {
+            font-size: 12px;
+            background: #2d1a0a;
+            color: #f0883e;
+            padding: 2px 14px;
+            border-radius: 20px;
+            border: 1px solid #f0883e;
+            font-weight: 500;
+        }
+        .main .page-sub {
+            color: #8b949e;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .platform-section {
+            display: none;
+            max-width: 600px;
+        }
+        .platform-section.active {
+            display: block;
+        }
+
+        .platform-section .card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        .platform-section .card::after {
+            content: '🔒 DEMO';
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #f0883e;
+            background: #1a1a2e;
+            padding: 1px 10px;
+            border-radius: 10px;
+            border: 1px solid #f0883e33;
+            opacity: 0.7;
+        }
+        .platform-section .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .platform-section .card-header h2 {
+            font-size: 17px;
+            font-weight: 600;
+        }
+        .platform-section .label-tag {
+            font-size: 10px;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            background: #21262d;
+            color: #8b949e;
+        }
+        .platform-section .label-tag.buffer {
+            background: #1a73e8;
+            color: white;
+        }
+        .platform-section .label-tag.wordpress {
+            background: #3858e9;
+            color: white;
+        }
+        .platform-section .label-tag.both {
+            background: #238636;
+            color: white;
+        }
+        .platform-section .label-tag.other {
+            background: #6e7681;
+            color: white;
+        }
+        .platform-section .label-tag.proxy {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .platform-section .connect-info {
+            font-size: 12px;
+            color: #8b949e;
+            background: #0d1117;
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            border-left: 3px solid #8b5cf6;
+        }
+        .platform-section .connect-info strong {
+            color: #c9d1d9;
+        }
+
+        .platform-section label {
+            font-size: 12px;
+            font-weight: 500;
+            display: block;
+            margin: 10px 0 3px;
+            color: #8b949e;
+        }
+        .platform-section input,
+        .platform-section textarea {
+            width: 100%;
+            padding: 8px 10px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            color: #e6edf3;
+            font-size: 13px;
+            font-family: inherit;
+            opacity: 0.7;
+            pointer-events: none;
+            user-select: none;
+        }
+        .platform-section input:focus,
+        .platform-section textarea:focus {
+            outline: none;
+            border-color: #58a6ff;
+        }
+        .platform-section textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+        .platform-section input[type="file"] {
+            padding: 6px;
+            cursor: not-allowed;
+            background: #161b22;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .platform-section .saved-note {
+            font-size: 10px;
+            color: #484f58;
+            margin-top: 2px;
+        }
+        .platform-section .actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .platform-section .actions button {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: not-allowed;
+            font-size: 12px;
+            min-width: 70px;
+            transition: background 0.2s;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .platform-section .actions button .lock-btn {
+            font-size: 11px;
+            margin-right: 4px;
+        }
+        .platform-section .btn-primary {
+            background: #238636;
+            color: white;
+        }
+        .platform-section .btn-primary:hover {
+            background: #2ea043;
+        }
+        .platform-section .btn-primary:disabled {
+            background: #21262d;
+            color: #484f58;
+            cursor: not-allowed;
+        }
+        .platform-section .btn-secondary {
+            background: #21262d;
+            color: #c9d1d9;
+        }
+        .platform-section .btn-secondary:hover {
+            background: #30363d;
+        }
+
+        .platform-section .status {
+            margin-top: 10px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            display: block;
+            background: #1c1b1a;
+            color: #d29922;
+            border: 1px solid #9e6a03;
+        }
+        .platform-section .status.success {
+            background: #0d2818;
+            color: #3fb950;
+            border: 1px solid #238636;
+        }
+        .platform-section .status.error {
+            background: #2d0a0a;
+            color: #f85149;
+            border: 1px solid #da3633;
+        }
+        .platform-section .status.loading {
+            background: #0d1f2d;
+            color: #58a6ff;
+            border: 1px solid #1f6feb;
+        }
+        .platform-section .status.info {
+            background: #1c1b1a;
+            color: #d29922;
+            border: 1px solid #9e6a03;
+        }
+        .platform-section .status.locked {
+            background: #1a1a2e;
+            color: #f0883e;
+            border: 1px solid #f0883e55;
+        }
+
+        .platform-section .file-info {
+            font-size: 11px;
+            color: #8b949e;
+            margin-top: 3px;
+        }
+        .platform-section .token-type {
+            font-size: 10px;
+            color: #8b949e;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .platform-section .token-type .classic-badge {
+            background: #f59e0b;
+            color: #0d1117;
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 10px;
+        }
+        .platform-section .token-type .fine-badge {
+            background: #8b5cf6;
+            color: white;
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 10px;
+        }
+
+        .da-connected {
+            background: #0d2818;
+            border: 1px solid #238636;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: #3fb950;
+        }
+        .da-disconnected {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: #8b949e;
+        }
+
+        .check-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 8px;
+            margin: 8px 0 10px;
+            background: #0d1117;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #21262d;
+        }
+        .check-group label {
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            color: #c9d1d9;
+            margin: 0;
+            cursor: not-allowed;
+            padding: 4px 6px;
+            border-radius: 4px;
+            opacity: 0.6;
+            transition: background 0.2s;
+        }
+        .check-group label:hover {
+            background: #21262d;
+        }
+        .check-group .label-tag {
+            font-size: 8px;
+            padding: 1px 6px;
+        }
+        .verify-status {
+            margin: 10px 0;
+            font-size: 12px;
+        }
+        .verify-status .v-item {
+            padding: 3px 0;
+            border-bottom: 1px solid #21262d;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .unified-results {
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        .unified-results .result-item {
+            padding: 3px 0;
+            border-bottom: 1px solid #21262d;
+            display: flex;
+            gap: 8px;
+        }
+
+        #da-token-input {
+            width: 100%;
+            padding: 8px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            color: #e6edf3;
+            font-size: 13px;
+            margin-top: 6px;
+            opacity: 0.7;
+            pointer-events: none;
+            user-select: none;
+        }
+        #da-token-submit {
+            margin-top: 6px;
+            opacity: 0.5 !important;
+            pointer-events: none !important;
+            cursor: not-allowed !important;
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                width: 180px;
+            }
+            .main {
+                padding: 20px;
+            }
+            .platform-section .card {
+                padding: 16px;
+            }
+        }
+        @media (max-width: 500px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                flex-direction: row;
+                overflow-x: auto;
+                border-right: none;
+                border-bottom: 1px solid #30363d;
+                padding: 10px 0;
+                height: auto;
+                gap: 6px;
+                flex-wrap: nowrap;
+                margin-top: 72px;
+            }
+            .sidebar .logo {
+                display: none;
+            }
+            .sidebar .nav-item {
+                padding: 8px 14px;
+                white-space: nowrap;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+                flex-direction: row;
+            }
+            .sidebar .nav-item .nav-sub {
+                display: none;
+            }
+            .sidebar .nav-item.active {
+                border-bottom-color: #f0883e;
+                border-left-color: transparent;
+            }
+            .sidebar .nav-item .badge {
+                display: none;
+            }
+            .sidebar .nav-item .lock-icon {
+                display: none;
+            }
+            .main {
+                padding: 16px;
+                margin-top: 72px;
+            }
+            .demo-banner {
+                font-size: 11px;
+                padding: 4px 12px;
+            }
+            .platform-section .card::after {
+                font-size: 7px;
+                top: 4px;
+                right: 6px;
+                padding: 0 8px;
+            }
+        }
+
+        /* ─── PAYMENT OVERLAY ─── */
+        .payment-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        .payment-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .payment-modal {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 16px;
+            padding: 40px 36px;
+            max-width: 460px;
+            width: 94%;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+        .payment-modal .close-modal {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            background: none;
+            border: none;
+            color: #8b949e;
+            font-size: 22px;
+            cursor: pointer;
+            transition: color 0.2s;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .payment-modal .close-modal:hover {
+            color: #e6edf3;
+            background: #21262d;
+        }
+        .payment-modal .modal-icon {
+            font-size: 44px;
+            text-align: center;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .payment-modal h2 {
+            font-size: 22px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 4px;
+            color: #e6edf3;
+        }
+        .payment-modal .sub {
+            text-align: center;
+            color: #8b949e;
+            font-size: 14px;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+        .payment-modal .sub strong {
+            color: #f0883e;
+        }
+        .payment-modal .divider {
+            border: none;
+            border-top: 1px solid #30363d;
+            margin: 18px 0;
+        }
+
+        .payment-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .payment-option {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: border-color 0.2s, background 0.2s;
+            cursor: pointer;
+        }
+        .payment-option:hover {
+            border-color: #58a6ff;
+            background: #161b22;
+        }
+        .payment-option .opt-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .payment-option .opt-left .opt-icon {
+            font-size: 22px;
+        }
+        .payment-option .opt-left .opt-text {
+            display: flex;
+            flex-direction: column;
+        }
+        .payment-option .opt-left .opt-text .opt-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #e6edf3;
+        }
+        .payment-option .opt-left .opt-text .opt-desc {
+            font-size: 12px;
+            color: #8b949e;
+        }
+        .payment-option .opt-right {
+            font-size: 13px;
+            font-weight: 600;
+            color: #58a6ff;
+            background: #1c2a3d;
+            padding: 4px 14px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+        .payment-option .opt-right.buy {
+            background: #238636;
+            color: white;
+        }
+        .payment-option .opt-right.request {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .payment-modal .action-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+        }
+        .payment-modal .action-row button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .payment-modal .action-row .btn-buy {
+            background: #238636;
+            color: white;
+        }
+        .payment-modal .action-row .btn-buy:hover {
+            background: #2ea043;
+        }
+        .payment-modal .action-row .btn-request {
+            background: #8b5cf6;
+            color: white;
+        }
+        .payment-modal .action-row .btn-request:hover {
+            background: #7c4de0;
+        }
+        .payment-modal .action-row .btn-demo {
+            background: #21262d;
+            color: #8b949e;
+        }
+        .payment-modal .action-row .btn-demo:hover {
+            background: #30363d;
+            color: #e6edf3;
+        }
+
+        .payment-modal .footnote {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 11px;
+            color: #484f58;
+        }
+        .payment-modal .footnote a {
+            color: #58a6ff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .payment-modal .footnote a:hover {
+            text-decoration: underline;
+        }
+
+        /* ─── DEMO UNLOCK BADGE (inline) ─── */
+        .unlock-inline {
+            font-size: 11px;
+            color: #f0883e;
+            background: #1a1a2e;
+            padding: 2px 12px;
+            border-radius: 12px;
+            border: 1px solid #f0883e44;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: 6px;
+            font-weight: 500;
+        }
+        .unlock-inline span {
+            font-size: 12px;
+        }
+
+        /* scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: var(--bg-primary);
+            background: #0d1117;
         }
         ::-webkit-scrollbar-thumb {
-            background: var(--accent-1);
-            border-radius: 10px;
-        }
-
-        /* ───────────── BUTTONS ───────────── */
-        .btn-primary {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 14px 36px;
-            background: var(--gradient-main);
-            border: none;
-            border-radius: 60px;
-            color: #fff;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: var(--transition);
-            box-shadow: 0 8px 30px rgba(124, 92, 252, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 12px 40px rgba(124, 92, 252, 0.5);
-        }
-
-        .btn-secondary {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 14px 36px;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 60px;
-            color: var(--text-primary);
-            font-weight: 500;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(255, 255, 255, 0.15);
-            transform: translateY(-2px);
-        }
-
-        /* ───────────── HEADER / NAV ───────────── */
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            padding: 18px 0;
-            z-index: 1000;
-            background: rgba(10, 12, 20, 0.6);
-            backdrop-filter: blur(20px) saturate(1.6);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        }
-
-        nav .container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .nav-logo {
-            font-weight: 800;
-            font-size: 1.5rem;
-            letter-spacing: -0.5px;
-            background: var(--gradient-main);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 32px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            transition: var(--transition);
-        }
-
-        .nav-links a:hover {
-            color: var(--text-primary);
-        }
-
-        .nav-links .btn-primary {
-            padding: 10px 24px;
-            font-size: 0.8rem;
-        }
-
-        .nav-toggle {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--text-primary);
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        /* ───────────── HERO ───────────── */
-        .hero {
-            padding: 140px 0 80px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -30%;
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(124, 92, 252, 0.06), transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-
-        .hero::after {
-            content: '';
-            position: absolute;
-            bottom: -40%;
-            right: -20%;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(91, 141, 239, 0.05), transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-
-        .hero .container {
-            position: relative;
-            z-index: 2;
-        }
-
-        .hero h1 {
-            font-size: clamp(4rem, 10vw, 7rem);
-            font-weight: 900;
-            line-height: 1;
-            letter-spacing: -2px;
-            background: var(--gradient-main);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 8px;
-        }
-
-        .hero .subtitle {
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-        }
-
-        .hero .subtitle span {
-            color: var(--accent-1);
-        }
-
-        .hero .tagline {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
-            max-width: 500px;
-            margin: 0 auto 32px;
-            line-height: 1.8;
-        }
-
-        .hero-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            justify-content: center;
-        }
-
-        .hero-stats {
-            display: flex;
-            justify-content: center;
-            gap: 48px;
-            margin-top: 48px;
-            padding-top: 32px;
-            border-top: 1px solid rgba(255, 255, 255, 0.04);
-        }
-
-        .hero-stats div {
-            text-align: center;
-        }
-
-        .hero-stats .number {
-            font-size: 1.8rem;
-            font-weight: 800;
-            background: var(--gradient-main);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero-stats .label {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        /* ───────────── FEATURES (HORIZONTAL SCROLL) ───────────── */
-        .features-section {
-            padding: 60px 0 80px;
-            background: var(--bg-secondary);
-        }
-
-        .features-section .section-header {
-            text-align: center;
-            margin-bottom: 48px;
-        }
-
-        .features-section .section-header h2 {
-            font-size: clamp(2rem, 3.5vw, 2.8rem);
-            font-weight: 800;
-        }
-
-        .features-section .section-header p {
-            color: var(--text-secondary);
-            font-size: 1rem;
-        }
-
-        .features-scroll {
-            display: flex;
-            gap: 28px;
-            overflow-x: auto;
-            padding: 12px 4px 20px 4px;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: thin;
-        }
-
-        .features-scroll::-webkit-scrollbar {
-            height: 4px;
-        }
-        .features-scroll::-webkit-scrollbar-thumb {
-            background: var(--accent-1);
-            border-radius: 10px;
-        }
-
-        .feature-card {
-            flex: 0 0 380px;
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            padding: 32px 28px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            scroll-snap-align: start;
-            transition: var(--transition);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-6px);
-            background: var(--bg-card-hover);
-            border-color: rgba(255, 255, 255, 0.08);
-        }
-
-        .feature-card .icon-wrap {
-            width: 52px;
-            height: 52px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
-            margin-bottom: 18px;
-            background: rgba(124, 92, 252, 0.12);
-            color: var(--accent-1);
-        }
-
-        .feature-card:nth-child(2) .icon-wrap {
-            background: rgba(91, 141, 239, 0.12);
-            color: var(--accent-2);
-        }
-
-        .feature-card h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .feature-card > p {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            line-height: 1.7;
-            margin-bottom: 20px;
-        }
-
-        /* ─── HORIZONTAL FEATURE CHIPS ─── */
-        .feature-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 24px;
-        }
-
-        .feature-chips .chip {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            padding: 6px 14px;
-            border-radius: 100px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: var(--transition);
-        }
-
-        .feature-chips .chip i {
-            font-size: 0.7rem;
-            color: var(--accent-1);
-        }
-
-        .feature-card .btn-card {
-            margin-top: auto;
-            align-self: flex-start;
-            padding: 10px 24px;
-            font-size: 0.85rem;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 60px;
-            color: var(--text-primary);
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .feature-card .btn-card:hover {
-            background: rgba(124, 92, 252, 0.12);
-            border-color: rgba(124, 92, 252, 0.2);
-            color: #fff;
-            gap: 12px;
-        }
-
-        /* ───────────── INTERACTIVE DEMO (Horizontal Mock) ───────────── */
-        .demo-section {
-            padding: 80px 0;
-            background: var(--bg-primary);
-        }
-
-        .demo-section .container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            align-items: center;
-        }
-
-        .demo-text h2 {
-            font-size: clamp(1.8rem, 3vw, 2.6rem);
-            font-weight: 800;
-            margin-bottom: 12px;
-        }
-
-        .demo-text p {
-            color: var(--text-secondary);
-            font-size: 1rem;
-            line-height: 1.8;
-            margin-bottom: 24px;
-        }
-
-        .demo-box {
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            padding: 28px 24px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            box-shadow: var(--shadow);
-        }
-
-        .demo-box .mock-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-        }
-
-        .demo-box .mock-header .dots span {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 4px;
-        }
-        .demo-box .mock-header .dots span:nth-child(1) {
-            background: #ff5f57; }
-        .demo-box .mock-header .dots span:nth-child(2) {
-            background: #ffbd2e; }
-        .demo-box .mock-header .dots span:nth-child(3) {
-            background: #28c840; }
-
-        .demo-box .mock-header .badge {
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 4px 14px;
-            background: rgba(124, 92, 252, 0.12);
-            border-radius: 100px;
-            color: var(--accent-1);
-        }
-
-        .waveform-mini {
-            display: flex;
-            align-items: center;
-            gap: 3px;
-            height: 40px;
-            margin: 12px 0;
-        }
-
-        .waveform-mini .bar {
-            width: 4px;
-            background: var(--accent-1);
+            background: #30363d;
             border-radius: 4px;
-            animation: waveAnim 1s ease-in-out infinite alternate;
         }
-        .waveform-mini .bar.silent {
-            background: rgba(255, 255, 255, 0.06);
-            animation: none;
-            height: 8px !important;
-        }
-
-        @keyframes waveAnim {
-            0% {
-                height: 6px;
-            }
-            100% {
-                height: 32px;
-            }
-        }
-
-        .poster-preview-mini {
-            display: flex;
-            gap: 16px;
-            align-items: stretch;
-            margin-top: 12px;
-        }
-
-        .poster-card-mini {
-            flex: 1;
-            background: linear-gradient(145deg, #1e2340, #14182e);
-            border-radius: var(--radius-sm);
-            padding: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            min-height: 100px;
-        }
-
-        .poster-card-mini .avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: var(--gradient-main);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.7rem;
-            margin-bottom: 8px;
-        }
-
-        .poster-card-mini .text {
-            font-weight: 500;
-            font-size: 0.85rem;
-        }
-
-        .poster-card-mini .meta {
-            font-size: 0.65rem;
-            color: var(--text-secondary);
-        }
-
-        .poster-sidebar-mini {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            min-width: 100px;
-        }
-
-        .poster-sidebar-mini .opt {
-            padding: 6px 12px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 6px;
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            border: 1px solid transparent;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .poster-sidebar-mini .opt:hover {
-            background: rgba(124, 92, 252, 0.08);
-            border-color: rgba(124, 92, 252, 0.1);
-            color: #fff;
-        }
-
-        .poster-sidebar-mini .opt.active {
-            background: rgba(124, 92, 252, 0.12);
-            border-color: rgba(124, 92, 252, 0.2);
-            color: #fff;
-        }
-
-        /* ───────────── TESTIMONIALS ───────────── */
-        .testimonials {
-            padding: 80px 0;
-            background: var(--bg-secondary);
-        }
-
-        .testimonials .section-header {
-            text-align: center;
-            margin-bottom: 48px;
-        }
-
-        .testimonials .section-header h2 {
-            font-size: clamp(1.8rem, 3vw, 2.6rem);
-            font-weight: 800;
-        }
-
-        .testimonial-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-        }
-
-        .testimonial-card {
-            background: var(--bg-card);
-            padding: 24px 22px;
-            border-radius: var(--radius);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            transition: var(--transition);
-        }
-
-        .testimonial-card:hover {
-            border-color: rgba(255, 255, 255, 0.08);
-            transform: translateY(-4px);
-        }
-
-        .testimonial-card .stars {
-            color: #fbbf24;
-            font-size: 0.8rem;
-            margin-bottom: 10px;
-        }
-
-        .testimonial-card blockquote {
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            line-height: 1.7;
-            font-style: italic;
-            margin-bottom: 14px;
-        }
-
-        .testimonial-card .author {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .testimonial-card .author .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--gradient-main);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.7rem;
-        }
-
-        .testimonial-card .author .name {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .testimonial-card .author .role {
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-        }
-
-        /* ───────────── CTA ───────────── */
-        .cta-section {
-            padding: 80px 0;
-            text-align: center;
-        }
-
-        .cta-box {
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            padding: 56px 40px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .cta-box h2 {
-            font-size: clamp(1.8rem, 3vw, 2.6rem);
-            font-weight: 800;
-            margin-bottom: 12px;
-        }
-
-        .cta-box p {
-            color: var(--text-secondary);
-            margin-bottom: 28px;
-        }
-
-        .cta-box .btn-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            justify-content: center;
-        }
-
-        /* ───────────── FOOTER ───────────── */
-        footer {
-            padding: 32px 0 24px;
-            border-top: 1px solid rgba(255, 255, 255, 0.03);
-        }
-
-        footer .container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        footer .copy {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        footer .socials {
-            display: flex;
-            gap: 12px;
-        }
-
-        footer .socials a {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.04);
-            color: var(--text-secondary);
-            transition: var(--transition);
-        }
-
-        footer .socials a:hover {
-            background: rgba(124, 92, 252, 0.1);
-            color: #fff;
-        }
-
-        /* ───────────── RESPONSIVE ───────────── */
-        @media (max-width: 992px) {
-            .demo-section .container {
-                grid-template-columns: 1fr;
-            }
-
-            .testimonial-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .feature-card {
-                flex: 0 0 300px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background: var(--bg-primary);
-                padding: 24px;
-                gap: 16px;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            }
-
-            .nav-links.open {
-                display: flex;
-            }
-
-            .nav-toggle {
-                display: block;
-            }
-
-            .hero h1 {
-                font-size: 3.6rem;
-            }
-
-            .hero-stats {
-                gap: 24px;
-                flex-wrap: wrap;
-            }
-
-            .testimonial-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .feature-card {
-                flex: 0 0 280px;
-                padding: 24px 20px;
-            }
-
-            .poster-preview-mini {
-                flex-direction: column;
-            }
-
-            .poster-sidebar-mini {
-                flex-direction: row;
-                flex-wrap: wrap;
-                min-width: unset;
-            }
-
-            .cta-box {
-                padding: 32px 20px;
-            }
-
-            footer .container {
-                flex-direction: column;
-                text-align: center;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .hero h1 {
-                font-size: 2.8rem;
-            }
-
-            .hero .subtitle {
-                font-size: 0.8rem;
-            }
-
-            .feature-card {
-                flex: 0 0 260px;
-            }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #484f58;
         }
     </style>
 </head>
 <body>
 
-    <!-- ═══════════ NAV ═══════════ -->
-    <nav id="navbar">
-        <div class="container">
-            <a href="#" class="nav-logo">FED-OS</a>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="#features">Features</a></li>
-                <li><a href="#demo">Demo</a></li>
-                <li><a href="#testimonials">Testimonials</a></li>
-                <li><a href="#cta" class="btn-primary">Get Started</a></li>
-            </ul>
-            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-    </nav>
+    <!-- ─── DEMO BANNER ─── -->
+    <div class="demo-banner">
+        <span class="badge-locked"><span>🔒</span> DEMO MODE</span>
+        <span>All actions are blocked. You need <strong>payment</strong> or <strong>permission</strong> to use this tool.</span>
+        <span class="unlock-link" id="unlockBannerLink">🔑 Unlock Now</span>
+    </div>
 
-    <!-- ═══════════ HERO ═══════════ -->
-    <section class="hero" id="hero">
-        <div class="container">
-            <h1>FED-OS</h1>
-            <p class="subtitle">by <span>fedpromptly.com</span></p>
-            <p class="tagline">
-                Silence Remover &amp; Social Poster — two powerful tools, one seamless workflow.
+    <!-- ─── SIDEBAR ─── -->
+    <div class="sidebar">
+        <div class="logo">
+            <span>📨</span> Fed-Poster
+            <span class="demo-tag">DEMO</span>
+        </div>
+        <div class="nav-item active" data-target="unified">
+            <div class="nav-row">📤 Multi Platform Post <span class="badge both">All</span><span class="lock-icon">🔒</span></div>
+        </div>
+        <div class="nav-item" data-target="telegram">
+            <div class="nav-row">📱 Telegram <span class="badge other">Other</span><span class="lock-icon">🔒</span></div>
+        </div>
+        <div class="nav-item" data-target="bluesky">
+            <div class="nav-row">☁️ Bluesky <span class="badge both">Both</span><span class="lock-icon">🔒</span></div>
+        </div>
+        <div class="nav-item" data-target="mastodon">
+            <div class="nav-row">🐘 Mastodon <span class="badge both">Both</span><span class="lock-icon">🔒</span></div>
+        </div>
+        <div class="nav-item" data-target="discord">
+            <div class="nav-row">🎮 Discord <span class="badge other">Other</span><span class="lock-icon">🔒</span></div>
+        </div>
+        <div class="nav-item" data-target="github-classic">
+            <div class="nav-row">📘 GitHub Classic <span class="badge other">Other</span><span class="lock-icon">🔒</span></div>
+        </div>
+        <div class="nav-item" data-target="github-repo">
+            <div class="nav-row">📂 GitHub Repo <span class="badge other">Other</span><span class="lock-icon">🔒</span></div>
+        </div>
+        <div class="nav-item" data-target="safew">
+            <div class="nav-row">🔐 SafeW <span class="badge other">Other</span><span class="lock-icon">🔒</span></div>
+        </div>
+        <div class="nav-item" data-target="tumblr">
+            <div class="nav-row">📝 Tumblr <span class="badge both">Both</span><span class="lock-icon">🔒</span></div>
+        </div>
+        <div class="nav-item" data-target="deviantart">
+            <div class="nav-row">🎨 DeviantArt <span class="badge other">Other</span><span class="lock-icon">🔒</span></div>
+        </div>
+        <div class="nav-item" data-target="buffer">
+            <div class="nav-row">⏳ Buffer Proxy <span class="badge proxy">Proxy</span><span class="lock-icon">🔒</span></div>
+            <div class="nav-sub">→ Twitter, LinkedIn, Facebook, Instagram</div>
+        </div>
+        <div class="nav-item" data-target="wordpress">
+            <div class="nav-row">📄 WordPress Jetpack <span class="badge proxy">Proxy</span><span class="lock-icon">🔒</span></div>
+            <div class="nav-sub">→ Twitter, LinkedIn, Facebook, Tumblr</div>
+        </div>
+    </div>
+
+    <!-- ─── MAIN CONTENT ─── -->
+    <div class="main">
+        <div class="page-title" id="page-title">
+            Multi Platform Post
+            <span class="count-badge">🌐 12 Social Networks</span>
+            <span class="lock-badge">🔒 DEMO</span>
+        </div>
+        <div class="page-sub" id="page-sub">
+            Post to all your connected platforms instantly.
+            <span class="unlock-inline"><span>🔒</span> Demo – actions blocked</span>
+        </div>
+
+        <!-- ====== MULTI PLATFORM POST ====== -->
+        <div class="platform-section active" id="section-unified">
+            <div class="card">
+                <div class="card-header">
+                    <h2>📤 Multi Platform Post</h2>
+                    <span class="label-tag both">All</span>
+                </div>
+                <label>Message / Content</label>
+                <textarea id="unified-msg" placeholder="Write once, post everywhere… (demo – locked)"></textarea>
+                <label>Upload Image (shared)</label>
+                <input type="file" id="unified-file" accept="image/*,video/*,audio/*" disabled />
+                <div class="file-info" id="unified-file-info">🔒 File upload disabled in demo</div>
+                <div class="check-group">
+                    <label><input type="checkbox" id="unified-tg" checked disabled /> Telegram <span class="label-tag other">Other</span></label>
+                    <label><input type="checkbox" id="unified-bsky" checked disabled /> Bluesky <span class="label-tag both">Both</span></label>
+                    <label><input type="checkbox" id="unified-mastodon" checked disabled /> Mastodon <span class="label-tag both">Both</span></label>
+                    <label><input type="checkbox" id="unified-discord" checked disabled /> Discord <span class="label-tag other">Other</span></label>
+                    <label><input type="checkbox" id="unified-github-classic" checked disabled /> GitHub Classic <span class="label-tag other">Other</span></label>
+                    <label><input type="checkbox" id="unified-github-repo" checked disabled /> GitHub Repo <span class="label-tag other">Other</span></label>
+                    <label><input type="checkbox" id="unified-safew" checked disabled /> SafeW <span class="label-tag other">Other</span></label>
+                    <label><input type="checkbox" id="unified-tumblr" checked disabled /> Tumblr <span class="label-tag both">Both</span></label>
+                </div>
+                <div class="verify-status" id="verify-status">
+                    <div class="v-item"><span>🔒</span> Verification disabled in demo.</div>
+                </div>
+                <div class="actions">
+                    <button class="btn-secondary" id="unified-verify">🔒 Verify All</button>
+                    <button class="btn-primary" id="unified-send">🔒 Post All</button>
+                </div>
+                <div id="unified-status" class="status locked">🔒 Demo – actions require payment or permission.</div>
+                <div id="unified-results" class="unified-results"></div>
+            </div>
+        </div>
+
+        <!-- ====== TELEGRAM ====== -->
+        <div class="platform-section" id="section-telegram">
+            <div class="card">
+                <div class="card-header">
+                    <h2>📱 Telegram</h2>
+                    <span class="label-tag other">Other</span>
+                </div>
+                <label>Bot Token</label>
+                <input id="tg-token" type="password" placeholder="Your bot token (demo – locked)" disabled />
+                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
+                <label>Channel / Chat ID</label>
+                <input id="tg-chat" type="text" placeholder="@channel or -100123456 (demo – locked)" disabled />
+                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
+                <label>Message</label>
+                <textarea id="tg-msg" placeholder="What to post? (demo – locked)"></textarea>
+                <label>Upload Image / Video</label>
+                <input type="file" id="tg-file" accept="image/*,video/*" disabled />
+                <div class="file-info" id="tg-file-info">🔒 File upload disabled in demo</div>
+                <div class="actions">
+                    <button class="btn-secondary" id="tg-test">🔒 Test</button>
+                    <button class="btn-primary" id="tg-send">🔒 Send</button>
+                </div>
+                <div id="tg-status" class="status locked">🔒 Demo – locked. Purchase to use.</div>
+            </div>
+        </div>
+
+        <!-- ====== BLUESKY ====== -->
+        <div class="platform-section" id="section-bluesky">
+            <div class="card">
+                <div class="card-header">
+                    <h2>☁️ Bluesky</h2>
+                    <span class="label-tag both">Both</span>
+                </div>
+                <label>Handle</label>
+                <input id="bsky-handle" type="text" placeholder="your-handle.bsky.social (demo – locked)" disabled />
+                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
+                <label>App Password</label>
+                <input id="bsky-password" type="password" placeholder="xxxx-xxxx-xxxx-xxxx (demo – locked)" disabled />
+                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
+                <label>Message</label>
+                <textarea id="bsky-msg" placeholder="What to post? (demo – locked)"></textarea>
+                <label>Upload Image</label>
+                <input type="file" id="bsky-file" accept="image/*" disabled />
+                <div class="file-info" id="bsky-file-info">🔒 File upload disabled in demo</div>
+                <div class="actions">
+                    <button class="btn-secondary" id="bsky-test">🔒 Test</button>
+                    <button class="btn-primary" id="bsky-send">🔒 Send</button>
+                </div>
+                <div id="bsky-status" class="status locked">🔒 Demo – locked. Purchase to use.</div>
+            </div>
+        </div>
+
+        <!-- ====== MASTODON ====== -->
+        <div class="platform-section" id="section-mastodon">
+            <div class="card">
+                <div class="card-header">
+                    <h2>🐘 Mastodon</h2>
+                    <span class="label-tag both">Both</span>
+                </div>
+                <label>Instance URL</label>
+                <input id="mastodon-instance" type="text" placeholder="https://mastodon.social (demo – locked)" disabled />
+                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
+                <label>Access Token</label>
+                <input id="mastodon-token" type="password" placeholder="Your access token (demo – locked)" disabled />
+                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
+                <label>Message</label>
+                <textarea id="mastodon-msg" placeholder="What to post? (demo – locked)"></textarea>
+                <label>Upload Image / Video / Audio</label>
+                <input type="file" id="mastodon-file" accept="image/*,video/*,audio/*" disabled />
+                <div class="file-info" id="mastodon-file-info">🔒 File upload disabled in demo</div>
+                <div class="actions">
+                    <button class="btn-secondary" id="mastodon-test">🔒 Test</button>
+                    <button class="btn-primary" id="mastodon-send">🔒 Send</button>
+                </div>
+                <div id="mastodon-status" class="status locked">🔒 Demo – locked. Purchase to use.</div>
+            </div>
+        </div>
+
+        <!-- ====== DISCORD ====== -->
+        <div class="platform-section" id="section-discord">
+            <div class="card">
+                <div class="card-header">
+                    <h2>🎮 Discord</h2>
+                    <span class="label-tag other">Other</span>
+                </div>
+                <label>Webhook URL</label>
+                <input id="discord-webhook" type="text" placeholder="https://discord.com/api/webhooks/... (demo – locked)" disabled />
+                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
+                <label>Message</label>
+                <textarea id="discord-msg" placeholder="What to post? (demo – locked)"></textarea>
+                <div class="actions">
+                    <button class="btn-secondary" id="discord-test">🔒 Test</button>
+                    <button class="btn-primary" id="discord-send">🔒 Send</button>
+                </div>
+                <div id="discord-status" class="status locked">🔒 Demo – locked. Purchase to use.</div>
+            </div>
+        </div>
+
+        <!-- ====== GITHUB CLASSIC ====== -->
+        <div class="platform-section" id="section-github-classic">
+            <div class="card">
+                <div class="card-header">
+                    <h2>📘 GitHub Classic</h2>
+                    <span class="label-tag other">Other</span>
+                </div>
+                <label>Token</label>
+                <input id="github-classic-token" type="password" placeholder="ghp_xxxx (demo – locked)" disabled />
+                <div class="token-type">🔒 Auto‑saved · <span class="classic-badge">Classic</span> · gist scope</div>
+                <label>Filename</label>
+                <input id="github-classic-filename" type="text" placeholder="post.md (demo – locked)" disabled />
+                <label>Description</label>
+                <input id="github-classic-desc" type="text" placeholder="My Gist description (demo – locked)" disabled />
+                <label>Content</label>
+                <textarea id="github-classic-msg" placeholder="Write your Gist content… (demo – locked)"></textarea>
+                <label style="display:flex; align-items:center; gap:8px; margin-top:6px; cursor:not-allowed; opacity:0.6;">
+                    <input type="checkbox" id="github-classic-public" checked disabled /> Public Gist
+                </label>
+                <div class="actions">
+                    <button class="btn-secondary" id="github-classic-test">🔒 Test</button>
+                    <button class="btn-primary" id="github-classic-send">🔒 Send</button>
+                </div>
+                <div id="github-classic-status" class="status locked">🔒 Demo – locked. Purchase to use.</div>
+            </div>
+        </div>
+
+        <!-- ====== GITHUB REPO ====== -->
+        <div class="platform-section" id="section-github-repo">
+            <div class="card">
+                <div class="card-header">
+                    <h2>📂 GitHub Repo</h2>
+                    <span class="label-tag other">Other</span>
+                </div>
+                <label>Token</label>
+                <input id="github-repo-token" type="password" placeholder="github_pat_xxxx (demo – locked)" disabled />
+                <div class="token-type">🔒 Auto‑saved · <span class="fine-badge">Fine-grained</span> · repo + code</div>
+                <label>Repository (owner/repo)</label>
+                <input id="github-repo-name" type="text" placeholder="username/repo (demo – locked)" disabled />
+                <label>File Path</label>
+                <input id="github-repo-path" type="text" placeholder="post.md (demo – locked)" disabled />
+                <label>Commit Message</label>
+                <input id="github-repo-msg" type="text" placeholder="Posted from Fed-Poster (demo – locked)" disabled />
+                <label>Branch</label>
+                <input id="github-repo-branch" type="text" placeholder="main (demo – locked)" disabled />
+                <label>Content</label>
+                <textarea id="github-repo-content" placeholder="Write your file content… (demo – locked)"></textarea>
+                <div class="actions">
+                    <button class="btn-secondary" id="github-repo-test">🔒 Test</button>
+                    <button class="btn-primary" id="github-repo-send">🔒 Send</button>
+                </div>
+                <div id="github-repo-status" class="status locked">🔒 Demo – locked. Purchase to use.</div>
+            </div>
+        </div>
+
+        <!-- ====== SAFEW ====== -->
+        <div class="platform-section" id="section-safew">
+            <div class="card">
+                <div class="card-header">
+                    <h2>🔐 SafeW</h2>
+                    <span class="label-tag other">Other</span>
+                </div>
+                <label>Bot Token</label>
+                <input id="safew-token" type="password" placeholder="Your bot token (demo – locked)" disabled />
+                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
+                <label>Chat ID</label>
+                <input id="safew-chat" type="text" placeholder="@username or chat_id (demo – locked)" disabled />
+                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
+                <label>Message</label>
+                <textarea id="safew-msg" placeholder="What to post? (demo – locked)"></textarea>
+                <div class="actions">
+                    <button class="btn-secondary" id="safew-test">🔒 Test</button>
+                    <button class="btn-primary" id="safew-send">🔒 Send</button>
+                </div>
+                <div id="safew-status" class="status locked">🔒 Demo – locked. Purchase to use.</div>
+            </div>
+        </div>
+
+        <!-- ====== TUMBLR ====== -->
+        <div class="platform-section" id="section-tumblr">
+            <div class="card">
+                <div class="card-header">
+                    <h2>📝 Tumblr</h2>
+                    <span class="label-tag both">Both</span>
+                </div>
+                <label>Blog Name</label>
+                <input id="tumblr-blog" type="text" placeholder="yourblog.tumblr.com (demo – locked)" disabled />
+                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
+                <label>Consumer Key</label>
+                <input id="tumblr-ckey" type="text" placeholder="Consumer Key (demo – locked)" disabled />
+                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
+                <label>Consumer Secret</label>
+                <input id="tumblr-csecret" type="password" placeholder="Consumer Secret (demo – locked)" disabled />
+                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
+                <label>Access Token</label>
+                <input id="tumblr-atoken" type="text" placeholder="Access Token (demo – locked)" disabled />
+                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
+                <label>Access Token Secret</label>
+                <input id="tumblr-asecret" type="password" placeholder="Access Token Secret (demo – locked)" disabled />
+                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
+                <label>Post Title</label>
+                <input id="tumblr-title" type="text" placeholder="Title (demo – locked)" disabled />
+                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
+                <label>Content</label>
+                <textarea id="tumblr-msg" placeholder="Write your post… (demo – locked)"></textarea>
+                <div class="actions">
+                    <button class="btn-secondary" id="tumblr-test">🔒 Test</button>
+                    <button class="btn-primary" id="tumblr-send">🔒 Send</button>
+                </div>
+                <div id="tumblr-status" class="status locked">🔒 Demo – locked. Purchase to use.</div>
+            </div>
+        </div>
+
+        <!-- ====== DEVIANTART ====== -->
+        <div class="platform-section" id="section-deviantart">
+            <div class="card">
+                <div class="card-header">
+                    <h2>🎨 DeviantArt</h2>
+                    <span class="label-tag other">Other</span>
+                </div>
+                <div id="deviantart-status-display" class="da-disconnected">
+                    🔒 Demo – connect disabled.
+                </div>
+                <div class="actions" style="margin-bottom:10px;">
+                    <button class="btn-secondary" id="deviantart-connect">🔒 Connect</button>
+                    <button class="btn-secondary" id="deviantart-disconnect">🚪 Disconnect</button>
+                </div>
+                <label>Title</label>
+                <input id="deviantart-title" type="text" placeholder="Artwork title (demo – locked)" disabled />
+                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
+                <label>Description</label>
+                <textarea id="deviantart-desc" placeholder="Artist comments… (demo – locked)"></textarea>
+                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
+                <label>Tags (comma separated)</label>
+                <input id="deviantart-tags" type="text" placeholder="digital art, fanart (demo – locked)" disabled />
+                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
+                <label>Upload Image</label>
+                <input type="file" id="deviantart-file" accept="image/*" disabled />
+                <div class="file-info" id="deviantart-file-info">🔒 File upload disabled in demo</div>
+                <div class="actions">
+                    <button class="btn-primary" id="deviantart-send" disabled>🔒 Send</button>
+                </div>
+                <div id="deviantart-status" class="status locked">🔒 Demo – locked. Purchase to use.</div>
+            </div>
+        </div>
+
+        <!-- ====== BUFFER PROXY ====== -->
+        <div class="platform-section" id="section-buffer">
+            <div class="card">
+                <div class="card-header">
+                    <h2>⏳ Buffer Proxy</h2>
+                    <span class="label-tag proxy">Proxy</span>
+                </div>
+                <div class="connect-info">
+                    🔗 <strong>Connects to:</strong> Twitter, LinkedIn, Facebook, Instagram
+                </div>
+                <div style="font-size: 11px; color: #8b949e; margin-bottom: 10px; background: #0d1117; padding: 6px 10px; border-radius: 4px;">
+                    ⚡ Sends via Buffer API – Buffer pays the platform fees
+                </div>
+                <label>Access Token</label>
+                <input id="buffer-token" type="password" placeholder="Your Buffer access token (demo – locked)" disabled />
+                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
+                <label>Profile IDs (comma separated – find in Buffer URL)</label>
+                <input id="buffer-profiles" type="text" placeholder="12345, 67890 (demo – locked)" disabled />
+                <div class="saved-note">💡 Go to Buffer dashboard → click a profile → copy number from URL</div>
+                <label>Message</label>
+                <textarea id="buffer-msg" placeholder="What to post? (demo – locked)"></textarea>
+                <div class="actions">
+                    <button class="btn-secondary" id="buffer-test">🔒 Test</button>
+                    <button class="btn-primary" id="buffer-send">🔒 Send</button>
+                </div>
+                <div id="buffer-status" class="status locked">🔒 Demo – locked. Purchase to use.</div>
+            </div>
+        </div>
+
+        <!-- ====== WORDPRESS JETPACK ====== -->
+        <div class="platform-section" id="section-wordpress">
+            <div class="card">
+                <div class="card-header">
+                    <h2>📄 WordPress Jetpack</h2>
+                    <span class="label-tag proxy">Proxy</span>
+                </div>
+                <div class="connect-info">
+                    🔗 <strong>Connects to:</strong> Twitter, LinkedIn, Facebook, Tumblr (via Jetpack Social)
+                </div>
+                <div style="font-size: 11px; color: #8b949e; margin-bottom: 10px; background: #0d1117; padding: 6px 10px; border-radius: 4px;">
+                    ✍️ Creates a post → Jetpack auto‑shares to connected social accounts
+                </div>
+                <label>WP Site URL</label>
+                <input id="wp-url" type="text" placeholder="https://your-site.com (demo – locked)" disabled />
+                <label>Application Password</label>
+                <input id="wp-password" type="password" placeholder="xxxx xxxx xxxx xxxx (demo – locked)" disabled />
+                <label>Post Title</label>
+                <input id="wp-title" type="text" placeholder="My Post Title (demo – locked)" disabled />
+                <label>Post Content (supports HTML)</label>
+                <textarea id="wp-content" placeholder="Write your blog post... (demo – locked)"></textarea>
+                <label style="display:flex; align-items:center; gap:8px; margin-top:6px; cursor:not-allowed; opacity:0.6;">
+                    <input type="checkbox" id="wp-publicize" checked disabled /> Auto-share to connected social accounts (Jetpack)
+                </label>
+                <div class="actions">
+                    <button class="btn-secondary" id="wp-test">🔒 Test</button>
+                    <button class="btn-primary" id="wp-send">🔒 Publish</button>
+                </div>
+                <div id="wp-status" class="status locked">🔒 Demo – locked. Purchase to use.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── PAYMENT OVERLAY ─── -->
+    <div class="payment-overlay" id="paymentOverlay">
+        <div class="payment-modal">
+            <button class="close-modal" id="closePaymentModal">✕</button>
+            <span class="modal-icon">🔒</span>
+            <h2>Action Blocked</h2>
+            <p class="sub">
+                This feature requires <strong>payment</strong> or <strong>permission</strong> to use.<br />
+                Fed-Poster is a demo – all actions are locked.
             </p>
-            <div class="hero-buttons">
-                <a href="#features" class="btn-primary">
-                    <i class="fas fa-rocket"></i> Explore Tools
-                </a>
-                <a href="#demo" class="btn-secondary">
-                    <i class="fas fa-play-circle"></i> See Demo
-                </a>
-            </div>
-            <div class="hero-stats">
-                <div>
-                    <div class="number">12k+</div>
-                    <div class="label">Silences Removed</div>
-                </div>
-                <div>
-                    <div class="number">4.9★</div>
-                    <div class="label">User Rating</div>
-                </div>
-                <div>
-                    <div class="number">8x</div>
-                    <div class="label">Faster Editing</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══════════ FEATURES (HORIZONTAL SCROLL) ═══════════ -->
-    <section class="features-section" id="features">
-        <div class="container">
-            <div class="section-header">
-                <h2>Everything You Need, <br />Horizontally Arranged.</h2>
-                <p>Scroll to explore the core tools of FED-OS.</p>
-            </div>
-            <div class="features-scroll">
-                <!-- Card 1: Silence Remover -->
-                <div class="feature-card">
-                    <div class="icon-wrap"><i class="fas fa-volume-mute"></i></div>
-                    <h3>Silence Remover</h3>
-                    <p>AI-powered detection cuts awkward pauses from your audio in seconds.</p>
-                    <div class="feature-chips">
-                        <span class="chip"><i class="fas fa-check-circle"></i> AI Detection</span>
-                        <span class="chip"><i class="fas fa-wave-square"></i> Waveform View</span>
-                        <span class="chip"><i class="fas fa-layer-group"></i> Batch Process</span>
-                        <span class="chip"><i class="fas fa-file-audio"></i> MP3 / WAV</span>
-                        <span class="chip"><i class="fas fa-bolt"></i> Real-time</span>
-                    </div>
-                    <button class="btn-card">Try Silence Remover <i class="fas fa-arrow-right"></i></button>
-                </div>
-
-                <!-- Card 2: Social Poster -->
-                <div class="feature-card">
-                    <div class="icon-wrap"><i class="fas fa-share-alt"></i></div>
-                    <h3>Social Poster</h3>
-                    <p>Design, preview, and schedule stunning posts for all major platforms.</p>
-                    <div class="feature-chips">
-                        <span class="chip"><i class="fas fa-palette"></i> 100+ Templates</span>
-                        <span class="chip"><i class="fas fa-wand-magic-sparkles"></i> AI Captions</span>
-                        <span class="chip"><i class="fas fa-hashtag"></i> Smart Hashtags</span>
-                        <span class="chip"><i class="fas fa-calendar-alt"></i> Schedule</span>
-                        <span class="chip"><i class="fas fa-chart-line"></i> Analytics</span>
-                    </div>
-                    <button class="btn-card">Try Social Poster <i class="fas fa-arrow-right"></i></button>
-                </div>
-
-                <!-- Card 3: Combined Workflow (Bonus) -->
-                <div class="feature-card">
-                    <div class="icon-wrap"><i class="fas fa-arrows-spin"></i></div>
-                    <h3>Unified Workflow</h3>
-                    <p>Clean your audio and create a post about it without leaving the app.</p>
-                    <div class="feature-chips">
-                        <span class="chip"><i class="fas fa-arrow-right"></i> Drag &amp; Drop</span>
-                        <span class="chip"><i class="fas fa-cloud-upload-alt"></i> Auto-sync</span>
-                        <span class="chip"><i class="fas fa-clock"></i> Version History</span>
-                        <span class="chip"><i class="fas fa-users"></i> Team Collab</span>
-                    </div>
-                    <button class="btn-card">Explore Workflow <i class="fas fa-arrow-right"></i></button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══════════ DEMO (Horizontal Mock) ═══════════ -->
-    <section class="demo-section" id="demo">
-        <div class="container">
-            <div class="demo-text">
-                <h2>See It in Action</h2>
-                <p>
-                    Remove silences from your audio and instantly create a social post
-                    to share your content. All within the FED-OS ecosystem.
-                </p>
-                <a href="#cta" class="btn-primary">
-                    <i class="fas fa-play"></i> Start Free Trial
-                </a>
-            </div>
-            <div class="demo-box">
-                <div class="mock-header">
-                    <div class="dots">
-                        <span></span><span></span><span></span>
-                    </div>
-                    <span class="badge"><i class="fas fa-microchip"></i> Live Preview</span>
-                </div>
-                <!-- Waveform Mini -->
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-                    <span style="font-size:0.7rem;color:var(--text-secondary);">Silence Remover</span>
-                    <span style="font-size:0.65rem;color:var(--accent-1);"><i class="fas fa-cut"></i> 2 silences found</span>
-                </div>
-                <div class="waveform-mini" id="waveformMini">
-                    <!-- bars injected by JS -->
-                </div>
-                <!-- Poster Mini -->
-                <div style="margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 16px;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                        <span style="font-size:0.7rem;color:var(--text-secondary);">Social Poster</span>
-                        <span style="font-size:0.65rem;color:var(--accent-2);"><i class="fas fa-pen-fancy"></i> Draft</span>
-                    </div>
-                    <div class="poster-preview-mini">
-                        <div class="poster-card-mini">
-                            <div class="avatar">F</div>
-                            <div class="text">🚀 New episode out now! No more awkward silences.</div>
-                            <div class="meta">FED-OS · 2 min read</div>
-                        </div>
-                        <div class="poster-sidebar-mini">
-                            <div class="opt active"><i class="fas fa-palette"></i> Theme</div>
-                            <div class="opt"><i class="fas fa-font"></i> Text</div>
-                            <div class="opt"><i class="fas fa-hashtag"></i> Hashtags</div>
+            <hr class="divider" />
+            <div class="payment-options">
+                <div class="payment-option" id="payNowOption">
+                    <div class="opt-left">
+                        <span class="opt-icon">💳</span>
+                        <div class="opt-text">
+                            <span class="opt-title">Buy Full Access</span>
+                            <span class="opt-desc">One‑time payment – unlock all features</span>
                         </div>
                     </div>
+                    <span class="opt-right buy">$19.99</span>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══════════ TESTIMONIALS ═══════════ -->
-    <section class="testimonials" id="testimonials">
-        <div class="container">
-            <div class="section-header">
-                <h2>Loved by Creators</h2>
-                <p style="color:var(--text-secondary);">See what our users are saying about FED-OS.</p>
-            </div>
-            <div class="testimonial-grid">
-                <div class="testimonial-card">
-                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                    <blockquote>“The silence remover saved me hours of manual editing. And the poster tool is just chef's kiss.”</blockquote>
-                    <div class="author">
-                        <div class="avatar">JD</div>
-                        <div><div class="name">Jessica Diaz</div><div class="role">Podcast Host</div></div>
+                <div class="payment-option" id="requestPermOption">
+                    <div class="opt-left">
+                        <span class="opt-icon">📧</span>
+                        <div class="opt-text">
+                            <span class="opt-title">Request Permission</span>
+                            <span class="opt-desc">Get approved by an admin</span>
+                        </div>
                     </div>
+                    <span class="opt-right request">Request</span>
                 </div>
-                <div class="testimonial-card">
-                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                    <blockquote>“I used to jump between three tools. Now I do everything in FED-OS. My workflow is 8x faster.”</blockquote>
-                    <div class="author">
-                        <div class="avatar">MR</div>
-                        <div><div class="name">Marcus Reed</div><div class="role">Content Creator</div></div>
+                <div class="payment-option" id="demoTrialOption">
+                    <div class="opt-left">
+                        <span class="opt-icon">⏳</span>
+                        <div class="opt-text">
+                            <span class="opt-title">Start Free Trial</span>
+                            <span class="opt-desc">7‑day trial – no credit card required</span>
+                        </div>
                     </div>
+                    <span class="opt-right" style="background:#1a1a2e;color:#f0883e;">Try</span>
                 </div>
-                <div class="testimonial-card">
-                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                    <blockquote>“The AI caption generator and hashtag suggestions are spot on. Engagement jumped 40%.”</blockquote>
-                    <div class="author">
-                        <div class="avatar">AL</div>
-                        <div><div class="name">Aisha Liu</div><div class="role">Social Media Manager</div></div>
-                    </div>
-                </div>
+            </div>
+            <hr class="divider" />
+            <div class="action-row">
+                <button class="btn-buy" id="modalBuyBtn">💳 Buy Now – $19.99</button>
+                <button class="btn-request" id="modalRequestBtn">📧 Request Permission</button>
+            </div>
+            <div class="footnote">
+                <a id="modalCloseLink">← Go back to dashboard</a> &nbsp;·&nbsp; <a id="modalLearnLink">Learn more</a>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- ═══════════ CTA ═══════════ -->
-    <section class="cta-section" id="cta">
-        <div class="container">
-            <div class="cta-box">
-                <h2>Ready to Supercharge Your Content?</h2>
-                <p>
-                    Join thousands of creators using FED-OS to clean audio and create
-                    stunning social posts — all in one place.
-                </p>
-                <div class="btn-group">
-                    <a href="#" class="btn-primary">
-                        <i class="fas fa-gem"></i> Start Free Trial
-                    </a>
-                    <a href="#" class="btn-secondary">
-                        <i class="fas fa-book-open"></i> View Docs
-                    </a>
-                </div>
-                <div style="margin-top:20px;font-size:0.75rem;color:var(--text-secondary);">
-                    <i class="fas fa-check-circle" style="color:var(--accent-1);"></i> No credit card required
-                    <span style="margin:0 10px;">·</span>
-                    <i class="fas fa-check-circle" style="color:var(--accent-1);"></i> 14-day free trial
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══════════ FOOTER ═══════════ -->
-    <footer>
-        <div class="container">
-            <div class="copy">
-                &copy; 2026 <strong>FED-OS</strong> by fedpromptly.com. All rights reserved.
-            </div>
-            <div class="socials">
-                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-                <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                <a href="#" aria-label="Discord"><i class="fab fa-discord"></i></a>
-            </div>
-        </div>
-    </footer>
-
-    <!-- ═══════════ JAVASCRIPT ═══════════ -->
     <script>
-        // ─── Nav Toggle ───────────────────────────────
-        const navToggle = document.getElementById('navToggle');
-        const navLinks = document.getElementById('navLinks');
+        // ================================================================
+        // DEMO MODE – BLOCK ALL ACTIONS, SHOW PAYMENT MODAL
+        // ================================================================
 
-        navToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('open');
-            const icon = navToggle.querySelector('i');
-            icon.className = navLinks.classList.contains('open') ? 'fas fa-times' : 'fas fa-bars';
-        });
+        const overlay = document.getElementById('paymentOverlay');
+        const closeModal = document.getElementById('closePaymentModal');
+        const closeLink = document.getElementById('modalCloseLink');
 
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', () => {
-                navLinks.classList.remove('open');
-                document.querySelector('#navToggle i').className = 'fas fa-bars';
-            });
-        });
-
-        // ─── Waveform Mini ─────────────────────────────
-        const waveformMini = document.getElementById('waveformMini');
-        const barCount = 30;
-
-        function buildMiniWaveform() {
-            waveformMini.innerHTML = '';
-            for (let i = 0; i < barCount; i++) {
-                const bar = document.createElement('div');
-                bar.className = 'bar';
-                const h = 6 + Math.random() * 28;
-                bar.style.height = h + 'px';
-                bar.style.animationDelay = (Math.random() * 0.5) + 's';
-                if (Math.random() < 0.15) {
-                    bar.classList.add('silent');
-                    bar.style.height = '8px';
-                }
-                waveformMini.appendChild(bar);
-            }
+        function showPaymentModal() {
+            overlay.classList.add('active');
         }
-        buildMiniWaveform();
 
-        // ─── Poster Sidebar Interaction ──────────────
-        const posterOpts = document.querySelectorAll('.poster-sidebar-mini .opt');
-        const posterText = document.querySelector('.poster-card-mini .text');
+        function hidePaymentModal() {
+            overlay.classList.remove('active');
+        }
 
-        posterOpts.forEach(opt => {
-            opt.addEventListener('click', () => {
-                posterOpts.forEach(o => o.classList.remove('active'));
-                opt.classList.add('active');
-                const label = opt.textContent.trim();
-                if (label.includes('Theme')) {
-                    posterText.textContent = '🚀 New episode out now! No more awkward silences.';
-                } else if (label.includes('Text')) {
-                    posterText.textContent = '📝 "Silence is not empty, it is full of answers."';
-                } else if (label.includes('Hashtags')) {
-                    posterText.textContent = '#Podcast #AI #ContentCreator #FEDOS';
-                }
+        closeModal.addEventListener('click', hidePaymentModal);
+        closeLink.addEventListener('click', hidePaymentModal);
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) hidePaymentModal();
+        });
+
+        // ─── ESC key ───
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') hidePaymentModal();
+        });
+
+        // ─── Banner "Unlock Now" ───
+        document.getElementById('unlockBannerLink').addEventListener('click', showPaymentModal);
+
+        // ─── Payment option clicks ───
+        document.getElementById('payNowOption').addEventListener('click', () => {
+            alert('💳 Redirecting to payment page…\n\nThis is a demo. In production, you would be taken to a secure checkout.');
+            hidePaymentModal();
+        });
+        document.getElementById('requestPermOption').addEventListener('click', () => {
+            alert('📧 Permission request sent to admin.\n\nThis is a demo. In production, an email would be sent.');
+            hidePaymentModal();
+        });
+        document.getElementById('demoTrialOption').addEventListener('click', () => {
+            alert('⏳ Starting your 7‑day free trial…\n\nThis is a demo. In production, your trial would begin.');
+            hidePaymentModal();
+        });
+        document.getElementById('modalBuyBtn').addEventListener('click', () => {
+            alert('💳 Proceeding to checkout…\n\nThis is a demo. No payment will be processed.');
+            hidePaymentModal();
+        });
+        document.getElementById('modalRequestBtn').addEventListener('click', () => {
+            alert('📧 Permission request submitted.\n\nThis is a demo. In production, an admin would review your request.');
+            hidePaymentModal();
+        });
+        document.getElementById('modalLearnLink').addEventListener('click', () => {
+            alert(
+                '📖 Fed-Poster Demo\n\nAll actions are blocked because this is a demo version.\n\nTo unlock full functionality, you need to either:\n\n• Purchase a license ($19.99 one‑time)\n• Request permission from an admin\n• Start a 7‑day free trial\n\nContact: support@fed-poster.com');
+            hidePaymentModal();
+        });
+
+        // ─── INTERCEPT ALL BUTTON CLICKS ───
+        document.addEventListener('click', function(e) {
+            // Find if the click target is a button or inside a button
+            let target = e.target;
+            while (target && target.tagName !== 'BUTTON') {
+                target = target.parentElement;
+            }
+            if (!target) return;
+
+            // Ignore buttons inside the payment modal (they have their own handlers)
+            if (overlay.contains(target)) return;
+
+            // Ignore the close button and banner link (they have their own handlers)
+            if (target.id === 'closePaymentModal' || target.id === 'unlockBannerLink') return;
+
+            // If it's a button, show the payment modal
+            if (target.tagName === 'BUTTON') {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Show a small feedback before the modal (optional)
+                // Just show the modal directly
+                showPaymentModal();
+                return;
+            }
+
+            // Also intercept clicks on label elements that might contain checkboxes
+            // But we already handle button clicks above
+        }, true);
+
+        // ─── Intercept clicks on checkboxes inside labels ───
+        document.addEventListener('click', function(e) {
+            const target = e.target;
+            if (target.tagName === 'INPUT' && target.type === 'checkbox') {
+                // Block checkbox clicks in demo
+                e.preventDefault();
+                e.stopPropagation();
+                showPaymentModal();
+                return;
+            }
+            // Also block file inputs
+            if (target.tagName === 'INPUT' && target.type === 'file') {
+                e.preventDefault();
+                e.stopPropagation();
+                showPaymentModal();
+                return;
+            }
+        }, true);
+
+        // ─── Block text input focus (optional) ───
+        document.addEventListener('focusin', function(e) {
+            const target = e.target;
+            if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') {
+                // Allow the banner's unlock link to work
+                if (target.id === 'unlockBannerLink') return;
+                // Don't block if it's in the modal
+                if (overlay.contains(target)) return;
+                // Blur the input and show modal
+                target.blur();
+                showPaymentModal();
+            }
+        }, true);
+
+        // ─── Sidebar nav items are disabled via CSS, but also block clicks ───
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                showPaymentModal();
             });
         });
 
-        // ─── Smooth Scroll ─────────────────────────────
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                const targetId = this.getAttribute('href');
-                if (targetId === '#') return;
-                const target = document.querySelector(targetId);
-                if (target) {
-                    e.preventDefault();
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            });
-        });
+        // ─── Also block any link clicks ───
+        document.addEventListener('click', function(e) {
+            let target = e.target;
+            while (target && target.tagName !== 'A') {
+                target = target.parentElement;
+            }
+            if (target && target.tagName === 'A') {
+                // Allow modal close link
+                if (target.id === 'modalCloseLink' || target.id === 'modalLearnLink') return;
+                e.preventDefault();
+                e.stopPropagation();
+                showPaymentModal();
+            }
+        }, true);
 
-        // ─── Nav Background ─────────────────────────────
-        window.addEventListener('scroll', () => {
-            const nav = document.getElementById('navbar');
-            if (window.scrollY > 40) {
-                nav.style.background = 'rgba(10, 12, 20, 0.85)';
-                nav.style.backdropFilter = 'blur(24px) saturate(1.6)';
-            } else {
-                nav.style.background = 'rgba(10, 12, 20, 0.6)';
-                nav.style.backdropFilter = 'blur(20px) saturate(1.4)';
+        // ─── Update all status messages to show locked state ───
+        document.querySelectorAll('.platform-section .status').forEach(el => {
+            if (!el.classList.contains('locked')) {
+                el.className = 'status locked';
+                el.textContent = '🔒 Demo – actions require payment or permission.';
             }
         });
 
-        console.log('🚀 FED-OS — Silence Remover + Social Poster');
-    </script>
+        // ─── Override all button click handlers from original code ───
+        // We already block all button clicks via the global listener,
+        // but we need to make sure the original event listeners don't fire.
+        // The `capture: true` and `stopPropagation` should handle this.
 
+        // ─── Also block the "Verify All" and "Post All" specifically ───
+        document.getElementById('unified-verify')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showPaymentModal();
+        }, true);
+        document.getElementById('unified-send')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            showPaymentModal();
+        }, true);
+
+        console.log('🔒 Fed-Poster DEMO MODE – All actions blocked. Payment or permission required.');
+        console.log('💡 Click any button or input to see the payment modal.');
+    </script>
 </body>
 </html>
