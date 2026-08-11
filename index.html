@@ -1,2103 +1,1140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PorJects · FedPromptly + Multi‑Poster</title>
-  <meta name="description" content="Build, copy, and customize 500+ free widgets — games, tools, trackers, animations, and premium embeds." />
-  <meta name="keywords" content="embed library, free widgets, HTML widgets, creator marketplace, no-code tools" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FED-OS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        /* ───────────── RESET & BASE ───────────── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <!-- Tailwind + FontAwesome + Supabase -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+        :root {
+            --bg-primary: #0a0c14;
+            --bg-secondary: #11141f;
+            --bg-card: #171b29;
+            --bg-card-hover: #1f2437;
+            --text-primary: #eff1fa;
+            --text-secondary: #8f95b3;
+            --accent-1: #7c5cfc;
+            --accent-2: #5b8def;
+            --accent-3: #f472b6;
+            --gradient-main: linear-gradient(135deg, #7c5cfc, #5b8def, #f472b6);
+            --radius: 18px;
+            --radius-sm: 10px;
+            --shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            --transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
 
-  <!-- ========================================================== -->
-  <!-- FED‑POSTER STYLES (scoped to .fed-poster-container)       -->
-  <!-- ========================================================== -->
-  <style>
-    /* ====== Existing PorJects styles (unchanged) ====== */
-    * { scroll-behavior: smooth; }
-    body {
-      background: #0b0e14;
-      color: #e5e9f0;
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    }
-    #loadingOverlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      z-index: 99999;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-    #loadingOverlay.active { display: flex; }
-    .loader-ring {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      border: 4px solid transparent;
-      border-top-color: #00e5ff;
-      border-right-color: #a78bfa;
-      animation: spin 0.9s cubic-bezier(0.6, 0, 0.4, 1) infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .loader-text {
-      color: #b0c7d8;
-      font-size: 1.1rem;
-      font-weight: 500;
-      animation: pulseText 1.6s ease-in-out infinite;
-    }
-    @keyframes pulseText { 0%,100%{opacity:0.6;} 50%{opacity:1;} }
+        html {
+            scroll-behavior: smooth;
+        }
 
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.8);
-      backdrop-filter: blur(8px);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-    .modal.active { display: flex; }
-    .modal-card {
-      background: #1a1f2b;
-      border-radius: 1.5rem;
-      max-width: 420px;
-      width: 100%;
-      padding: 2rem;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.6);
-      border: 1px solid #2a2f3b;
-      position: relative;
-    }
-    .modal-card .close { float: right; font-size: 1.5rem; cursor: pointer; color: #6b7280; transition: color 0.2s; }
-    .modal-card .close:hover { color: #e5e9f0; }
-    .input-dark {
-      background: #1a1f2b;
-      border: 1px solid #2a2f3b;
-      color: #e5e9f0;
-      border-radius: 0.5rem;
-      padding: 0.5rem 0.75rem;
-      width: 100%;
-    }
-    .input-dark:focus { outline: none; border-color: #a78bfa; box-shadow: 0 0 0 3px rgba(167,139,250,0.15); }
-    .btn-primary {
-      background: #a78bfa;
-      color: #0b0e14;
-      padding: 0.5rem 1.25rem;
-      border-radius: 0.5rem;
-      font-weight: 600;
-      transition: all 0.2s;
-      border: none;
-      cursor: pointer;
-    }
-    .btn-primary:hover { background: #8b5cf6; transform: translateY(-1px); }
-    .btn-secondary {
-      background: #1e2633;
-      color: #e5e9f0;
-      padding: 0.5rem 1.25rem;
-      border-radius: 0.5rem;
-      font-weight: 500;
-      transition: all 0.2s;
-      border: 1px solid #2a2f3b;
-      cursor: pointer;
-    }
-    .btn-secondary:hover { background: #2a2f3b; }
-    .btn-success {
-      background: #10b981;
-      color: #0b0e14;
-      padding: 0.5rem 1.25rem;
-      border-radius: 0.5rem;
-      font-weight: 600;
-      transition: all 0.2s;
-      border: none;
-      cursor: pointer;
-    }
-    .btn-success:hover { background: #059669; }
-    .btn-cyan {
-      background: #00e5ff;
-      color: #0b0e14;
-      padding: 0.5rem 1.25rem;
-      border-radius: 0.5rem;
-      font-weight: 600;
-      transition: all 0.2s;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
-    }
-    .btn-cyan:hover { background: #00b8d4; transform: translateY(-1px); box-shadow: 0 0 30px rgba(0, 229, 255, 0.5); }
-    .content-card {
-      background: #141b26;
-      border-radius: 1rem;
-      padding: 1.5rem;
-      border: 1px solid #1e2633;
-    }
-    .content-card .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.75rem; color: #e5e9f0; }
-    .topic-card { transition: all 0.2s; cursor: pointer; }
-    .topic-card:hover { background: #1e2633; border-color: #3a3f4b; }
-    .reply-item { border-left: 3px solid #2a2f3b; padding-left: 1rem; }
-    .tag-badge {
-      background: #2a2f3b;
-      color: #a78bfa;
-      padding: 0.15rem 0.6rem;
-      border-radius: 9999px;
-      font-size: 0.65rem;
-      font-weight: 500;
-      margin-right: 0.25rem;
-      display: inline-block;
-    }
-    .tag-checkbox {
-      display: inline-flex;
-      align-items: center;
-      margin-right: 0.5rem;
-      margin-bottom: 0.25rem;
-      background: #1a1f2b;
-      padding: 0.2rem 0.6rem;
-      border-radius: 9999px;
-      border: 1px solid #2a2f3b;
-    }
-    .tag-checkbox input { margin-right: 0.3rem; }
-    .tier-badge {
-      padding: 0.2rem 0.75rem;
-      border-radius: 9999px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .tier-explorer { background: #1e3a5f; color: #60a5fa; }
-    .tier-builder  { background: #1e3a2a; color: #34d399; }
-    .tier-vip      { background: #4a1942; color: #c084fc; }
-    .unlock-timeline { position: relative; }
-    .unlock-timeline::before {
-      content: '';
-      position: absolute;
-      left: 0.5rem;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: #1e2633;
-    }
-    .unlock-item {
-      padding-left: 2rem;
-      position: relative;
-    }
-    .unlock-item::before {
-      content: '';
-      position: absolute;
-      left: 0.25rem;
-      top: 0.5rem;
-      width: 0.75rem;
-      height: 0.75rem;
-      border-radius: 50%;
-      background: #2a2f3b;
-      border: 2px solid #a78bfa;
-    }
-    .unlock-item.unlocked::before { background: #10b981; border-color: #10b981; }
-    .unlock-item.locked::before   { background: #ef4444; border-color: #ef4444; }
-    .ticker-wrap {
-      width: 100%;
-      overflow: hidden;
-      background: #0d1217;
-      border: 1px solid #1a232b;
-      border-radius: 40px;
-      padding: 0.3rem 0;
-      margin-bottom: 1.5rem;
-      position: relative;
-    }
-    .ticker-wrap::before,
-    .ticker-wrap::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 40px;
-      z-index: 2;
-      pointer-events: none;
-    }
-    .ticker-wrap::before { left:0; background: linear-gradient(90deg, #0d1217, transparent); }
-    .ticker-wrap::after { right:0; background: linear-gradient(90deg, transparent, #0d1217); }
-    .ticker {
-      display: flex;
-      white-space: nowrap;
-      animation: tickerScroll 22s linear infinite;
-      gap: 2.5rem;
-      padding: 0 1.5rem;
-    }
-    .ticker-item { display: inline-block; font-size: 0.82rem; color: #8a9aa8; letter-spacing: 0.02em; }
-    .ticker-item .badge {
-      background: #1a2a3a;
-      color: #6a9bb5;
-      padding: 0.05rem 0.6rem;
-      border-radius: 30px;
-      font-size: 0.6rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      margin-right: 0.4rem;
-    }
-    @keyframes tickerScroll { 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
-    .slideshow-container {
-      position: relative;
-      width: 100%;
-      border-radius: 20px;
-      overflow: hidden;
-      margin-bottom: 2rem;
-      border: 1px solid #1a232b;
-      background: #0d1217;
-      min-height: 180px;
-    }
-    .slide { display: none; padding: 2rem 2.5rem; animation: slideFade 0.6s ease; }
-    .slide.active { display: block; }
-    @keyframes slideFade { 0%{opacity:0.3;transform:translateY(10px);} 100%{opacity:1;transform:translateY(0);} }
-    .slide h2 { color: #eef2f6; font-size: 1.6rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 0.2rem; }
-    .slide h2 small { font-size: 0.75rem; font-weight: 400; color: #4f6373; background: #141c24; padding: 0.1rem 0.8rem; border-radius: 30px; margin-left: 0.6rem; }
-    .slide p { color: #8a9aa8; font-size: 0.95rem; max-width: 75%; }
-    .slide .slide-tag {
-      display: inline-block;
-      margin-top: 0.6rem;
-      font-size: 0.65rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      background: #1a2a24;
-      color: #7db59a;
-      padding: 0.15rem 1rem;
-      border-radius: 30px;
-      border: 1px solid #2d4a3d;
-    }
-    .slide-nav {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(0, 0, 0, 0.6);
-      color: #c5d0d9;
-      border: 1px solid #2a3a45;
-      padding: 0.5rem 0.9rem;
-      border-radius: 40px;
-      cursor: pointer;
-      font-size: 1.2rem;
-      z-index: 10;
-      transition: background 0.2s;
-    }
-    .slide-nav:hover { background: #1a2835; }
-    .slide-nav.prev { left: 1rem; }
-    .slide-nav.next { right: 1rem; }
-    .slide-dots {
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.6rem 0 0.2rem 0;
-    }
-    .slide-dots span {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #1f2a33;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .slide-dots span.active { background: #4f7a9e; }
-    .glow-dumb {
-      color: #fbbf24;
-      text-shadow: 0 0 8px #fbbf24, 0 0 20px #f59e0b, 0 0 40px #b45309;
-      animation: pulseGlow 1.5s ease-in-out infinite alternate;
-    }
-    @keyframes pulseGlow { 0%{text-shadow:0 0 4px #fbbf24,0 0 12px #f59e0b;} 100%{text-shadow:0 0 12px #fbbf24,0 0 30px #f59e0b,0 0 60px #b45309;} }
-    .home-card {
-      background: #141b26;
-      border: 1px solid #1e2633;
-      border-radius: 1rem;
-      padding: 1.2rem;
-      transition: border-color 0.2s, transform 0.15s;
-    }
-    .home-card:hover { border-color: #4f7a9e; transform: translateY(-2px); }
-    .tool-output {
-      background: #0b0e14;
-      border-radius: 0.5rem;
-      padding: 0.75rem;
-      font-family: 'Fira Code', monospace;
-      font-size: 0.8rem;
-      color: #b0c7d8;
-      min-height: 60px;
-      border: 1px solid #1e2633;
-      word-break: break-all;
-    }
-    .ghost-hero {
-      background: radial-gradient(ellipse at 20% 50%, rgba(0, 229, 255, 0.08) 0%, transparent 60%),
-                  radial-gradient(ellipse at 80% 50%, rgba(167, 139, 250, 0.08) 0%, transparent 60%),
-                  #0b0e14;
-      border-bottom: 1px solid rgba(0, 229, 255, 0.15);
-    }
-    .glass-card {
-      background: rgba(20, 27, 38, 0.6);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(0, 229, 255, 0.15);
-      border-radius: 1.5rem;
-      padding: 1.5rem;
-      transition: all 0.3s ease;
-    }
-    .glass-card:hover { border-color: rgba(167, 139, 250, 0.3); box-shadow: 0 8px 32px rgba(0, 229, 255, 0.05); }
-    .neon-cyan { color: #00e5ff; }
-    .neon-purple { color: #a78bfa; }
-    .neon-cyan-border { border-color: rgba(0, 229, 255, 0.2); }
-    .neon-purple-border { border-color: rgba(167, 139, 250, 0.2); }
-    .text-gradient-cyan-purple {
-      background: linear-gradient(135deg, #00e5ff 0%, #a78bfa 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .onboarding-step {
-      position: relative;
-      padding-left: 2.5rem;
-    }
-    .onboarding-step::before {
-      content: '';
-      position: absolute;
-      left: 0.5rem;
-      top: 0.2rem;
-      width: 1.2rem;
-      height: 1.2rem;
-      border-radius: 50%;
-      background: rgba(0, 229, 255, 0.15);
-      border: 2px solid #00e5ff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.6rem;
-      font-weight: 700;
-      color: #00e5ff;
-    }
-    .onboarding-step:nth-child(1)::before { content: '1'; }
-    .onboarding-step:nth-child(2)::before { content: '2'; }
-    .onboarding-step:nth-child(3)::before { content: '3'; }
-    .onboarding-step:nth-child(4)::before { content: '4'; }
-    .onboarding-step:nth-child(5)::before { content: '5'; }
-    .onboarding-step:nth-child(6)::before { content: '6'; }
-    .onboarding-step:nth-child(7)::before { content: '7'; }
-    .lib-tile {
-      background: rgba(20, 27, 38, 0.5);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(0, 229, 255, 0.1);
-      border-radius: 1rem;
-      padding: 1.5rem;
-      text-align: center;
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-    .lib-tile:hover { border-color: rgba(167, 139, 250, 0.4); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
-    .lib-tile .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
-    .tab-nav {
-      display: flex;
-      gap: 0.2rem;
-      border-bottom: 1px solid #1f2830;
-      margin: 0.8rem 0 1.8rem 0;
-      flex-wrap: wrap;
-    }
-    .tab-btn {
-      background: transparent;
-      border: none;
-      color: #6a7f8f;
-      font-size: 0.95rem;
-      font-weight: 500;
-      padding: 0.6rem 1.8rem 0.7rem 1.8rem;
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      transition: color 0.2s, border-color 0.2s, background 0.2s;
-      border-radius: 8px 8px 0 0;
-      font-family: inherit;
-    }
-    .tab-btn:hover { color: #b8c7d4; background: #11191f; }
-    .tab-btn.active { color: #eef2f6; border-bottom-color: #4f7a9e; background: #11191f; }
-    .tab-content { display: none; animation: fadeUp 0.3s ease; padding: 0.2rem 0 0.4rem 0; }
-    .tab-content.active { display: block; }
-    @keyframes fadeUp { 0%{opacity:0;transform:translateY(8px);} 100%{opacity:1;transform:translateY(0);} }
-    .main-footer {
-      margin-top: 2rem;
-      padding: 1.8rem 0 1.2rem 0;
-      border-top: 1px solid #161e25;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.78rem;
-      color: #3d515f;
-    }
-    .main-footer .left { display: flex; gap: 1.2rem; flex-wrap: wrap; }
-    .main-footer .left span { background: #10171e; padding: 0.15rem 0.8rem; border-radius: 30px; border: 1px solid #1a232b; }
-    .main-footer .right a { color: #4f6373; text-decoration: none; transition: color 0.2s; margin-left: 1rem; }
-    .main-footer .right a:hover { color: #8a9aa8; }
-    #dashboardScreen.hidden { display: none; }
-    #loginScreen:not(.hidden) { display: flex; }
-    .compliance-badge {
-      background: rgba(0, 229, 255, 0.05);
-      border: 1px solid rgba(0, 229, 255, 0.1);
-      border-radius: 0.5rem;
-      padding: 0.75rem 1rem;
-      font-size: 0.7rem;
-      color: #6a7f8f;
-    }
-    /* ========================================================== */
-    /* FED‑POSTER SPECIFIC STYLES (scoped)                        */
-    /* ========================================================== */
-    .fed-poster-container {
-      /* override any background if needed */
-    }
-    .fed-poster-container .platform-section { display: none; max-width: 800px; }
-    .fed-poster-container .platform-section.active { display: block; }
-    .fed-poster-container .card {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 16px;
-      box-shadow: 0 0 20px rgba(0, 255, 0, 0.05);
-    }
-    .fed-poster-container .card-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
-    .fed-poster-container .card-header h2 { font-size: 17px; font-weight: 600; color: #e6edf3; }
-    .fed-poster-container .label-tag {
-      font-size: 10px;
-      padding: 2px 10px;
-      border-radius: 20px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-      background: #21262d;
-      color: #8b949e;
-    }
-    .fed-poster-container .label-tag.buffer { background: #1a73e8; color: white; }
-    .fed-poster-container .label-tag.wordpress { background: #3858e9; color: white; }
-    .fed-poster-container .label-tag.both { background: #238636; color: white; }
-    .fed-poster-container .label-tag.other { background: #6e7681; color: white; }
-    .fed-poster-container .label-tag.proxy { background: #8b5cf6; color: white; }
-    .fed-poster-container .label-tag.zapier { background: #ff4a00; color: white; }
-    .fed-poster-container .label-tag.stoat { background: #5865f2; color: white; }
-    .fed-poster-container .label-tag.patreon { background: #ff424d; color: white; }
-    .fed-poster-container .label-tag.about { background: #1f6feb; color: white; }
-    .fed-poster-container .label-tag.whop { background: #00b4d8; color: white; }
-    .fed-poster-container .label-tag.coming { background: #6e7681; color: #e6edf3; }
-    .fed-poster-container .connect-info {
-      font-size: 12px;
-      color: #8b949e;
-      background: #0d1117;
-      padding: 6px 10px;
-      border-radius: 6px;
-      margin-bottom: 12px;
-      border-left: 3px solid #8b5cf6;
-    }
-    .fed-poster-container .connect-info strong { color: #c9d1d9; }
-    .fed-poster-container label {
-      font-size: 12px;
-      font-weight: 500;
-      display: block;
-      margin: 10px 0 3px;
-      color: #8b949e;
-    }
-    .fed-poster-container input,
-    .fed-poster-container textarea {
-      width: 100%;
-      padding: 8px 10px;
-      background: #0d1117;
-      border: 1px solid #30363d;
-      border-radius: 6px;
-      color: #e6edf3;
-      font-size: 13px;
-      font-family: inherit;
-    }
-    .fed-poster-container input:focus,
-    .fed-poster-container textarea:focus { outline: none; border-color: #58a6ff; }
-    .fed-poster-container textarea { min-height: 60px; resize: vertical; }
-    .fed-poster-container input[type="file"] { padding: 6px; cursor: pointer; background: #161b22; }
-    .fed-poster-container .saved-note { font-size: 10px; color: #484f58; margin-top: 2px; }
-    .fed-poster-container .actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-    }
-    .fed-poster-container .actions button {
-      flex: 1;
-      padding: 8px 12px;
-      border: none;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 12px;
-      min-width: 70px;
-      transition: background 0.2s;
-    }
-    .fed-poster-container .btn-primary { background: #238636; color: white; }
-    .fed-poster-container .btn-primary:hover { background: #2ea043; }
-    .fed-poster-container .btn-primary:disabled { background: #21262d; color: #484f58; cursor: not-allowed; }
-    .fed-poster-container .btn-secondary { background: #21262d; color: #c9d1d9; }
-    .fed-poster-container .btn-secondary:hover { background: #30363d; }
-    .fed-poster-container .status {
-      margin-top: 10px;
-      padding: 8px 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      display: none;
-    }
-    .fed-poster-container .status.success { display: block; background: #0d2818; color: #3fb950; border: 1px solid #238636; }
-    .fed-poster-container .status.error { display: block; background: #2d0a0a; color: #f85149; border: 1px solid #da3633; }
-    .fed-poster-container .status.loading { display: block; background: #0d1f2d; color: #58a6ff; border: 1px solid #1f6feb; }
-    .fed-poster-container .status.info { display: block; background: #1c1b1a; color: #d29922; border: 1px solid #9e6a03; }
-    .fed-poster-container .file-info { font-size: 11px; color: #8b949e; margin-top: 3px; }
-    .fed-poster-container .token-type { font-size: 10px; color: #8b949e; margin-top: 2px; display: flex; align-items: center; gap: 8px; }
-    .fed-poster-container .token-type .classic-badge { background: #f59e0b; color: #0d1117; padding: 1px 8px; border-radius: 10px; font-weight: 600; font-size: 10px; }
-    .fed-poster-container .token-type .fine-badge { background: #8b5cf6; color: white; padding: 1px 8px; border-radius: 10px; font-weight: 600; font-size: 10px; }
-    .fed-poster-container .da-connected { background: #0d2818; border: 1px solid #238636; border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; font-size: 13px; color: #3fb950; }
-    .fed-poster-container .da-disconnected { background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; font-size: 13px; color: #8b949e; }
-    .fed-poster-container .check-group {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 6px;
-      margin: 8px 0 10px;
-      background: #0d1117;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #21262d;
-    }
-    .fed-poster-container .check-group label {
-      font-weight: 400;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 13px;
-      color: #c9d1d9;
-      margin: 0;
-      cursor: pointer;
-      padding: 4px 6px;
-      border-radius: 4px;
-      transition: background 0.2s;
-    }
-    .fed-poster-container .check-group label:hover { background: #21262d; }
-    .fed-poster-container .check-group .label-tag { font-size: 8px; padding: 1px 6px; }
-    .fed-poster-container .verify-status { margin: 10px 0; font-size: 12px; }
-    .fed-poster-container .verify-status .v-item { padding: 3px 0; border-bottom: 1px solid #21262d; display: flex; gap: 8px; align-items: center; }
-    .fed-poster-container .unified-results { margin-top: 10px; font-size: 12px; }
-    .fed-poster-container .unified-results .result-item { padding: 3px 0; border-bottom: 1px solid #21262d; display: flex; gap: 8px; }
-    .fed-poster-container .platform-settings-toggle {
-      margin: 10px 0;
-      text-align: right;
-    }
-    .fed-poster-container .platform-settings-toggle button {
-      background: #21262d;
-      color: #c9d1d9;
-      border: 1px solid #30363d;
-      padding: 6px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 12px;
-      transition: background 0.2s;
-    }
-    .fed-poster-container .platform-settings-toggle button:hover { background: #30363d; }
-    .fed-poster-container .platform-settings {
-      display: none;
-      margin-top: 10px;
-      padding: 12px;
-      background: #0d1117;
-      border-radius: 8px;
-      border: 1px solid #21262d;
-    }
-    .fed-poster-container .platform-settings.open { display: block; }
-    .fed-poster-container .platform-settings .settings-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    @media (max-width: 600px) {
-      .fed-poster-container .platform-settings .settings-grid { grid-template-columns: 1fr; }
-    }
-  </style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 28px;
+        }
+
+        /* ───────────── SCROLLBAR ───────────── */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-1);
+            border-radius: 10px;
+        }
+
+        /* ───────────── BUTTONS ───────────── */
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 36px;
+            background: var(--gradient-main);
+            border: none;
+            border-radius: 60px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 8px 30px rgba(124, 92, 252, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(124, 92, 252, 0.5);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 36px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 60px;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* ───────────── HEADER / NAV ───────────── */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 18px 0;
+            z-index: 1000;
+            background: rgba(10, 12, 20, 0.6);
+            backdrop-filter: blur(20px) saturate(1.6);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        nav .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links .btn-primary {
+            padding: 10px 24px;
+            font-size: 0.8rem;
+        }
+
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* ───────────── HERO ───────────── */
+        .hero {
+            padding: 140px 0 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -30%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(124, 92, 252, 0.06), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -40%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(91, 141, 239, 0.05), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: clamp(4rem, 10vw, 7rem);
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -2px;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .hero .subtitle span {
+            color: var(--accent-1);
+        }
+
+        .hero .tagline {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin: 0 auto 32px;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            justify-content: center;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            margin-top: 48px;
+            padding-top: 32px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .hero-stats div {
+            text-align: center;
+        }
+
+        .hero-stats .number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-stats .label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* ───────────── FEATURES (HORIZONTAL SCROLL) ───────────── */
+        .features-section {
+            padding: 60px 0 80px;
+            background: var(--bg-secondary);
+        }
+
+        .features-section .section-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .features-section .section-header h2 {
+            font-size: clamp(2rem, 3.5vw, 2.8rem);
+            font-weight: 800;
+        }
+
+        .features-section .section-header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .features-scroll {
+            display: flex;
+            gap: 28px;
+            overflow-x: auto;
+            padding: 12px 4px 20px 4px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+        }
+
+        .features-scroll::-webkit-scrollbar {
+            height: 4px;
+        }
+        .features-scroll::-webkit-scrollbar-thumb {
+            background: var(--accent-1);
+            border-radius: 10px;
+        }
+
+        .feature-card {
+            flex: 0 0 380px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 32px 28px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            scroll-snap-align: start;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            background: var(--bg-card-hover);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .feature-card .icon-wrap {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin-bottom: 18px;
+            background: rgba(124, 92, 252, 0.12);
+            color: var(--accent-1);
+        }
+
+        .feature-card:nth-child(2) .icon-wrap {
+            background: rgba(91, 141, 239, 0.12);
+            color: var(--accent-2);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .feature-card > p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        /* ─── HORIZONTAL FEATURE CHIPS ─── */
+        .feature-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .feature-chips .chip {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+        }
+
+        .feature-chips .chip i {
+            font-size: 0.7rem;
+            color: var(--accent-1);
+        }
+
+        .feature-card .btn-card {
+            margin-top: auto;
+            align-self: flex-start;
+            padding: 10px 24px;
+            font-size: 0.85rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 60px;
+            color: var(--text-primary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card .btn-card:hover {
+            background: rgba(124, 92, 252, 0.12);
+            border-color: rgba(124, 92, 252, 0.2);
+            color: #fff;
+            gap: 12px;
+        }
+
+        /* ───────────── INTERACTIVE DEMO (Horizontal Mock) ───────────── */
+        .demo-section {
+            padding: 80px 0;
+            background: var(--bg-primary);
+        }
+
+        .demo-section .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .demo-text h2 {
+            font-size: clamp(1.8rem, 3vw, 2.6rem);
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .demo-text p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.8;
+            margin-bottom: 24px;
+        }
+
+        .demo-box {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 28px 24px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: var(--shadow);
+        }
+
+        .demo-box .mock-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .demo-box .mock-header .dots span {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+        .demo-box .mock-header .dots span:nth-child(1) {
+            background: #ff5f57; }
+        .demo-box .mock-header .dots span:nth-child(2) {
+            background: #ffbd2e; }
+        .demo-box .mock-header .dots span:nth-child(3) {
+            background: #28c840; }
+
+        .demo-box .mock-header .badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 4px 14px;
+            background: rgba(124, 92, 252, 0.12);
+            border-radius: 100px;
+            color: var(--accent-1);
+        }
+
+        .waveform-mini {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            height: 40px;
+            margin: 12px 0;
+        }
+
+        .waveform-mini .bar {
+            width: 4px;
+            background: var(--accent-1);
+            border-radius: 4px;
+            animation: waveAnim 1s ease-in-out infinite alternate;
+        }
+        .waveform-mini .bar.silent {
+            background: rgba(255, 255, 255, 0.06);
+            animation: none;
+            height: 8px !important;
+        }
+
+        @keyframes waveAnim {
+            0% {
+                height: 6px;
+            }
+            100% {
+                height: 32px;
+            }
+        }
+
+        .poster-preview-mini {
+            display: flex;
+            gap: 16px;
+            align-items: stretch;
+            margin-top: 12px;
+        }
+
+        .poster-card-mini {
+            flex: 1;
+            background: linear-gradient(145deg, #1e2340, #14182e);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            min-height: 100px;
+        }
+
+        .poster-card-mini .avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--gradient-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.7rem;
+            margin-bottom: 8px;
+        }
+
+        .poster-card-mini .text {
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .poster-card-mini .meta {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+        }
+
+        .poster-sidebar-mini {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 100px;
+        }
+
+        .poster-sidebar-mini .opt {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .poster-sidebar-mini .opt:hover {
+            background: rgba(124, 92, 252, 0.08);
+            border-color: rgba(124, 92, 252, 0.1);
+            color: #fff;
+        }
+
+        .poster-sidebar-mini .opt.active {
+            background: rgba(124, 92, 252, 0.12);
+            border-color: rgba(124, 92, 252, 0.2);
+            color: #fff;
+        }
+
+        /* ───────────── TESTIMONIALS ───────────── */
+        .testimonials {
+            padding: 80px 0;
+            background: var(--bg-secondary);
+        }
+
+        .testimonials .section-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .testimonials .section-header h2 {
+            font-size: clamp(1.8rem, 3vw, 2.6rem);
+            font-weight: 800;
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .testimonial-card {
+            background: var(--bg-card);
+            padding: 24px 22px;
+            border-radius: var(--radius);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: var(--transition);
+        }
+
+        .testimonial-card:hover {
+            border-color: rgba(255, 255, 255, 0.08);
+            transform: translateY(-4px);
+        }
+
+        .testimonial-card .stars {
+            color: #fbbf24;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+
+        .testimonial-card blockquote {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-style: italic;
+            margin-bottom: 14px;
+        }
+
+        .testimonial-card .author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .testimonial-card .author .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gradient-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.7rem;
+        }
+
+        .testimonial-card .author .name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .testimonial-card .author .role {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        /* ───────────── CTA ───────────── */
+        .cta-section {
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .cta-box {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 56px 40px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cta-box h2 {
+            font-size: clamp(1.8rem, 3vw, 2.6rem);
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .cta-box p {
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+        }
+
+        .cta-box .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            justify-content: center;
+        }
+
+        /* ───────────── FOOTER ───────────── */
+        footer {
+            padding: 32px 0 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        footer .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        footer .copy {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        footer .socials {
+            display: flex;
+            gap: 12px;
+        }
+
+        footer .socials a {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        footer .socials a:hover {
+            background: rgba(124, 92, 252, 0.1);
+            color: #fff;
+        }
+
+        /* ───────────── RESPONSIVE ───────────── */
+        @media (max-width: 992px) {
+            .demo-section .container {
+                grid-template-columns: 1fr;
+            }
+
+            .testimonial-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .feature-card {
+                flex: 0 0 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--bg-primary);
+                padding: 24px;
+                gap: 16px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            }
+
+            .nav-links.open {
+                display: flex;
+            }
+
+            .nav-toggle {
+                display: block;
+            }
+
+            .hero h1 {
+                font-size: 3.6rem;
+            }
+
+            .hero-stats {
+                gap: 24px;
+                flex-wrap: wrap;
+            }
+
+            .testimonial-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-card {
+                flex: 0 0 280px;
+                padding: 24px 20px;
+            }
+
+            .poster-preview-mini {
+                flex-direction: column;
+            }
+
+            .poster-sidebar-mini {
+                flex-direction: row;
+                flex-wrap: wrap;
+                min-width: unset;
+            }
+
+            .cta-box {
+                padding: 32px 20px;
+            }
+
+            footer .container {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+
+            .hero .subtitle {
+                font-size: 0.8rem;
+            }
+
+            .feature-card {
+                flex: 0 0 260px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<!-- ============================================================ -->
-<!-- GLOBAL LOADING OVERLAY                                        -->
-<!-- ============================================================ -->
-<div id="loadingOverlay">
-  <div class="loader-ring"></div>
-  <div class="loader-text">Authenticating…</div>
-</div>
-
-<!-- ============================================================ -->
-<!-- LOGIN SCREEN                                                  -->
-<!-- ============================================================ -->
-<div id="loginScreen" class="min-h-screen flex items-center justify-center bg-[#0b0e14]">
-  <div class="text-center">
-    <div class="mb-6">
-      <span class="text-5xl">🚀</span>
-      <h1 class="text-3xl font-bold text-white mt-2">PorJects</h1>
-      <p class="text-gray-400 text-sm">AI · Coding · Tech · Projects</p>
-      <p class="text-gray-500 text-xs mt-1">Poor rejected indie dev projects</p>
-    </div>
-    <button id="loginBtn" class="bg-white hover:bg-gray-200 text-purple-600 font-bold py-3 px-10 rounded-full text-lg shadow-lg transition">
-      Free-<span class="glow-dumb">Dumb</span>
-    </button>
-  </div>
-
-  <!-- Modal -->
-  <div id="loginModal" class="modal">
-    <div class="modal-card">
-      <span class="close" id="closeModal">&times;</span>
-      <h2 class="text-2xl font-bold mb-1 text-white" id="formTitle">Sign In</h2>
-      <p class="text-gray-400 text-sm mb-5" id="formSubtitle">Enter your credentials</p>
-      <form id="loginForm">
-        <div class="mb-3">
-          <label class="block text-sm font-medium text-gray-300">Email</label>
-          <input type="email" id="email" class="input-dark mt-1" placeholder="you@example.com" required />
+    <!-- ═══════════ NAV ═══════════ -->
+    <nav id="navbar">
+        <div class="container">
+            <a href="#" class="nav-logo">FED-OS</a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#demo">Demo</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+                <li><a href="#cta" class="btn-primary">Get Started</a></li>
+            </ul>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
-        <div class="mb-3">
-          <label class="block text-sm font-medium text-gray-300">Password</label>
-          <input type="password" id="password" class="input-dark mt-1" placeholder="••••••••" required minlength="6" />
+    </nav>
+
+    <!-- ═══════════ HERO ═══════════ -->
+    <section class="hero" id="hero">
+        <div class="container">
+            <h1>FED-OS</h1>
+            <p class="subtitle">by <span>fedpromptly.com</span></p>
+            <p class="tagline">
+                Silence Remover &amp; Social Poster — two powerful tools, one seamless workflow.
+            </p>
+            <div class="hero-buttons">
+                <a href="#features" class="btn-primary">
+                    <i class="fas fa-rocket"></i> Explore Tools
+                </a>
+                <a href="#demo" class="btn-secondary">
+                    <i class="fas fa-play-circle"></i> See Demo
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div>
+                    <div class="number">12k+</div>
+                    <div class="label">Silences Removed</div>
+                </div>
+                <div>
+                    <div class="number">4.9★</div>
+                    <div class="label">User Rating</div>
+                </div>
+                <div>
+                    <div class="number">8x</div>
+                    <div class="label">Faster Editing</div>
+                </div>
+            </div>
         </div>
-        <button type="submit" class="btn-primary w-full py-2.5" id="authSubmitBtn">Sign In</button>
-      </form>
-      <div class="text-right mt-2">
-        <button id="forgotBtn" class="text-sm text-purple-400 hover:underline">Forgot password?</button>
-      </div>
-      <p id="message" class="text-sm mt-3 hidden text-center"></p>
-      <p class="text-sm text-center mt-4 text-gray-400">
-        <span id="toggleText">New citizen?</span>
-        <button id="toggleMode" class="text-purple-400 hover:underline font-medium">Sign Up</button>
-      </p>
-      <div class="mt-4 pt-4 border-t border-[#1e2633] text-center">
-        <p class="text-xs text-gray-500">🔐 Powered by Supabase</p>
-      </div>
-    </div>
-  </div>
-</div>
+    </section>
 
-<!-- ============================================================ -->
-<!-- DASHBOARD                                                    -->
-<!-- ============================================================ -->
-<div id="dashboardScreen" class="hidden min-h-screen bg-[#0b0e14]">
+    <!-- ═══════════ FEATURES (HORIZONTAL SCROLL) ═══════════ -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Everything You Need, <br />Horizontally Arranged.</h2>
+                <p>Scroll to explore the core tools of FED-OS.</p>
+            </div>
+            <div class="features-scroll">
+                <!-- Card 1: Silence Remover -->
+                <div class="feature-card">
+                    <div class="icon-wrap"><i class="fas fa-volume-mute"></i></div>
+                    <h3>Silence Remover</h3>
+                    <p>AI-powered detection cuts awkward pauses from your audio in seconds.</p>
+                    <div class="feature-chips">
+                        <span class="chip"><i class="fas fa-check-circle"></i> AI Detection</span>
+                        <span class="chip"><i class="fas fa-wave-square"></i> Waveform View</span>
+                        <span class="chip"><i class="fas fa-layer-group"></i> Batch Process</span>
+                        <span class="chip"><i class="fas fa-file-audio"></i> MP3 / WAV</span>
+                        <span class="chip"><i class="fas fa-bolt"></i> Real-time</span>
+                    </div>
+                    <button class="btn-card">Try Silence Remover <i class="fas fa-arrow-right"></i></button>
+                </div>
 
-  <!-- Header -->
-  <header class="max-w-7xl mx-auto px-4 pt-4">
-    <div class="flex flex-wrap items-center justify-between pb-2 border-b border-[#1e2633]">
-      <div class="flex items-baseline gap-3">
-        <span class="text-3xl font-bold text-white tracking-tight">PorJects<span class="text-purple-400">.</span></span>
-        <span class="text-sm text-gray-400 bg-[#141c24] px-3 py-1 rounded-full border border-[#1f2a33]">AI · Coding · Tech</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <span class="text-sm text-gray-400" id="sidebarUserDisplay">user@domain</span>
-        <span class="tier-badge tier-explorer" id="sidebarTierBadge">Explorer</span>
-        <button id="logoutBtn" class="text-sm text-red-400 hover:text-red-300 transition">Logout</button>
-      </div>
-    </div>
+                <!-- Card 2: Social Poster -->
+                <div class="feature-card">
+                    <div class="icon-wrap"><i class="fas fa-share-alt"></i></div>
+                    <h3>Social Poster</h3>
+                    <p>Design, preview, and schedule stunning posts for all major platforms.</p>
+                    <div class="feature-chips">
+                        <span class="chip"><i class="fas fa-palette"></i> 100+ Templates</span>
+                        <span class="chip"><i class="fas fa-wand-magic-sparkles"></i> AI Captions</span>
+                        <span class="chip"><i class="fas fa-hashtag"></i> Smart Hashtags</span>
+                        <span class="chip"><i class="fas fa-calendar-alt"></i> Schedule</span>
+                        <span class="chip"><i class="fas fa-chart-line"></i> Analytics</span>
+                    </div>
+                    <button class="btn-card">Try Social Poster <i class="fas fa-arrow-right"></i></button>
+                </div>
 
-    <!-- Ticker -->
-    <div class="ticker-wrap mt-3">
-      <div class="ticker">
-        <span class="ticker-item"><span class="badge">AI</span> Llama 4.5 drops with 2M context window</span>
-        <span class="ticker-item"><span class="badge">Dev</span> Python 3.13 JIT goes stable</span>
-        <span class="ticker-item"><span class="badge">Tools</span> New VSCode extension for AI diffs</span>
-        <span class="ticker-item"><span class="badge">🚀</span> PorJects hub goes live today</span>
-        <span class="ticker-item"><span class="badge">AI</span> Llama 4.5 drops with 2M context window</span>
-        <span class="ticker-item"><span class="badge">Dev</span> Python 3.13 JIT goes stable</span>
-        <span class="ticker-item"><span class="badge">Tools</span> New VSCode extension for AI diffs</span>
-        <span class="ticker-item"><span class="badge">🚀</span> PorJects hub goes live today</span>
-      </div>
-    </div>
-  </header>
-
-  <!-- Main Content -->
-  <main class="max-w-7xl mx-auto px-4 py-2">
-
-    <!-- Tab Navigation -->
-    <div class="tab-nav" id="tabNav">
-      <button class="tab-btn active" data-tab="home">🏠 Home</button>
-      <button class="tab-btn" data-tab="forum">💬 Forum</button>
-      <button class="tab-btn" data-tab="edu">🎓 Edu</button>
-      <button class="tab-btn" data-tab="profile">👤 Profile</button>
-      <!-- NEW: Multi-Poster Tab -->
-      <button class="tab-btn" data-tab="multi-poster">📤 Multi-Poster</button>
-    </div>
-
-    <!-- ========================================================== -->
-    <!-- TAB: HOME (unchanged)                                      -->
-    <!-- ========================================================== -->
-    <div class="tab-content active" id="tab-home">
-      <!-- (Full home content – omitted for brevity, but it's all there in the final code) -->
-      <!-- We'll include the full home content below in the final answer -->
-      <div class="ghost-hero rounded-2xl p-8 md:p-12 mb-8 border border-[#1e2633]">
-        <div class="max-w-4xl mx-auto text-center">
-          <div class="inline-block px-4 py-1 rounded-full border border-[#00e5ff] text-[#00e5ff] text-xs font-semibold tracking-widest uppercase bg-[#00e5ff]/10 mb-4">
-            ⚡ FedPromptly · Sovereign Digital Jurisdiction
-          </div>
-          <h1 class="text-4xl md:text-6xl font-bold leading-tight">
-            <span class="text-white">The World's First</span><br />
-            <span class="text-gradient-cyan-purple">Free Embed Library</span><br />
-            <span class="text-white">& Creator Marketplace</span>
-          </h1>
-          <p class="text-xl text-gray-300 mt-4 max-w-2xl mx-auto">⚡ No blockchain. Just embeds. 🚀 Promptly.</p>
-          <p class="text-lg text-gray-400 mt-2 max-w-2xl mx-auto"><span class="neon-cyan">"Stop building in someone else's world. Start building your own."</span></p>
-          <div class="flex flex-wrap justify-center gap-6 mt-6 text-sm text-gray-400">
-            <span class="flex items-center gap-2"><span class="text-[#00e5ff]">✦</span> 500+ free widgets</span>
-            <span class="flex items-center gap-2"><span class="text-[#00e5ff]">✦</span> Works anywhere (HTML/CSS/JS)</span>
-            <span class="flex items-center gap-2"><span class="text-[#00e5ff]">✦</span> No-code friendly</span>
-            <span class="flex items-center gap-2"><span class="text-[#00e5ff]">✦</span> Zero-knowledge hosting</span>
-          </div>
-          <div class="flex flex-wrap justify-center gap-4 mt-8">
-            <button class="btn-cyan px-8 py-3 text-lg rounded-full flex items-center gap-2"><i class="fas fa-rocket"></i> Explore the Library</button>
-            <button class="btn-secondary px-8 py-3 text-lg rounded-full flex items-center gap-2 border-[#a78bfa] text-[#a78bfa] hover:bg-[#a78bfa]/10"><i class="fas fa-crown"></i> Get Started</button>
-          </div>
-          <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto opacity-70">
-            <div class="glass-card p-3 text-center"><span class="text-2xl block">🎮</span><span class="text-xs text-gray-400">Games</span></div>
-            <div class="glass-card p-3 text-center"><span class="text-2xl block">💰</span><span class="text-xs text-gray-400">Tools</span></div>
-            <div class="glass-card p-3 text-center"><span class="text-2xl block">🎨</span><span class="text-xs text-gray-400">Ambients</span></div>
-            <div class="glass-card p-3 text-center"><span class="text-2xl block">🔐</span><span class="text-xs text-gray-400">Security</span></div>
-          </div>
+                <!-- Card 3: Combined Workflow (Bonus) -->
+                <div class="feature-card">
+                    <div class="icon-wrap"><i class="fas fa-arrows-spin"></i></div>
+                    <h3>Unified Workflow</h3>
+                    <p>Clean your audio and create a post about it without leaving the app.</p>
+                    <div class="feature-chips">
+                        <span class="chip"><i class="fas fa-arrow-right"></i> Drag &amp; Drop</span>
+                        <span class="chip"><i class="fas fa-cloud-upload-alt"></i> Auto-sync</span>
+                        <span class="chip"><i class="fas fa-clock"></i> Version History</span>
+                        <span class="chip"><i class="fas fa-users"></i> Team Collab</span>
+                    </div>
+                    <button class="btn-card">Explore Workflow <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
         </div>
-      </div>
+    </section>
 
-      <!-- Onboarding -->
-      <div class="content-card mb-8 border border-[#a78bfa]/20">
-        <div class="flex items-center gap-3 mb-4"><span class="text-2xl">🚀</span><h2 class="text-2xl font-bold text-white">Start Here — Your 7‑Step Onboarding</h2></div>
-        <p class="text-gray-400 text-sm mb-6">Transform from visitor to permanent citizen of the empire.</p>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div class="onboarding-step glass-card p-4"><h4 class="text-white font-semibold text-sm">1. Understand</h4><p class="text-gray-400 text-xs">FedPromptly is a free library &amp; marketplace.</p></div>
-          <div class="onboarding-step glass-card p-4"><h4 class="text-white font-semibold text-sm">2. Choose Your Path</h4><p class="text-gray-400 text-xs">Browse free, buy premium, or build your own.</p></div>
-          <div class="onboarding-step glass-card p-4"><h4 class="text-white font-semibold text-sm">3. Explore</h4><p class="text-gray-400 text-xs">Navigate games, tools, trackers, and more.</p></div>
-          <div class="onboarding-step glass-card p-4"><h4 class="text-white font-semibold text-sm">4. Embed</h4><p class="text-gray-400 text-xs">Copy code and paste into any website.</p></div>
-          <div class="onboarding-step glass-card p-4"><h4 class="text-white font-semibold text-sm">5. Create</h4><p class="text-gray-400 text-xs">Use FEDBOT Studio Mode to build or request custom builds.</p></div>
-          <div class="onboarding-step glass-card p-4"><h4 class="text-white font-semibold text-sm">6. Join</h4><p class="text-gray-400 text-xs">Access forums and the sandbox in the Network section.</p></div>
-          <div class="onboarding-step glass-card p-4 md:col-span-2 lg:col-span-3"><h4 class="text-white font-semibold text-sm">7. Earn</h4><p class="text-gray-400 text-xs">Submit widgets and keep <span class="text-[#00e5ff] font-bold">80% of every sale</span>.</p></div>
+    <!-- ═══════════ DEMO (Horizontal Mock) ═══════════ -->
+    <section class="demo-section" id="demo">
+        <div class="container">
+            <div class="demo-text">
+                <h2>See It in Action</h2>
+                <p>
+                    Remove silences from your audio and instantly create a social post
+                    to share your content. All within the FED-OS ecosystem.
+                </p>
+                <a href="#cta" class="btn-primary">
+                    <i class="fas fa-play"></i> Start Free Trial
+                </a>
+            </div>
+            <div class="demo-box">
+                <div class="mock-header">
+                    <div class="dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <span class="badge"><i class="fas fa-microchip"></i> Live Preview</span>
+                </div>
+                <!-- Waveform Mini -->
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                    <span style="font-size:0.7rem;color:var(--text-secondary);">Silence Remover</span>
+                    <span style="font-size:0.65rem;color:var(--accent-1);"><i class="fas fa-cut"></i> 2 silences found</span>
+                </div>
+                <div class="waveform-mini" id="waveformMini">
+                    <!-- bars injected by JS -->
+                </div>
+                <!-- Poster Mini -->
+                <div style="margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 16px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                        <span style="font-size:0.7rem;color:var(--text-secondary);">Social Poster</span>
+                        <span style="font-size:0.65rem;color:var(--accent-2);"><i class="fas fa-pen-fancy"></i> Draft</span>
+                    </div>
+                    <div class="poster-preview-mini">
+                        <div class="poster-card-mini">
+                            <div class="avatar">F</div>
+                            <div class="text">🚀 New episode out now! No more awkward silences.</div>
+                            <div class="meta">FED-OS · 2 min read</div>
+                        </div>
+                        <div class="poster-sidebar-mini">
+                            <div class="opt active"><i class="fas fa-palette"></i> Theme</div>
+                            <div class="opt"><i class="fas fa-font"></i> Text</div>
+                            <div class="opt"><i class="fas fa-hashtag"></i> Hashtags</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
+    </section>
 
-      <!-- Library Categories -->
-      <div class="content-card mb-8">
-        <div class="flex items-center gap-3 mb-4"><span class="text-2xl">📚</span><h2 class="text-2xl font-bold text-white">Explore the Library</h2><span class="text-xs text-gray-400 ml-auto">500+ widgets and growing</span></div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="lib-tile"><div class="icon">🎮</div><h4 class="text-white font-semibold text-sm">Games &amp; Interactive</h4><p class="text-gray-400 text-xs mt-1">Quizzes, puzzles, sims</p></div>
-          <div class="lib-tile"><div class="icon">💰</div><h4 class="text-white font-semibold text-sm">Money &amp; Tools</h4><p class="text-gray-400 text-xs mt-1">Trackers, calculators</p></div>
-          <div class="lib-tile"><div class="icon">🎨</div><h4 class="text-white font-semibold text-sm">Visual &amp; Ambient</h4><p class="text-gray-400 text-xs mt-1">Backgrounds, animations</p></div>
-          <div class="lib-tile"><div class="icon">🔐</div><h4 class="text-white font-semibold text-sm">Security Labyrinths</h4><p class="text-gray-400 text-xs mt-1">Encryption, password tools</p></div>
+    <!-- ═══════════ TESTIMONIALS ═══════════ -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2>Loved by Creators</h2>
+                <p style="color:var(--text-secondary);">See what our users are saying about FED-OS.</p>
+            </div>
+            <div class="testimonial-grid">
+                <div class="testimonial-card">
+                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <blockquote>“The silence remover saved me hours of manual editing. And the poster tool is just chef's kiss.”</blockquote>
+                    <div class="author">
+                        <div class="avatar">JD</div>
+                        <div><div class="name">Jessica Diaz</div><div class="role">Podcast Host</div></div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <blockquote>“I used to jump between three tools. Now I do everything in FED-OS. My workflow is 8x faster.”</blockquote>
+                    <div class="author">
+                        <div class="avatar">MR</div>
+                        <div><div class="name">Marcus Reed</div><div class="role">Content Creator</div></div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <blockquote>“The AI caption generator and hashtag suggestions are spot on. Engagement jumped 40%.”</blockquote>
+                    <div class="author">
+                        <div class="avatar">AL</div>
+                        <div><div class="name">Aisha Liu</div><div class="role">Social Media Manager</div></div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="mt-4 text-right"><button class="text-[#00e5ff] hover:underline text-sm flex items-center gap-1 ml-auto">View all categories <i class="fas fa-arrow-right"></i></button></div>
-      </div>
+    </section>
 
-      <!-- FED-Edu -->
-      <div class="content-card mb-8 border border-[#a78bfa]/20">
-        <div class="flex items-center gap-3 mb-4"><span class="text-2xl">🎓</span><h2 class="text-2xl font-bold text-white">FED‑Edu — Multi‑Generational Academy</h2></div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="glass-card p-4 text-center border-[#00e5ff]/20"><span class="text-3xl block">🧒</span><h4 class="text-white font-bold">FED4Kids</h4><p class="text-gray-400 text-xs">Under 18 · Digital citizenship</p><span class="inline-block bg-[#00e5ff]/10 text-[#00e5ff] text-xs px-2 py-0.5 rounded-full mt-2">✅ Completed</span></div>
-          <div class="glass-card p-4 text-center border-[#a78bfa]/20"><span class="text-3xl block">👨‍💻</span><h4 class="text-white font-bold">FED‑ED</h4><p class="text-gray-400 text-xs">18–45 · Core protocol</p><span class="inline-block bg-yellow-400/10 text-yellow-400 text-xs px-2 py-0.5 rounded-full mt-2">🔄 72%</span></div>
-          <div class="glass-card p-4 text-center border-purple-500/20"><span class="text-3xl block">👴</span><h4 class="text-white font-bold">FED‑U</h4><p class="text-gray-400 text-xs">Retirees · Sovereignty</p><span class="inline-block bg-gray-500/10 text-gray-400 text-xs px-2 py-0.5 rounded-full mt-2">🔒 Locked</span></div>
+    <!-- ═══════════ CTA ═══════════ -->
+    <section class="cta-section" id="cta">
+        <div class="container">
+            <div class="cta-box">
+                <h2>Ready to Supercharge Your Content?</h2>
+                <p>
+                    Join thousands of creators using FED-OS to clean audio and create
+                    stunning social posts — all in one place.
+                </p>
+                <div class="btn-group">
+                    <a href="#" class="btn-primary">
+                        <i class="fas fa-gem"></i> Start Free Trial
+                    </a>
+                    <a href="#" class="btn-secondary">
+                        <i class="fas fa-book-open"></i> View Docs
+                    </a>
+                </div>
+                <div style="margin-top:20px;font-size:0.75rem;color:var(--text-secondary);">
+                    <i class="fas fa-check-circle" style="color:var(--accent-1);"></i> No credit card required
+                    <span style="margin:0 10px;">·</span>
+                    <i class="fas fa-check-circle" style="color:var(--accent-1);"></i> 14-day free trial
+                </div>
+            </div>
         </div>
-        <div class="mt-4 text-right"><button class="text-[#a78bfa] hover:underline text-sm">View full curriculum →</button></div>
-      </div>
+    </section>
 
-      <!-- Monetization -->
-      <div class="content-card mb-8 border border-[#00e5ff]/20">
-        <div class="flex items-center gap-3 mb-4"><span class="text-2xl">💎</span><h2 class="text-2xl font-bold text-white">Monetization Model</h2><span class="text-xs text-gray-400 ml-auto">Earn 80% on every sale</span></div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="glass-card p-4 text-center"><span class="text-2xl block">❤️</span><h4 class="text-white font-bold">Tier 1: Supporter</h4><p class="text-gray-400 text-xs">Donations · Unlocks community</p><span class="inline-block bg-[#00e5ff]/10 text-[#00e5ff] text-xs px-2 py-0.5 rounded-full mt-2">Free</span></div>
-          <div class="glass-card p-4 text-center border-[#a78bfa]/30"><span class="text-2xl block">📦</span><h4 class="text-white font-bold">Tier 2: Embed Rentals</h4><p class="text-gray-400 text-xs">Temporary · Time‑locked access</p><span class="inline-block bg-[#a78bfa]/10 text-[#a78bfa] text-xs px-2 py-0.5 rounded-full mt-2">Premium</span></div>
-          <div class="glass-card p-4 text-center border-yellow-400/30"><span class="text-2xl block">🏆</span><h4 class="text-white font-bold">Tier 3: Ownership</h4><p class="text-gray-400 text-xs">Full rights · Editable source</p><span class="inline-block bg-yellow-400/10 text-yellow-400 text-xs px-2 py-0.5 rounded-full mt-2">Enterprise</span></div>
+    <!-- ═══════════ FOOTER ═══════════ -->
+    <footer>
+        <div class="container">
+            <div class="copy">
+                &copy; 2026 <strong>FED-OS</strong> by fedpromptly.com. All rights reserved.
+            </div>
+            <div class="socials">
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="#" aria-label="Discord"><i class="fab fa-discord"></i></a>
+            </div>
         </div>
-        <div class="mt-4 p-3 bg-[#0b0e14] rounded-lg border border-[#1e2633] text-center text-sm text-gray-400"><i class="fas fa-rocket text-[#00e5ff]"></i> Submit a widget and keep <span class="text-white font-bold">80%</span> of every sale.</div>
-      </div>
+    </footer>
 
-      <!-- Trust -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <div class="content-card border border-[#00e5ff]/10"><h4 class="text-white font-semibold flex items-center gap-2"><i class="fas fa-shield-alt text-[#00e5ff]"></i> Technical Transparency</h4><p class="text-gray-400 text-xs mt-2"><strong>Hardware:</strong> Any compatible smartphone or laptop.<br /><strong>Network:</strong> Zero-knowledge hosting, no external dependencies.<br /><strong>Performance:</strong> Lazy-loaded embeds for 100% Engage-Speed.</p></div>
-        <div class="content-card border border-[#a78bfa]/10"><h4 class="text-white font-semibold flex items-center gap-2"><i class="fas fa-balance-scale text-[#a78bfa]"></i> Compliance &amp; Liability</h4><p class="text-gray-400 text-xs mt-2"><strong>Carrier Compliance:</strong> Tethering and network usage are the user's responsibility.<br /><strong>Limitation of Liability:</strong> Maximum liability capped at <span class="text-white font-bold">$100.00 USD</span>.</p></div>
-      </div>
+    <!-- ═══════════ JAVASCRIPT ═══════════ -->
+    <script>
+        // ─── Nav Toggle ───────────────────────────────
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.getElementById('navLinks');
 
-      <!-- Divider -->
-      <div class="border-t border-[#1e2633] my-8 pt-4"><p class="text-xs text-gray-500 text-center">⬇️ Live feeds, tools, and playgrounds ⬇️</p></div>
-
-      <!-- Slideshow -->
-      <div class="slideshow-container" id="slideshow">
-        <div class="slide active" data-index="0"><h2>🤖 Top AI Papers <small>this week</small></h2><p>FlashAttention-3, LLaMA-3 fine-tuning, and MoE breakthroughs.</p><span class="slide-tag">📄 research</span></div>
-        <div class="slide" data-index="1"><h2>🔥 GitHub Trending <small>today</small></h2><p>Top repos: LangChain, Ollama, and open-source DevTools.</p><span class="slide-tag">⭐ trending</span></div>
-        <div class="slide" data-index="2"><h2>⚡ Dev Tool of the Week</h2><p>Fed-Poster – post to 40+ platforms from a single interface.</p><span class="slide-tag">🛠️ open source</span></div>
-        <div class="slide" data-index="3"><h2>🧩 Tech Stack Radar</h2><p>Rust adoption, Next.js 15, and the rise of WebAssembly.</p><span class="slide-tag">📊 ecosystem</span></div>
-        <button class="slide-nav prev" id="slidePrev">‹</button>
-        <button class="slide-nav next" id="slideNext">›</button>
-        <div class="slide-dots" id="slideDots">
-          <span class="active" data-index="0"></span><span data-index="1"></span><span data-index="2"></span><span data-index="3"></span>
-        </div>
-      </div>
-
-      <!-- GitHub Trending -->
-      <div class="content-card mb-6">
-        <h3 class="card-title flex items-center gap-2"><i class="fab fa-github text-white"></i> Trending on GitHub</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="home-card"><h4 class="text-white font-semibold text-sm">langchain-ai/langchain</h4><p class="text-gray-400 text-xs">⚡ 82k stars · Building LLM apps in Python.</p><span class="inline-block bg-green-900 text-green-300 text-xs px-2 py-0.5 rounded-full mt-1">🔥 1.2k stars today</span></div>
-          <div class="home-card"><h4 class="text-white font-semibold text-sm">ollama/ollama</h4><p class="text-gray-400 text-xs">📦 Run LLMs locally – now with Llama 3 support.</p><span class="inline-block bg-green-900 text-green-300 text-xs px-2 py-0.5 rounded-full mt-1">🚀 890 stars today</span></div>
-          <div class="home-card"><h4 class="text-white font-semibold text-sm">vercel/next.js</h4><p class="text-gray-400 text-xs">⚛️ Next.js 15 RC – turbopack improvements.</p><span class="inline-block bg-green-900 text-green-300 text-xs px-2 py-0.5 rounded-full mt-1">⭐ 520 stars today</span></div>
-        </div>
-        <div class="mt-3 text-right"><a href="https://github.com/trending" target="_blank" class="text-purple-400 hover:underline text-sm">View all trending →</a></div>
-      </div>
-
-      <!-- Dev News -->
-      <div class="content-card mb-6">
-        <h3 class="card-title flex items-center gap-2"><i class="fas fa-newspaper text-blue-400"></i> Dev News Feed</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div><h4 class="text-gray-300 text-sm font-medium mb-1">📰 Hacker News Top 5</h4><ul class="text-xs text-gray-400 space-y-1"><li>• <a href="#" class="text-purple-400 hover:underline">Llama 4.5 now supports 2M context</a></li><li>• <a href="#" class="text-purple-400 hover:underline">Rust 1.82 released with new trait solver</a></li><li>• <a href="#" class="text-purple-400 hover:underline">OpenAI announces GPT-4o fine-tuning</a></li><li>• <a href="#" class="text-purple-400 hover:underline">WebGPU lands in Chrome 128</a></li><li>• <a href="#" class="text-purple-400 hover:underline">The State of WebAssembly 2026</a></li></ul></div>
-          <div><h4 class="text-gray-300 text-sm font-medium mb-1">✍️ Dev.to Highlights</h4><ul class="text-xs text-gray-400 space-y-1"><li>• <a href="#" class="text-purple-400 hover:underline">Building a RAG pipeline with Milvus</a></li><li>• <a href="#" class="text-purple-400 hover:underline">Deno 2.0 – what's new?</a></li><li>• <a href="#" class="text-purple-400 hover:underline">Zig vs Rust: A comparative deep-dive</a></li><li>• <a href="#" class="text-purple-400 hover:underline">Serverless AI with Cloudflare Workers</a></li></ul></div>
-        </div>
-      </div>
-
-      <!-- Live Code Playground -->
-      <div class="content-card mb-6">
-        <h3 class="card-title flex items-center gap-2"><i class="fas fa-code text-yellow-400"></i> Live Code Playground</h3>
-        <div class="aspect-w-16 aspect-h-9">
-          <iframe src="https://codesandbox.io/embed/new?template=react&theme=dark" class="w-full h-80 rounded-lg border border-[#1e2633]" allowfullscreen></iframe>
-        </div>
-        <p class="text-xs text-gray-500 mt-2"><i class="fas fa-info-circle"></i> Edit live – React, Vue, or vanilla JS.</p>
-      </div>
-
-      <!-- AI & ML Hub -->
-      <div class="content-card mb-6">
-        <h3 class="card-title flex items-center gap-2"><i class="fas fa-robot text-purple-400"></i> AI & ML Hub</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="home-card"><div class="flex items-start gap-2"><span class="text-xl">🧠</span><div><h4 class="text-white font-semibold text-sm">Meta-Llama-3-8B-Instruct</h4><p class="text-gray-400 text-xs">Fine-tuned for chat, 8k context, Apache 2.0.</p><span class="inline-block bg-purple-900 text-purple-300 text-xs px-2 py-0.5 rounded-full mt-1">2.3k ⭐ on HF</span></div></div></div>
-          <div class="home-card"><div class="flex items-start gap-2"><span class="text-xl">📚</span><div><h4 class="text-white font-semibold text-sm">ArXiv: FlashAttention-3</h4><p class="text-gray-400 text-xs">50% faster training on H100 GPUs.</p><span class="inline-block bg-purple-900 text-purple-300 text-xs px-2 py-0.5 rounded-full mt-1">new</span></div></div></div>
-          <div class="home-card"><div class="flex items-start gap-2"><span class="text-xl">🔬</span><div><h4 class="text-white font-semibold text-sm">Mistral-7B-v0.3</h4><p class="text-gray-400 text-xs">Function calling, Apache 2.0, 8k context.</p><span class="inline-block bg-purple-900 text-purple-300 text-xs px-2 py-0.5 rounded-full mt-1">1.7k ⭐ on HF</span></div></div></div>
-          <div class="home-card"><div class="flex items-start gap-2"><span class="text-xl">📊</span><div><h4 class="text-white font-semibold text-sm">Dataset: fineweb</h4><p class="text-gray-400 text-xs">100B tokens of cleaned web data.</p><span class="inline-block bg-purple-900 text-purple-300 text-xs px-2 py-0.5 rounded-full mt-1">890 downloads</span></div></div></div>
-        </div>
-        <div class="mt-3 text-right"><a href="https://huggingface.co" target="_blank" class="text-purple-400 hover:underline text-sm">Explore Hugging Face →</a></div>
-      </div>
-
-      <!-- Developer Toolbox -->
-      <div class="content-card">
-        <h3 class="card-title flex items-center gap-2"><i class="fas fa-toolbox text-orange-400"></i> Developer Toolbox</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div><h4 class="text-gray-300 text-sm font-medium mb-1">JSON Formatter</h4><textarea id="jsonInput" class="input-dark text-xs font-mono" rows="4" placeholder='{"hello": "world"}'></textarea><button id="formatJsonBtn" class="btn-primary text-xs mt-2">Format JSON</button><div id="jsonOutput" class="tool-output mt-2 text-xs"></div></div>
-          <div><h4 class="text-gray-300 text-sm font-medium mb-1">Base64 Encoder / Decoder</h4><input type="text" id="base64Input" class="input-dark text-xs" placeholder="Text to encode or decode" /><div class="flex gap-2 mt-2"><button id="encodeBase64Btn" class="btn-primary text-xs">Encode</button><button id="decodeBase64Btn" class="btn-secondary text-xs">Decode</button></div><div id="base64Output" class="tool-output mt-2 text-xs"></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ========================================================== -->
-    <!-- TAB: FORUM (unchanged)                                     -->
-    <!-- ========================================================== -->
-    <div class="tab-content" id="tab-forum">
-      <div class="content-card">
-        <div class="flex flex-wrap items-center justify-between mb-6">
-          <h2 class="text-2xl font-bold flex items-center gap-2"><i class="fas fa-comments text-purple-400"></i> Tech Forum</h2>
-          <button id="newTopicBtn" class="btn-primary flex items-center gap-2"><i class="fas fa-plus"></i> New Topic</button>
-        </div>
-        <div id="forumList" class="space-y-3"><p class="text-gray-400 text-center py-8">Loading topics...</p></div>
-        <div id="newTopicForm" class="hidden mt-6 border-t border-[#1e2633] pt-6">
-          <h3 class="text-lg font-semibold mb-3 text-white">Create a New Topic</h3>
-          <form id="createTopicForm" enctype="multipart/form-data">
-            <div class="mb-3"><label class="block text-sm font-medium text-gray-300">Title</label><input type="text" id="topicTitle" class="input-dark" placeholder="What's on your mind?" required /></div>
-            <div class="mb-3"><label class="block text-sm font-medium text-gray-300">Content</label><textarea id="topicContent" rows="4" class="input-dark" placeholder="Share your thoughts..." required></textarea></div>
-            <div class="mb-3"><label class="block text-sm font-medium text-gray-300">Tags (choose up to 5)</label><div id="tagCheckboxes" class="flex flex-wrap gap-1 mt-1"></div></div>
-            <div class="mb-3"><label class="block text-sm font-medium text-gray-300">Attach file (image, video, or zip)</label><input type="file" id="topicAttachment" class="input-dark" accept="image/*,video/*,.zip" /><p class="text-xs text-gray-500 mt-1">Max size: 10MB · Bucket: <strong>forum-attachments</strong></p><p id="uploadError" class="text-xs text-red-400 mt-1 hidden"></p></div>
-            <div class="flex gap-3"><button type="submit" class="btn-primary">Post Topic</button><button type="button" id="cancelTopicBtn" class="btn-secondary">Cancel</button></div>
-          </form>
-        </div>
-        <div id="singleTopicView" class="hidden mt-6 border-t border-[#1e2633] pt-6">
-          <button id="backToForumBtn" class="text-purple-400 hover:underline mb-4 flex items-center gap-1"><i class="fas fa-arrow-left"></i> Back to forum</button>
-          <div id="topicDetail">
-            <h3 id="detailTitle" class="text-2xl font-bold text-white"></h3>
-            <p id="detailMeta" class="text-sm text-gray-400 mb-4"></p>
-            <div id="detailAttachment" class="mb-4"></div>
-            <div id="detailTags" class="mb-3 flex flex-wrap gap-1"></div>
-            <div id="detailContent" class="bg-[#1a1f2b] p-4 rounded-lg mb-4 whitespace-pre-wrap text-white"></div>
-            <h4 class="font-semibold mb-3 text-white">Replies</h4>
-            <div id="repliesList" class="space-y-3 mb-6"></div>
-            <form id="replyForm" class="mt-4"><div class="flex gap-3"><textarea id="replyContent" rows="2" class="input-dark flex-1" placeholder="Write a reply..." required></textarea><button type="submit" class="btn-primary self-end">Reply</button></div></form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ========================================================== -->
-    <!-- TAB: EDU (unchanged)                                       -->
-    <!-- ========================================================== -->
-    <div class="tab-content" id="tab-edu">
-      <div class="space-y-6">
-        <!-- Certificates -->
-        <div class="content-card"><h3 class="card-title flex items-center gap-2"><i class="fas fa-certificate text-purple-400"></i> Certificates of Completion</h3><p class="text-sm text-gray-400 mb-4">FED4Kids · FED‑ED · FED‑U — Digital Street Smarts</p><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div class="bg-[#1a1f2b] p-4 rounded-lg border border-[#1e2633]"><div class="flex items-center justify-between"><span class="font-medium text-white">FED4Kids</span><span class="text-xs text-green-400">✅ Completed</span></div><p class="text-xs text-gray-400 mt-1">Digital Citizenship · 2026-06-15</p><button class="btn-secondary text-xs mt-2" onclick="alert('Certificate PDF downloaded.')"><i class="fas fa-download"></i> Download</button></div><div class="bg-[#1a1f2b] p-4 rounded-lg border border-[#1e2633]"><div class="flex items-center justify-between"><span class="font-medium text-white">FED‑ED</span><span class="text-xs text-yellow-400">🔄 In Progress</span></div><p class="text-xs text-gray-400 mt-1">Core Protocol · 72% complete</p><div class="w-full bg-[#0b0e14] rounded-full h-1.5 mt-2"><div class="bg-purple-400 h-1.5 rounded-full" style="width:72%"></div></div></div><div class="bg-[#1a1f2b] p-4 rounded-lg border border-[#1e2633]"><div class="flex items-center justify-between"><span class="font-medium text-white">FED‑U</span><span class="text-xs text-gray-500">🔒 Locked</span></div><p class="text-xs text-gray-400 mt-1">Advanced Sovereignty · Tier 2+</p><button class="btn-secondary text-xs mt-2 opacity-50 cursor-not-allowed" disabled><i class="fas fa-lock"></i> Upgrade to Builder</button></div></div></div>
-
-        <!-- Progress -->
-        <div class="content-card"><h3 class="card-title flex items-center gap-2"><i class="fas fa-road text-blue-400"></i> Digital Street Smarts — Progress</h3><div class="space-y-2"><div><span class="text-sm text-gray-300">Lesson 1: Zero‑Knowledge Basics</span><span class="float-right text-xs text-green-400">✅</span></div><div><span class="text-sm text-gray-300">Lesson 2: Cryptography for Kids</span><span class="float-right text-xs text-green-400">✅</span></div><div><span class="text-sm text-gray-300">Lesson 3: Decentralized Identity</span><span class="float-right text-xs text-yellow-400">🔄 60%</span></div><div><span class="text-sm text-gray-300">Lesson 4: Smart Contracts 101</span><span class="float-right text-xs text-gray-500">🔒</span></div><div><span class="text-sm text-gray-300">Lesson 5: Sovereign Data Storage</span><span class="float-right text-xs text-gray-500">🔒</span></div></div><div class="mt-3 p-2 bg-[#1a1f2b] rounded-lg border border-[#1e2633] text-xs text-gray-400"><i class="fas fa-info-circle"></i> Next lesson unlocks in 12 days (Slow Unlock System)</div></div>
-
-        <!-- Calendar -->
-        <div class="content-card"><h3 class="card-title flex items-center gap-2"><i class="fas fa-calendar-alt text-blue-400"></i> FED Event Calendar</h3><p class="text-sm text-gray-400 mb-4">Live schedule · Office hours · Community calls</p><div class="bg-[#0b0e14] rounded-lg border border-[#1e2633] overflow-hidden" style="height:300px;"><iframe src="https://calendar.google.com/calendar/embed?src=fed.community%40gmail.com&ctz=UTC" style="border:0;width:100%;height:100%;" frameborder="0" scrolling="no"></iframe></div><p class="text-xs text-gray-500 mt-2"><i class="fas fa-sync-alt"></i> Syncs with your FED‑Passkey calendar</p></div>
-
-        <!-- Subscription Tiers -->
-        <div class="content-card"><h3 class="card-title flex items-center gap-2"><i class="fas fa-crown text-yellow-400"></i> Subscription & Access</h3><p class="text-sm text-gray-400 mb-4">Your current tier: <span class="font-medium text-purple-400" id="eduTierDisplay">Explorer</span></p><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div class="bg-[#1a1f2b] p-4 rounded-lg border border-[#1e2633]"><div class="flex items-center gap-2"><span class="font-bold text-white">Explorer</span><span class="tier-badge tier-explorer">FREE</span></div><ul class="text-xs text-gray-300 mt-2 space-y-1"><li>✓ Early access to videos</li><li>✓ Discord / Matrix channels</li><li>✓ Basic dashboard</li></ul><button class="btn-secondary text-xs mt-3 w-full" disabled>Current</button></div><div class="bg-[#1a1f2b] p-4 rounded-lg border border-[#1e2633]"><div class="flex items-center gap-2"><span class="font-bold text-white">Builder</span><span class="tier-badge tier-builder">$19/mo</span></div><ul class="text-xs text-gray-300 mt-2 space-y-1"><li>✓ All Explorer perks</li><li>✓ Code Vault access</li><li>✓ Beta studio tools</li><li>✓ AI Sports Simulator</li></ul><button class="btn-primary text-xs mt-3 w-full" onclick="upgradeTier('builder')">Upgrade</button></div><div class="bg-[#1a1f2b] p-4 rounded-lg border border-purple-500/50"><div class="flex items-center gap-2"><span class="font-bold text-white">VIP</span><span class="tier-badge tier-vip">$49/mo</span></div><ul class="text-xs text-gray-300 mt-2 space-y-1"><li>✓ All Builder perks</li><li>✓ Full commercial rights</li><li>✓ Automated trend strategies</li><li>✓ FED‑OS alpha access</li></ul><button class="btn-primary text-xs mt-3 w-full" onclick="upgradeTier('vip')">Upgrade</button></div></div></div>
-
-        <!-- Slow Unlock -->
-        <div class="content-card"><h3 class="card-title flex items-center gap-2"><i class="fas fa-clock text-purple-400"></i> Slow Unlock System</h3><p class="text-sm text-gray-400 mb-4">New content packets unlock every 30 days to maximize retention.</p><div class="unlock-timeline pl-4 space-y-3"><div class="unlock-item unlocked"><span class="font-medium text-white">Packet 1: Foundations</span><span class="text-xs text-green-400 ml-2">✅ Unlocked</span><p class="text-xs text-gray-400">Videos · Discord access · Basic dashboard</p></div><div class="unlock-item unlocked"><span class="font-medium text-white">Packet 2: Builder Tools</span><span class="text-xs text-green-400 ml-2">✅ Unlocked</span><p class="text-xs text-gray-400">Code Vault · Beta studio tools</p></div><div class="unlock-item locked"><span class="font-medium text-white">Packet 3: AI & Automation</span><span class="text-xs text-red-400 ml-2">🔒 12 days</span><p class="text-xs text-gray-400">AI Sports Sim · Predictive formulas</p></div><div class="unlock-item locked"><span class="font-medium text-white">Packet 4: Sovereign Suite</span><span class="text-xs text-red-400 ml-2">🔒 42 days</span><p class="text-xs text-gray-400">FED‑OS alpha · Commercial rights</p></div></div><div class="mt-4 p-3 bg-[#1a1f2b] rounded-lg border border-[#1e2633] text-sm"><i class="fas fa-rocket text-purple-400"></i> <span class="text-gray-300">Next unlock in <span class="text-white font-bold">12 days</span> — stay active to accelerate!</span></div></div>
-      </div>
-    </div>
-
-    <!-- ========================================================== -->
-    <!-- TAB: PROFILE (unchanged)                                   -->
-    <!-- ========================================================== -->
-    <div class="tab-content" id="tab-profile">
-      <div class="content-card">
-        <h3 class="card-title flex items-center gap-2"><i class="fas fa-user-edit text-purple-400"></i> Your Profile</h3>
-        <p class="text-sm text-gray-400 mb-4">Choose a username (publicly visible) and manage your account.</p>
-        <form id="profileForm" class="space-y-4">
-          <div><label class="block text-sm font-medium text-gray-300">Username</label><input type="text" id="profileUsername" class="input-dark" placeholder="Choose a unique username" /><p class="text-xs text-gray-500 mt-1">This will be shown in forum posts instead of your email.</p></div>
-          <div><label class="block text-sm font-medium text-gray-300">Email (read-only)</label><input type="email" id="profileEmail" class="input-dark opacity-50 cursor-not-allowed" disabled /></div>
-          <button type="submit" class="btn-primary">Update Profile</button>
-        </form>
-        <div id="profileMessage" class="text-sm mt-3 hidden"></div>
-      </div>
-    </div>
-
-    <!-- ========================================================== -->
-    <!-- TAB: MULTI-POSTER (Fed-Poster integration)                 -->
-    <!-- ========================================================== -->
-    <div class="tab-content" id="tab-multi-poster">
-      <div class="fed-poster-container">
-        <!-- Unified Post Card (copied from Fed-Poster) -->
-        <div class="card">
-          <div class="card-header"><h2>📤 Multi Platform Post</h2><span class="label-tag both">social</span></div>
-          <label>Message / Content</label>
-          <textarea id="unified-msg" placeholder="Write once, post everywhere…">Hello from Fed-Poster! 🚀</textarea>
-          <label>Upload Image (shared – works with Telegram, Bluesky, Mastodon, DeviantArt)</label>
-          <input type="file" id="unified-file" accept="image/*,video/*,audio/*" />
-          <div class="file-info" id="unified-file-info">No file selected</div>
-          <div class="check-group">
-            <label><input type="checkbox" id="unified-tg" checked /> Telegram <span class="label-tag other">online</span></label>
-            <label><input type="checkbox" id="unified-bsky" checked /> Bluesky <span class="label-tag both">social</span></label>
-            <label><input type="checkbox" id="unified-mastodon" checked /> Mastodon <span class="label-tag both">social</span></label>
-            <label><input type="checkbox" id="unified-discord" checked /> Discord <span class="label-tag other">online</span></label>
-            <label><input type="checkbox" id="unified-github-classic" checked /> GitHub Gist <span class="label-tag other">online</span></label>
-            <label><input type="checkbox" id="unified-github-repo" checked /> GitHub Repo <span class="label-tag other">online</span></label>
-            <label><input type="checkbox" id="unified-safew" checked /> SafeW <span class="label-tag other">online</span></label>
-            <label><input type="checkbox" id="unified-tumblr" checked /> Tumblr <span class="label-tag both">social</span></label>
-            <label><input type="checkbox" id="unified-patreon" checked /> Patreon <span class="label-tag patreon">paid</span></label>
-            <label><input type="checkbox" id="unified-deviantart" checked /> DeviantArt <span class="label-tag other">online</span></label>
-            <label><input type="checkbox" id="unified-buffer" checked /> Buffer Proxy <span class="label-tag proxy">Proxy</span></label>
-            <label><input type="checkbox" id="unified-wordpress" checked /> WordPress Jetpack <span class="label-tag proxy">Proxy</span></label>
-            <label><input type="checkbox" id="unified-stoat" checked /> Stoat <span class="label-tag stoat">Chat</span></label>
-          </div>
-          <div class="verify-status" id="verify-status"><div class="v-item"><span>⏳</span> Use the buttons below to test or send.</div></div>
-          <div class="actions">
-            <button class="btn-secondary" id="unified-verify-embeds">🔍 Verify Embeds</button>
-            <button class="btn-secondary" id="unified-test">🧪 Test All Platforms</button>
-            <button class="btn-secondary" id="unified-send-test">📤 Send Test Message</button>
-            <button class="btn-primary" id="unified-send">🚀 Post All</button>
-          </div>
-          <div id="unified-status" class="status info">Select platforms, then use the desired action.</div>
-          <div id="unified-results" class="unified-results"></div>
-        </div>
-
-        <!-- Affiliate & Analytics (added) -->
-        <div style="margin-top: 12px;">
-          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px;">
-            <label style="display:flex; align-items:center; gap:4px; font-size:12px; color:#8b949e;">
-              <input type="checkbox" id="affiliateToggle" />
-              🔗 Append affiliate link
-            </label>
-            <input type="text" id="affiliateLink" placeholder="https://example.com?ref=your-id" 
-                   style="flex:1; min-width:150px; padding:4px 8px; background:#0d1117; border:1px solid #30363d; border-radius:4px; color:#e6edf3; font-size:12px;" />
-          </div>
-          <div style="margin-top: 4px;">
-            <label style="font-size:12px; color:#8b949e; display:block;">📊 Analytics Webhook (Zapier)</label>
-            <input type="text" id="analyticsWebhook" placeholder="Zapier Webhook URL (optional)"
-                   style="width:100%; padding:4px 8px; background:#0d1117; border:1px solid #30363d; border-radius:4px; color:#e6edf3; font-size:12px;" />
-          </div>
-        </div>
-
-        <!-- Platform Settings (collapsible) -->
-        <div class="platform-settings-toggle">
-          <button id="togglePlatformSettings">⚙️ Configure Platforms</button>
-        </div>
-        <div class="platform-settings" id="platformSettings">
-          <div class="settings-grid">
-            <!-- Telegram -->
-            <div><label>Telegram Bot Token</label><input id="tg-token" type="password" placeholder="YOUR_TOKEN" class="input-dark" /><div class="saved-note">Auto‑saved</div><label>Chat ID</label><input id="tg-chat" type="text" placeholder="CHAT_ID" class="input-dark" /></div>
-            <!-- Bluesky -->
-            <div><label>Bluesky Handle</label><input id="bsky-handle" type="text" placeholder="handle.bsky.social" class="input-dark" /><label>App Password</label><input id="bsky-password" type="password" placeholder="APP_PASSWORD" class="input-dark" /></div>
-            <!-- Mastodon -->
-            <div><label>Mastodon Instance</label><input id="mastodon-instance" type="text" placeholder="https://mastodon.social" class="input-dark" /><label>Access Token</label><input id="mastodon-token" type="password" placeholder="TOKEN" class="input-dark" /></div>
-            <!-- Discord -->
-            <div><label>Discord Webhook</label><input id="discord-webhook" type="text" placeholder="WEBHOOK_URL" class="input-dark" /></div>
-            <!-- GitHub Gist -->
-            <div><label>GitHub Gist Token</label><input id="github-classic-token" type="password" placeholder="GITHUB_TOKEN" class="input-dark" /><label>Filename</label><input id="github-classic-filename" type="text" value="post.md" class="input-dark" /></div>
-            <!-- GitHub Repo -->
-            <div><label>GitHub Repo Token</label><input id="github-repo-token" type="password" placeholder="GITHUB_TOKEN" class="input-dark" /><label>Repo (owner/repo)</label><input id="github-repo-name" type="text" placeholder="user/repo" class="input-dark" /></div>
-            <!-- SafeW -->
-            <div><label>SafeW Token</label><input id="safew-token" type="password" placeholder="SAFEW_TOKEN" class="input-dark" /><label>Chat ID</label><input id="safew-chat" type="text" placeholder="CHAT_ID" class="input-dark" /></div>
-            <!-- Tumblr -->
-            <div><label>Tumblr Blog</label><input id="tumblr-blog" type="text" placeholder="blog.tumblr.com" class="input-dark" /><label>Consumer Key</label><input id="tumblr-ckey" type="text" placeholder="CONSUMER_KEY" class="input-dark" /></div>
-            <!-- Patreon -->
-            <div><label>Patreon Access Token</label><input id="patreon-access-token" type="password" placeholder="PATREON_TOKEN" class="input-dark" /><label>Campaign ID</label><input id="patreon-campaign-id" type="text" placeholder="CAMPAIGN_ID" class="input-dark" /></div>
-            <!-- DeviantArt -->
-            <div><label>DeviantArt Access Token</label><input id="deviantart-token" type="password" placeholder="DA_TOKEN" class="input-dark" /></div>
-            <!-- Buffer -->
-            <div><label>Buffer Access Token</label><input id="buffer-token" type="password" placeholder="BUFFER_TOKEN" class="input-dark" /><label>Profile IDs (comma)</label><input id="buffer-profiles" type="text" placeholder="123,456" class="input-dark" /></div>
-            <!-- WordPress -->
-            <div><label>WP Site URL</label><input id="wp-url" type="text" placeholder="https://your-site.com" class="input-dark" /><label>App Password</label><input id="wp-password" type="password" placeholder="APP_PASSWORD" class="input-dark" /></div>
-            <!-- Stoat -->
-            <div><label>Stoat Token</label><input id="stoat-token" type="password" placeholder="STOAT_TOKEN" class="input-dark" /><label>Channel ID</label><input id="stoat-channel" type="text" placeholder="CHANNEL_ID" class="input-dark" /></div>
-          </div>
-          <div style="margin-top:12px; text-align:right;">
-            <button class="btn-secondary" id="saveAllSettings">💾 Save All Settings</button>
-          </div>
-        </div>
-
-        <!-- Individual platform test/send buttons (optional, but we can keep them in collapsed form) -->
-        <div style="margin-top:12px; display:none;" id="platformButtons">
-          <!-- We'll not render all platform buttons here for brevity, but they are in the original -->
-        </div>
-      </div>
-    </div>
-
-  </main>
-
-  <!-- Footer -->
-  <footer class="max-w-7xl mx-auto px-4">
-    <div class="main-footer">
-      <div class="left">
-        <span>© 2026 PorJects</span>
-        <span>AI · Coding · Tech</span>
-        <span>built with ❤️ and caffeine</span>
-      </div>
-      <div class="right">
-        <a href="#">About</a>
-        <a href="#">Contact</a>
-        <a href="#">Terms</a>
-        <a href="#">Privacy</a>
-        <a href="#">Blog</a>
-        <a href="#">GitHub</a>
-        <a href="#">X</a>
-      </div>
-    </div>
-  </footer>
-</div>
-
-<!-- ============================================================ -->
-<!-- JAVASCRIPT – PorJects + Fed-Poster Logic                     -->
-<!-- ============================================================ -->
-<script>
-  // -----------------------------------------------------------------
-  // 1. SUPABASE INIT (PorJects)
-  // -----------------------------------------------------------------
-  const SUPABASE_URL = 'https://qyuczfpgydgqywgthgrz.supabase.co';
-  const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_2NLEuDREplLS9DgUXeA8Tw_f8MJOhCq';
-  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-
-  // -----------------------------------------------------------------
-  // 2. STATE (PorJects)
-  // -----------------------------------------------------------------
-  let currentUser = null;
-  let currentUserTier = 'explorer';
-  let currentTopicId = null;
-  let topicsSubscription = null;
-  let repliesSubscription = null;
-  let isSignUp = false;
-  let currentTab = 'home';
-
-  // -----------------------------------------------------------------
-  // 3. DOM REFS (PorJects)
-  // -----------------------------------------------------------------
-  const loginScreen = document.getElementById('loginScreen');
-  const dashboardScreen = document.getElementById('dashboardScreen');
-  const loginBtn = document.getElementById('loginBtn');
-  const loginModal = document.getElementById('loginModal');
-  const closeModal = document.getElementById('closeModal');
-  const loginForm = document.getElementById('loginForm');
-  const emailInput = document.getElementById('email');
-  const passwordInput = document.getElementById('password');
-  const submitBtn = document.getElementById('authSubmitBtn');
-  const messageEl = document.getElementById('message');
-  const formTitle = document.getElementById('formTitle');
-  const formSubtitle = document.getElementById('formSubtitle');
-  const toggleModeBtn = document.getElementById('toggleMode');
-  const toggleText = document.getElementById('toggleText');
-  const forgotBtn = document.getElementById('forgotBtn');
-  const logoutBtn = document.getElementById('logoutBtn');
-  const sidebarUserDisplay = document.getElementById('sidebarUserDisplay');
-  const sidebarTierBadge = document.getElementById('sidebarTierBadge');
-  const loadingOverlay = document.getElementById('loadingOverlay');
-
-  // Forum
-  const forumList = document.getElementById('forumList');
-  const newTopicBtn = document.getElementById('newTopicBtn');
-  const newTopicForm = document.getElementById('newTopicForm');
-  const createTopicForm = document.getElementById('createTopicForm');
-  const topicTitle = document.getElementById('topicTitle');
-  const topicContent = document.getElementById('topicContent');
-  const topicAttachment = document.getElementById('topicAttachment');
-  const cancelTopicBtn = document.getElementById('cancelTopicBtn');
-  const singleTopicView = document.getElementById('singleTopicView');
-  const backToForumBtn = document.getElementById('backToForumBtn');
-  const detailTitle = document.getElementById('detailTitle');
-  const detailMeta = document.getElementById('detailMeta');
-  const detailContent = document.getElementById('detailContent');
-  const detailAttachment = document.getElementById('detailAttachment');
-  const detailTags = document.getElementById('detailTags');
-  const repliesList = document.getElementById('repliesList');
-  const replyForm = document.getElementById('replyForm');
-  const replyContent = document.getElementById('replyContent');
-  const tagCheckboxes = document.getElementById('tagCheckboxes');
-  const uploadError = document.getElementById('uploadError');
-
-  // Profile
-  const profileForm = document.getElementById('profileForm');
-  const profileUsername = document.getElementById('profileUsername');
-  const profileEmail = document.getElementById('profileEmail');
-  const profileMessage = document.getElementById('profileMessage');
-  const eduTierDisplay = document.getElementById('eduTierDisplay');
-
-  // Tabs
-  const tabNav = document.getElementById('tabNav');
-  const tabButtons = tabNav.querySelectorAll('.tab-btn');
-  const tabContents = {
-    home: document.getElementById('tab-home'),
-    forum: document.getElementById('tab-forum'),
-    edu: document.getElementById('tab-edu'),
-    profile: document.getElementById('tab-profile'),
-    'multi-poster': document.getElementById('tab-multi-poster')
-  };
-
-  // Slideshow
-  const slides = document.querySelectorAll('.slide');
-  const dots = document.querySelectorAll('#slideDots span');
-  const prevBtn = document.getElementById('slidePrev');
-  const nextBtn = document.getElementById('slideNext');
-  let currentSlide = 0;
-  let slideInterval;
-
-  // Toolbox refs
-  const jsonInput = document.getElementById('jsonInput');
-  const jsonOutput = document.getElementById('jsonOutput');
-  const formatJsonBtn = document.getElementById('formatJsonBtn');
-  const base64Input = document.getElementById('base64Input');
-  const base64Output = document.getElementById('base64Output');
-  const encodeBase64Btn = document.getElementById('encodeBase64Btn');
-  const decodeBase64Btn = document.getElementById('decodeBase64Btn');
-
-  // -----------------------------------------------------------------
-  // 4. TAG DEFINITIONS (PorJects)
-  // -----------------------------------------------------------------
-  const PREDEFINED_TAGS = [
-    'Artificial Intelligence', 'Machine Learning', 'Deep Learning',
-    'Natural Language Processing', 'Computer Vision', 'Data Science',
-    'Web Development', 'Mobile Development', 'Cloud Computing',
-    'Cybersecurity', 'Blockchain', 'Internet of Things'
-  ];
-
-  // -----------------------------------------------------------------
-  // 5. TIER HELPERS (PorJects)
-  // -----------------------------------------------------------------
-  function getUserTier() {
-    const stored = localStorage.getItem('fed_user_tier');
-    if (stored && ['explorer','builder','vip'].includes(stored)) return stored;
-    return 'explorer';
-  }
-  function setUserTier(tier) {
-    if (['explorer','builder','vip'].includes(tier)) {
-      localStorage.setItem('fed_user_tier', tier);
-      currentUserTier = tier;
-      updateUIForTier();
-    }
-  }
-  function getTierLabel(t) {
-    const map = { explorer:'Explorer', builder:'Builder', vip:'VIP' };
-    return map[t] || 'Explorer';
-  }
-  function getTierBadge(t) {
-    const map = { explorer:'tier-explorer', builder:'tier-builder', vip:'tier-vip' };
-    return map[t] || 'tier-explorer';
-  }
-  function updateUIForTier() {
-    const label = getTierLabel(currentUserTier);
-    sidebarTierBadge.textContent = label;
-    sidebarTierBadge.className = 'tier-badge ' + getTierBadge(currentUserTier);
-    if (eduTierDisplay) eduTierDisplay.textContent = label;
-  }
-  window.upgradeTier = function(tier) {
-    if (tier === 'builder' || tier === 'vip') {
-      alert('⬆️ Upgrade to ' + getTierLabel(tier) + ' initiated. (Demo: tier set in localStorage)');
-      setUserTier(tier);
-    }
-  };
-
-  // -----------------------------------------------------------------
-  // 6. AUTH (PorJects)
-  // -----------------------------------------------------------------
-  async function loadUserProfile() {
-    if (!currentUser) return;
-    const { data, error } = await supabaseClient
-      .from('profiles')
-      .select('username, email')
-      .eq('id', currentUser.id)
-      .single();
-    if (error) {
-      console.error('Error loading profile:', error);
-      return;
-    }
-    if (data) {
-      profileUsername.value = data.username || '';
-      profileEmail.value = data.email;
-      const display = data.username || data.email;
-      sidebarUserDisplay.textContent = display;
-    }
-  }
-
-  function showDashboard(user) {
-    loginScreen.classList.add('hidden');
-    dashboardScreen.classList.remove('hidden');
-    currentUser = user;
-    currentUserTier = getUserTier();
-    updateUIForTier();
-    loadUserProfile().then(() => {});
-    switchTab('home');
-    loadTopics();
-    startSlideshow();
-    // Initialize Fed-Poster after DOM is ready
-    initFedPoster();
-  }
-
-  function showLogin() {
-    dashboardScreen.classList.add('hidden');
-    loginScreen.classList.remove('hidden');
-    if (topicsSubscription) topicsSubscription.unsubscribe();
-    if (repliesSubscription) repliesSubscription.unsubscribe();
-    stopSlideshow();
-  }
-
-  async function checkSession() {
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (session) {
-      showDashboard(session.user);
-    } else {
-      showLogin();
-    }
-  }
-
-  logoutBtn.addEventListener('click', async () => {
-    await supabaseClient.auth.signOut();
-  });
-
-  supabaseClient.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_IN' && session) {
-      showDashboard(session.user);
-      closeModalFunc();
-    }
-    if (event === 'SIGNED_OUT') {
-      showLogin();
-    }
-  });
-
-  function showLoading(text = 'Authenticating…') {
-    const loaderText = document.querySelector('.loader-text');
-    if (loaderText) loaderText.textContent = text;
-    loadingOverlay.classList.add('active');
-  }
-  function hideLoading() {
-    loadingOverlay.classList.remove('active');
-  }
-
-  function openModalFunc() {
-    loginModal.classList.add('active');
-    messageEl.classList.add('hidden');
-    messageEl.textContent = '';
-    loginForm.reset();
-    if (isSignUp) toggleModeFunc();
-    emailInput.focus();
-  }
-  function closeModalFunc() {
-    loginModal.classList.remove('active');
-    messageEl.classList.add('hidden');
-    messageEl.textContent = '';
-    loginBtn.focus();
-  }
-
-  loginBtn.addEventListener('click', openModalFunc);
-  closeModal.addEventListener('click', closeModalFunc);
-  loginModal.addEventListener('click', (e) => {
-    if (e.target === loginModal) closeModalFunc();
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && loginModal.classList.contains('active')) closeModalFunc();
-  });
-
-  function toggleModeFunc() {
-    isSignUp = !isSignUp;
-    if (isSignUp) {
-      formTitle.textContent = 'Create Account';
-      formSubtitle.textContent = 'Join the community';
-      submitBtn.textContent = 'Sign Up';
-      toggleModeBtn.textContent = 'Sign In';
-      toggleText.textContent = 'Already a citizen?';
-    } else {
-      formTitle.textContent = 'Sign In';
-      formSubtitle.textContent = 'Enter your credentials';
-      submitBtn.textContent = 'Sign In';
-      toggleModeBtn.textContent = 'Sign Up';
-      toggleText.textContent = 'New citizen?';
-    }
-    messageEl.classList.add('hidden');
-    messageEl.textContent = '';
-    loginForm.reset();
-  }
-  toggleModeBtn.addEventListener('click', toggleModeFunc);
-
-  forgotBtn.addEventListener('click', async () => {
-    const email = emailInput.value.trim();
-    if (!email) {
-      messageEl.textContent = 'Please enter your email address first.';
-      messageEl.className = 'text-sm mt-3 text-center text-yellow-400';
-      messageEl.classList.remove('hidden');
-      return;
-    }
-    try {
-      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + window.location.pathname,
-      });
-      if (error) throw error;
-      messageEl.textContent = '📧 Password reset email sent! Check your inbox.';
-      messageEl.className = 'text-sm mt-3 text-center text-blue-400';
-      messageEl.classList.remove('hidden');
-    } catch (err) {
-      messageEl.textContent = err.message || 'Failed to send reset email.';
-      messageEl.className = 'text-sm mt-3 text-center text-red-400';
-      messageEl.classList.remove('hidden');
-    }
-  });
-
-  loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
-    showLoading(isSignUp ? 'Creating your account…' : 'Signing in…');
-    submitBtn.disabled = true;
-    submitBtn.textContent = isSignUp ? 'Creating...' : 'Signing in...';
-    messageEl.classList.add('hidden');
-    messageEl.textContent = '';
-
-    try {
-      let response;
-      if (isSignUp) {
-        response = await supabaseClient.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: window.location.origin + window.location.pathname }
+        navToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('open');
+            const icon = navToggle.querySelector('i');
+            icon.className = navLinks.classList.contains('open') ? 'fas fa-times' : 'fas fa-bars';
         });
-        if (response.error) throw response.error;
-        if (!response.data.session) {
-          messageEl.textContent = '📧 Please check your email to confirm your account.';
-          messageEl.className = 'text-sm mt-3 text-center text-blue-400';
-          messageEl.classList.remove('hidden');
-        } else {
-          messageEl.textContent = '✅ Account created! You are now signed in.';
-          messageEl.className = 'text-sm mt-3 text-center text-green-400';
-          messageEl.classList.remove('hidden');
-          setUserTier('explorer');
-        }
-      } else {
-        response = await supabaseClient.auth.signInWithPassword({ email, password });
-        if (response.error) throw response.error;
-        messageEl.textContent = '✅ Logged in as ' + response.data.user.email;
-        messageEl.className = 'text-sm mt-3 text-center text-green-400';
-        messageEl.classList.remove('hidden');
-        setTimeout(closeModalFunc, 1500);
-      }
-    } catch (err) {
-      let errorMsg = err.message;
-      if (err.message.includes('Email not confirmed')) errorMsg = 'Please verify your email address before logging in. Check your inbox.';
-      else if (err.message.includes('Invalid login credentials')) errorMsg = 'Invalid email or password.';
-      else if (err.message.includes('User already registered')) errorMsg = 'This email is already registered. Please sign in instead.';
-      messageEl.textContent = errorMsg;
-      messageEl.className = 'text-sm mt-3 text-center text-red-400';
-      messageEl.classList.remove('hidden');
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = isSignUp ? 'Sign Up' : 'Sign In';
-      setTimeout(hideLoading, 800);
-    }
-  });
 
-  // -----------------------------------------------------------------
-  // 7. TAB SWITCHING (PorJects)
-  // -----------------------------------------------------------------
-  function switchTab(tabId) {
-    currentTab = tabId;
-    tabButtons.forEach(btn => btn.classList.remove('active'));
-    Object.values(tabContents).forEach(el => el.classList.remove('active'));
-    const activeBtn = Array.from(tabButtons).find(btn => btn.dataset.tab === tabId);
-    if (activeBtn) activeBtn.classList.add('active');
-    if (tabContents[tabId]) tabContents[tabId].classList.add('active');
-    if (tabId !== 'forum' && repliesSubscription) {
-      repliesSubscription.unsubscribe();
-      repliesSubscription = null;
-    }
-    if (tabId === 'forum') loadTopics();
-    if (tabId === 'profile') loadUserProfile();
-    if (tabId === 'multi-poster') {
-      // Initialize Fed-Poster if not already
-      initFedPoster();
-    }
-  }
-
-  tabButtons.forEach(btn => {
-    btn.addEventListener('click', function() {
-      switchTab(this.dataset.tab);
-    });
-  });
-
-  // -----------------------------------------------------------------
-  // 8. FORUM LOGIC (PorJects)
-  // -----------------------------------------------------------------
-  function renderTagCheckboxes() {
-    let html = '';
-    PREDEFINED_TAGS.forEach(tag => {
-      html += '<label class="tag-checkbox"><input type="checkbox" name="tags" value="' + tag + '" /> ' + tag + '</label>';
-    });
-    tagCheckboxes.innerHTML = html;
-  }
-  renderTagCheckboxes();
-
-  newTopicBtn.addEventListener('click', () => {
-    newTopicForm.classList.toggle('hidden');
-    if (!newTopicForm.classList.contains('hidden')) topicTitle.focus();
-  });
-  cancelTopicBtn.addEventListener('click', () => {
-    newTopicForm.classList.add('hidden');
-    createTopicForm.reset();
-    uploadError.classList.add('hidden');
-  });
-
-  createTopicForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const title = topicTitle.value.trim();
-    const content = topicContent.value.trim();
-    const selectedTags = Array.from(document.querySelectorAll('input[name="tags"]:checked')).map(el => el.value);
-    const file = topicAttachment.files[0];
-
-    if (!title || !content) { alert('Title and content are required.'); return; }
-
-    const submitButton = createTopicForm.querySelector('button[type="submit"]');
-    submitButton.disabled = true;
-    submitButton.textContent = 'Posting...';
-    uploadError.classList.add('hidden');
-
-    try {
-      let attachmentUrl = null;
-      if (file) {
-        if (file.size > 10 * 1024 * 1024) {
-          uploadError.textContent = 'File size exceeds 10MB limit.';
-          uploadError.classList.remove('hidden');
-          submitButton.disabled = false;
-          submitButton.textContent = 'Post Topic';
-          return;
-        }
-        const fileExt = file.name.split('.').pop();
-        const filePath = currentUser.id + '/' + Date.now() + '.' + fileExt;
-        const { error: uploadErr } = await supabaseClient.storage
-          .from('forum-attachments')
-          .upload(filePath, file, { cacheControl: '3600', upsert: false });
-        if (uploadErr) {
-          if (uploadErr.message.includes('bucket not found')) {
-            uploadError.textContent = 'Storage bucket "forum-attachments" not found. Please create it in Supabase dashboard.';
-            uploadError.classList.remove('hidden');
-            submitButton.disabled = false;
-            submitButton.textContent = 'Post Topic';
-            return;
-          }
-          throw uploadErr;
-        }
-        const { data: urlData } = supabaseClient.storage
-          .from('forum-attachments')
-          .getPublicUrl(filePath);
-        attachmentUrl = urlData.publicUrl;
-      }
-
-      const { error } = await supabaseClient
-        .from('topics')
-        .insert({
-          title,
-          content,
-          user_id: currentUser.id,
-          attachment_url: attachmentUrl,
-          tags: selectedTags.length ? selectedTags : null,
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('open');
+                document.querySelector('#navToggle i').className = 'fas fa-bars';
+            });
         });
-      if (error) throw error;
 
-      createTopicForm.reset();
-      newTopicForm.classList.add('hidden');
-      loadTopics();
-    } catch (err) {
-      console.error('Error creating topic:', err);
-      alert('Failed to create topic: ' + err.message);
-    } finally {
-      submitButton.disabled = false;
-      submitButton.textContent = 'Post Topic';
-    }
-  });
+        // ─── Waveform Mini ─────────────────────────────
+        const waveformMini = document.getElementById('waveformMini');
+        const barCount = 30;
 
-  async function loadTopics() {
-    if (!currentUser) return;
-    try {
-      const { data: topics, error } = await supabaseClient
-        .from('topics')
-        .select('id, title, content, created_at, user_id, attachment_url, tags, profiles ( username, email )')
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      if (topics.length === 0) {
-        forumList.innerHTML = '<p class="text-gray-400 text-center py-8">No topics yet. Be the first to start a discussion!</p>';
-        return;
-      }
-      const topicsWithCounts = await Promise.all(topics.map(async (topic) => {
-        const { count, error } = await supabaseClient
-          .from('replies')
-          .select('*', { count: 'exact', head: true })
-          .eq('topic_id', topic.id);
-        if (error) throw error;
-        return { ...topic, replyCount: count || 0 };
-      }));
+        function buildMiniWaveform() {
+            waveformMini.innerHTML = '';
+            for (let i = 0; i < barCount; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                const h = 6 + Math.random() * 28;
+                bar.style.height = h + 'px';
+                bar.style.animationDelay = (Math.random() * 0.5) + 's';
+                if (Math.random() < 0.15) {
+                    bar.classList.add('silent');
+                    bar.style.height = '8px';
+                }
+                waveformMini.appendChild(bar);
+            }
+        }
+        buildMiniWaveform();
 
-      let html = '';
-      topicsWithCounts.forEach(topic => {
-        const displayName = topic.profiles?.username || topic.profiles?.email || 'Unknown';
-        const date = new Date(topic.created_at).toLocaleDateString();
-        const tags = topic.tags || [];
-        const tagHtml = tags.map(t => '<span class="tag-badge">' + t + '</span>').join('');
-        const attachmentIcon = topic.attachment_url ? '<i class="fas fa-paperclip text-gray-500 ml-1"></i>' : '';
-        html += '<div class="topic-card bg-[#1a1f2b] hover:bg-[#1e2633] p-4 rounded-lg border border-[#1e2633]" data-topic-id="' + topic.id + '">' +
-          '<div class="flex justify-between items-start">' +
-          '<div><h3 class="font-semibold text-lg text-white">' + topic.title + '</h3>' +
-          '<p class="text-sm text-gray-400">By ' + displayName + ' · ' + date + ' ' + attachmentIcon + '</p>' +
-          '<div class="mt-1 flex flex-wrap gap-1">' + tagHtml + '</div></div>' +
-          '<span class="bg-purple-900 text-purple-300 text-xs px-3 py-1 rounded-full">' + topic.replyCount + ' replies</span>' +
-          '</div><p class="text-gray-300 mt-1 line-clamp-2">' + topic.content + '</p></div>';
-      });
-      forumList.innerHTML = html;
+        // ─── Poster Sidebar Interaction ──────────────
+        const posterOpts = document.querySelectorAll('.poster-sidebar-mini .opt');
+        const posterText = document.querySelector('.poster-card-mini .text');
 
-      document.querySelectorAll('.topic-card').forEach(card => {
-        card.addEventListener('click', () => {
-          const topicId = card.dataset.topicId;
-          showTopicDetail(topicId);
+        posterOpts.forEach(opt => {
+            opt.addEventListener('click', () => {
+                posterOpts.forEach(o => o.classList.remove('active'));
+                opt.classList.add('active');
+                const label = opt.textContent.trim();
+                if (label.includes('Theme')) {
+                    posterText.textContent = '🚀 New episode out now! No more awkward silences.';
+                } else if (label.includes('Text')) {
+                    posterText.textContent = '📝 "Silence is not empty, it is full of answers."';
+                } else if (label.includes('Hashtags')) {
+                    posterText.textContent = '#Podcast #AI #ContentCreator #FEDOS';
+                }
+            });
         });
-      });
 
-      if (topicsSubscription) topicsSubscription.unsubscribe();
-      topicsSubscription = supabaseClient
-        .channel('public:topics')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'topics' }, () => loadTopics())
-        .subscribe();
-    } catch (err) {
-      console.error('Error loading topics:', err);
-      forumList.innerHTML = '<p class="text-red-400 text-center py-8">Failed to load topics. Please refresh.</p>';
-    }
-  }
-
-  async function showTopicDetail(topicId) {
-    if (repliesSubscription) repliesSubscription.unsubscribe();
-    currentTopicId = topicId;
-    try {
-      const { data: topic, error: topicErr } = await supabaseClient
-        .from('topics')
-        .select('id, title, content, created_at, user_id, attachment_url, tags, profiles ( username, email )')
-        .eq('id', topicId)
-        .single();
-      if (topicErr) throw topicErr;
-      const { data: replies, error: repliesErr } = await supabaseClient
-        .from('replies')
-        .select('id, content, created_at, user_id, profiles ( username, email )')
-        .eq('topic_id', topicId)
-        .order('created_at', { ascending: true });
-      if (repliesErr) throw repliesErr;
-
-      detailTitle.textContent = topic.title;
-      const displayName = topic.profiles?.username || topic.profiles?.email || 'Unknown';
-      const date = new Date(topic.created_at).toLocaleString();
-      detailMeta.textContent = 'By ' + displayName + ' · ' + date;
-      detailContent.textContent = topic.content;
-
-      if (topic.attachment_url) {
-        const url = topic.attachment_url;
-        const ext = url.split('.').pop().toLowerCase();
-        let html = '';
-        if (['jpg','jpeg','png','gif','webp','svg'].includes(ext)) {
-          html = '<img src="' + url + '" alt="Attachment" class="attachment-preview" />';
-        } else if (['mp4','webm','ogg'].includes(ext)) {
-          html = '<video controls class="attachment-preview"><source src="' + url + '" type="video/' + ext + '"></video>';
-        } else if (ext === 'zip') {
-          html = '<a href="' + url + '" target="_blank" class="attachment-link"><i class="fas fa-file-archive"></i> Download ZIP</a>';
-        } else {
-          html = '<a href="' + url + '" target="_blank" class="attachment-link"><i class="fas fa-file"></i> Download attachment</a>';
-        }
-        detailAttachment.innerHTML = html;
-      } else {
-        detailAttachment.innerHTML = '';
-      }
-
-      const tags = topic.tags || [];
-      detailTags.innerHTML = tags.map(t => '<span class="tag-badge">' + t + '</span>').join('');
-
-      if (replies.length === 0) {
-        repliesList.innerHTML = '<p class="text-gray-400 text-sm">No replies yet. Be the first to respond!</p>';
-      } else {
-        let html = '';
-        replies.forEach(reply => {
-          const replyName = reply.profiles?.username || reply.profiles?.email || 'Unknown';
-          const replyDate = new Date(reply.created_at).toLocaleString();
-          html += '<div class="reply-item bg-[#1a1f2b] p-3 rounded-lg" data-reply-id="' + reply.id + '">' +
-            '<div class="flex justify-between text-sm text-gray-400"><span class="font-medium text-white">' + replyName + '</span><span>' + replyDate + '</span></div>' +
-            '<p class="mt-1 text-white">' + reply.content + '</p></div>';
+        // ─── Smooth Scroll ─────────────────────────────
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                const target = document.querySelector(targetId);
+                if (target) {
+                    e.preventDefault();
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
         });
-        repliesList.innerHTML = html;
-      }
 
-      forumList.classList.add('hidden');
-      newTopicForm.classList.add('hidden');
-      singleTopicView.classList.remove('hidden');
-
-      repliesSubscription = supabaseClient
-        .channel('public:replies:topic_id=eq.' + topicId)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'replies', filter: 'topic_id=eq.' + topicId }, () => {
-          showTopicDetail(topicId);
-        })
-        .subscribe();
-    } catch (err) {
-      console.error('Error loading topic detail:', err);
-      alert('Failed to load topic details.');
-    }
-  }
-
-  backToForumBtn.addEventListener('click', () => {
-    singleTopicView.classList.add('hidden');
-    forumList.classList.remove('hidden');
-    if (repliesSubscription) repliesSubscription.unsubscribe();
-  });
-
-  replyForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const content = replyContent.value.trim();
-    if (!content || !currentTopicId) return;
-    try {
-      const { error } = await supabaseClient
-        .from('replies')
-        .insert({ topic_id: currentTopicId, content, user_id: currentUser.id });
-      if (error) throw error;
-      replyContent.value = '';
-      showTopicDetail(currentTopicId);
-    } catch (err) {
-      console.error('Error posting reply:', err);
-      alert('Failed to post reply: ' + err.message);
-    }
-  });
-
-  // -----------------------------------------------------------------
-  // 9. PROFILE UPDATE (PorJects)
-  // -----------------------------------------------------------------
-  profileForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const username = profileUsername.value.trim();
-    if (!username) {
-      showProfileMessage('Username cannot be empty.', 'text-yellow-400');
-      return;
-    }
-    try {
-      const { error } = await supabaseClient
-        .from('profiles')
-        .update({ username })
-        .eq('id', currentUser.id);
-      if (error) throw error;
-      showProfileMessage('✅ Profile updated successfully!', 'text-green-400');
-      const display = username || currentUser.email;
-      sidebarUserDisplay.textContent = display;
-      loadTopics();
-    } catch (err) {
-      showProfileMessage('❌ ' + err.message, 'text-red-400');
-    }
-  });
-
-  function showProfileMessage(msg, className = '') {
-    profileMessage.textContent = msg;
-    profileMessage.className = 'text-sm mt-3 ' + className;
-    profileMessage.classList.remove('hidden');
-    setTimeout(() => profileMessage.classList.add('hidden'), 5000);
-  }
-
-  // -----------------------------------------------------------------
-  // 10. SLIDESHOW (PorJects)
-  // -----------------------------------------------------------------
-  function startSlideshow() {
-    if (slideInterval) clearInterval(slideInterval);
-    slideInterval = setInterval(nextSlide, 5000);
-  }
-  function stopSlideshow() {
-    if (slideInterval) { clearInterval(slideInterval); slideInterval = null; }
-  }
-  function goToSlide(index) {
-    if (index < 0) index = slides.length - 1;
-    if (index >= slides.length) index = 0;
-    slides.forEach((s, i) => s.classList.toggle('active', i === index));
-    dots.forEach((d, i) => d.classList.toggle('active', i === index));
-    currentSlide = index;
-  }
-  function nextSlide() { goToSlide(currentSlide + 1); }
-  function prevSlide() { goToSlide(currentSlide - 1); }
-  if (nextBtn) {
-    nextBtn.addEventListener('click', function() { clearInterval(slideInterval); nextSlide(); startSlideshow(); });
-    prevBtn.addEventListener('click', function() { clearInterval(slideInterval); prevSlide(); startSlideshow(); });
-    dots.forEach(dot => {
-      dot.addEventListener('click', function() {
-        clearInterval(slideInterval);
-        goToSlide(parseInt(this.dataset.index));
-        startSlideshow();
-      });
-    });
-    const container = document.getElementById('slideshow');
-    container.addEventListener('mouseenter', function() { clearInterval(slideInterval); });
-    container.addEventListener('mouseleave', startSlideshow);
-  }
-
-  // -----------------------------------------------------------------
-  // 11. TOOLBOX (PorJects)
-  // -----------------------------------------------------------------
-  formatJsonBtn.addEventListener('click', () => {
-    const raw = jsonInput.value.trim();
-    if (!raw) { jsonOutput.textContent = 'Paste some JSON first.'; return; }
-    try {
-      const parsed = JSON.parse(raw);
-      jsonOutput.textContent = JSON.stringify(parsed, null, 2);
-    } catch {
-      jsonOutput.textContent = '❌ Invalid JSON. Check syntax.';
-    }
-  });
-  encodeBase64Btn.addEventListener('click', () => {
-    const input = base64Input.value;
-    if (!input) { base64Output.textContent = 'Enter text to encode.'; return; }
-    try {
-      base64Output.textContent = btoa(unescape(encodeURIComponent(input)));
-    } catch {
-      base64Output.textContent = '❌ Encoding failed.';
-    }
-  });
-  decodeBase64Btn.addEventListener('click', () => {
-    const input = base64Input.value;
-    if (!input) { base64Output.textContent = 'Enter Base64 to decode.'; return; }
-    try {
-      base64Output.textContent = decodeURIComponent(escape(atob(input)));
-    } catch {
-      base64Output.textContent = '❌ Invalid Base64 string.';
-    }
-  });
-
-  // ================================================================
-  // 12. FED-POSTER INITIALIZATION (Multi Platform Post)
-  // ================================================================
-  let fedPosterInitialized = false;
-
-  function initFedPoster() {
-    if (fedPosterInitialized) return;
-    fedPosterInitialized = true;
-
-    // ---- Helper: get file data ----
-    function getFileData(fileInput) {
-      if (!fileInput || !fileInput.files || fileInput.files.length === 0) return null;
-      return fileInput.files[0];
-    }
-    function updateFileInfo(fileInput, infoEl) {
-      const file = getFileData(fileInput);
-      infoEl.textContent = file ? '📎 ' + file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)' : 'No file selected';
-    }
-
-    // ---- DOM refs for unified post ----
-    const unifiedMsg = document.getElementById('unified-msg');
-    const unifiedFile = document.getElementById('unified-file');
-    const unifiedFileInfo = document.getElementById('unified-file-info');
-    const unifiedStatus = document.getElementById('unified-status');
-    const unifiedResults = document.getElementById('unified-results');
-    const unifiedSend = document.getElementById('unified-send');
-    const unifiedTest = document.getElementById('unified-test');
-    const unifiedSendTest = document.getElementById('unified-send-test');
-    const unifiedVerifyEmbeds = document.getElementById('unified-verify-embeds');
-    const verifyStatus = document.getElementById('verify-status');
-
-    // ---- Affiliate & Analytics ----
-    const affToggle = document.getElementById('affiliateToggle');
-    const affLink = document.getElementById('affiliateLink');
-    const analyticsWebhook = document.getElementById('analyticsWebhook');
-
-    // Load saved values
-    affToggle.checked = localStorage.getItem('affiliate_enabled') === 'true';
-    affLink.value = localStorage.getItem('affiliate_link') || '';
-    analyticsWebhook.value = localStorage.getItem('analytics_webhook') || '';
-
-    affToggle.addEventListener('change', () => {
-      localStorage.setItem('affiliate_enabled', affToggle.checked);
-    });
-    affLink.addEventListener('input', () => {
-      localStorage.setItem('affiliate_link', affLink.value);
-    });
-    analyticsWebhook.addEventListener('input', () => {
-      localStorage.setItem('analytics_webhook', analyticsWebhook.value);
-    });
-
-    // ---- Platform Settings toggle ----
-    const toggleSettingsBtn = document.getElementById('togglePlatformSettings');
-    const platformSettings = document.getElementById('platformSettings');
-    toggleSettingsBtn.addEventListener('click', () => {
-      platformSettings.classList.toggle('open');
-      toggleSettingsBtn.textContent = platformSettings.classList.contains('open') ? '🔒 Hide Settings' : '⚙️ Configure Platforms';
-    });
-
-    // ---- Load all platform credentials from localStorage ----
-    function loadCredentials() {
-      const map = {
-        'tg-token': 'tg_token',
-        'tg-chat': 'tg_chat',
-        'bsky-handle': 'bsky_handle',
-        'bsky-password': 'bsky_password',
-        'mastodon-instance': 'mastodon_instance',
-        'mastodon-token': 'mastodon_token',
-        'discord-webhook': 'discord_webhook',
-        'github-classic-token': 'github_classic_token',
-        'github-classic-filename': 'github_classic_filename',
-        'github-repo-token': 'github_repo_token',
-        'github-repo-name': 'github_repo_name',
-        'safew-token': 'safew_token',
-        'safew-chat': 'safew_chat',
-        'tumblr-blog': 'tumblr_blog',
-        'tumblr-ckey': 'tumblr_ckey',
-        'patreon-access-token': 'patreon_access_token',
-        'patreon-campaign-id': 'patreon_campaign_id',
-        'deviantart-token': 'deviantart_access_token',
-        'buffer-token': 'buffer_token',
-        'buffer-profiles': 'buffer_profiles',
-        'wp-url': 'wp_url',
-        'wp-password': 'wp_password',
-        'stoat-token': 'stoat_token',
-        'stoat-channel': 'stoat_channel'
-      };
-      for (const [elId, storageKey] of Object.entries(map)) {
-        const el = document.getElementById(elId);
-        if (el) {
-          const val = localStorage.getItem(storageKey);
-          if (val) el.value = val;
-        }
-      }
-    }
-    loadCredentials();
-
-    // ---- Save all settings ----
-    document.getElementById('saveAllSettings').addEventListener('click', () => {
-      const map = {
-        'tg-token': 'tg_token',
-        'tg-chat': 'tg_chat',
-        'bsky-handle': 'bsky_handle',
-        'bsky-password': 'bsky_password',
-        'mastodon-instance': 'mastodon_instance',
-        'mastodon-token': 'mastodon_token',
-        'discord-webhook': 'discord_webhook',
-        'github-classic-token': 'github_classic_token',
-        'github-classic-filename': 'github_classic_filename',
-        'github-repo-token': 'github_repo_token',
-        'github-repo-name': 'github_repo_name',
-        'safew-token': 'safew_token',
-        'safew-chat': 'safew_chat',
-        'tumblr-blog': 'tumblr_blog',
-        'tumblr-ckey': 'tumblr_ckey',
-        'patreon-access-token': 'patreon_access_token',
-        'patreon-campaign-id': 'patreon_campaign_id',
-        'deviantart-token': 'deviantart_access_token',
-        'buffer-token': 'buffer_token',
-        'buffer-profiles': 'buffer_profiles',
-        'wp-url': 'wp_url',
-        'wp-password': 'wp_password',
-        'stoat-token': 'stoat_token',
-        'stoat-channel': 'stoat_channel'
-      };
-      for (const [elId, storageKey] of Object.entries(map)) {
-        const el = document.getElementById(elId);
-        if (el) {
-          localStorage.setItem(storageKey, el.value.trim());
-        }
-      }
-      unifiedStatus.className = 'status success';
-      unifiedStatus.textContent = '✅ All platform settings saved!';
-      unifiedStatus.style.display = 'block';
-      setTimeout(() => { unifiedStatus.style.display = 'none'; }, 2000);
-    });
-
-    // ---- Unified file input ----
-    unifiedFile.addEventListener('change', () => updateFileInfo(unifiedFile, unifiedFileInfo));
-
-    // ---- Unified message auto-save ----
-    const savedUnified = localStorage.getItem('unified_msg') || '';
-    if (savedUnified) unifiedMsg.value = savedUnified;
-    unifiedMsg.addEventListener('input', () => {
-      localStorage.setItem('unified_msg', unifiedMsg.value);
-    });
-
-    // ---- Verify Embeds ----
-    unifiedVerifyEmbeds.addEventListener('click', function() {
-      const status = unifiedStatus;
-      const resultsContainer = unifiedResults;
-      const embeds = [
-        { id: 'section-telegram', name: 'Telegram' },
-        { id: 'section-bluesky', name: 'Bluesky' },
-        { id: 'section-mastodon', name: 'Mastodon' },
-        { id: 'section-discord', name: 'Discord' },
-        { id: 'section-github-classic', name: 'GitHub Gist' },
-        { id: 'section-github-repo', name: 'GitHub Repo' },
-        { id: 'section-safew', name: 'SafeW' },
-        { id: 'section-tumblr', name: 'Tumblr' },
-        { id: 'section-patreon', name: 'Patreon' },
-        { id: 'section-deviantart', name: 'DeviantArt' },
-        { id: 'section-buffer', name: 'Buffer Proxy' },
-        { id: 'section-wordpress', name: 'WordPress Jetpack' },
-        { id: 'section-stoat', name: 'Stoat' }
-      ];
-      let allOk = true;
-      let resultHTML = '<div style="margin-top:6px;"><strong>Embed Verification Results:</strong></div>';
-      embeds.forEach(embed => {
-        const section = document.getElementById(embed.id);
-        let ok = true;
-        let msg = '✅ Found';
-        if (!section) {
-          ok = false;
-          msg = '❌ Missing section';
-          allOk = false;
-        } else {
-          const inputs = section.querySelectorAll('input, textarea, button');
-          if (inputs.length === 0) {
-            ok = false;
-            msg = '❌ No interactive elements found';
-            allOk = false;
-          }
-        }
-        resultHTML += '<div class="v-item"><span>' + (ok ? '✅' : '❌') + '</span> ' + embed.name + ': ' + msg + '</div>';
-      });
-      const unifiedSection = document.getElementById('section-unified');
-      if (unifiedSection) {
-        resultHTML += '<div class="v-item"><span>✅</span> Unified Post section found.</div>';
-      } else {
-        resultHTML += '<div class="v-item"><span>❌</span> Unified Post section missing.</div>';
-        allOk = false;
-      }
-      resultsContainer.innerHTML = resultHTML;
-      if (allOk) {
-        status.className = 'status success';
-        status.textContent = '✅ All embeds verified – UI is intact.';
-      } else {
-        status.className = 'status error';
-        status.textContent = '❌ Some embeds are missing elements. Check the results below.';
-      }
-      status.style.display = 'block';
-    });
-
-    // ---- Test All Platforms ----
-    unifiedTest.addEventListener('click', async function() {
-      unifiedStatus.className = 'status loading';
-      unifiedStatus.textContent = '⏳ Testing selected platforms...';
-      this.disabled = true;
-      setTimeout(() => {
-        unifiedStatus.className = 'status success';
-        unifiedStatus.textContent = '✅ All selected platforms are ready!';
-        this.disabled = false;
-      }, 1500);
-    });
-
-    // ---- Send Test Message ----
-    unifiedSendTest.addEventListener('click', async function() {
-      unifiedStatus.className = 'status loading';
-      unifiedStatus.textContent = '⏳ Sending test message...';
-      this.disabled = true;
-      setTimeout(() => {
-        unifiedStatus.className = 'status success';
-        unifiedStatus.textContent = '✅ Test message sent to all selected platforms!';
-        this.disabled = false;
-      }, 2000);
-    });
-
-    // ---- Post All (with affiliate & analytics) ----
-    unifiedSend.addEventListener('click', async function() {
-      const text = unifiedMsg.value.trim();
-      if (!text) {
-        unifiedStatus.className = 'status error';
-        unifiedStatus.textContent = '❌ Write a message.';
-        return;
-      }
-      // Append affiliate link if enabled
-      let finalText = text;
-      if (affToggle.checked && affLink.value.trim()) {
-        if (!finalText.includes(affLink.value.trim())) {
-          finalText = finalText + '\n\n' + affLink.value.trim();
-        }
-      }
-      unifiedStatus.className = 'status loading';
-      unifiedStatus.textContent = '⏳ Sending...';
-      this.disabled = true;
-      // Simulate sending
-      setTimeout(() => {
-        unifiedStatus.className = 'status success';
-        unifiedStatus.textContent = '✅ Message sent to all selected platforms!';
-        const platforms = [];
-        document.querySelectorAll('#section-unified .check-group input:checked').forEach(cb => {
-          platforms.push(cb.parentElement.textContent.trim());
+        // ─── Nav Background ─────────────────────────────
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 40) {
+                nav.style.background = 'rgba(10, 12, 20, 0.85)';
+                nav.style.backdropFilter = 'blur(24px) saturate(1.6)';
+            } else {
+                nav.style.background = 'rgba(10, 12, 20, 0.6)';
+                nav.style.backdropFilter = 'blur(20px) saturate(1.4)';
+            }
         });
-        // Results
-        let resultsHtml = '';
-        platforms.forEach(p => {
-          resultsHtml += '<div class="result-item">' + p + ': ✅ Sent</div>';
-        });
-        unifiedResults.innerHTML = resultsHtml;
 
-        // Send analytics webhook
-        const webhookUrl = analyticsWebhook.value.trim();
-        if (webhookUrl) {
-          const payload = {
-            timestamp: new Date().toISOString(),
-            message: finalText,
-            platforms: platforms,
-            hasImage: unifiedFile.files.length > 0,
-            userAgent: navigator.userAgent
-          };
-          fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          }).catch(console.error);
-        }
+        console.log('🚀 FED-OS — Silence Remover + Social Poster');
+    </script>
 
-        this.disabled = false;
-      }, 2000);
-    });
-
-    // ---- Platform selection status update ----
-    document.querySelectorAll('#unified-tg, #unified-bsky, #unified-mastodon, #unified-discord, #unified-github-classic, #unified-github-repo, #unified-safew, #unified-tumblr, #unified-patreon, #unified-deviantart, #unified-buffer, #unified-wordpress, #unified-stoat').forEach(cb => {
-      cb.addEventListener('change', () => {
-        unifiedStatus.className = 'status info';
-        unifiedStatus.textContent = 'Selection changed – use the desired action.';
-      });
-    });
-
-    console.log('✅ Fed-Poster initialized inside PorJects.');
-  }
-
-  // ================================================================
-  // 13. INIT (PorJects)
-  // ================================================================
-  checkSession();
-  console.log('🚀 PorJects · Ghost Stack · FedPromptly · 500+ Widgets');
-  console.log('🔐 Tier: ' + getUserTier());
-</script>
 </body>
 </html>
