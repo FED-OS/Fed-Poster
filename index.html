@@ -1295,6 +1295,343 @@
 
     <script>
         // ================================================================
+        // PAYMENT PAGE – embedded as a blob URL
+        // ================================================================
+
+        // The full payment page HTML (provided by the user)
+        const PAYMENT_PAGE_HTML = `<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>⌨️ Tech · Subscriber Lock</title>
+            <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>
+            <script src="https://www.paypal.com/sdk/js?client-id=AZ9PGqfwfBFyHG_XK-wBvAfw2r-m6CkFWjQaEkI_NRDN76vf4g6EbfkM1rWXpyYnZGUej1KNKGxjWT3G&currency=USD&intent=capture"><\/script>
+            <style>
+                * { box-sizing: border-box; }
+                body {
+                    font-family: 'Courier New', monospace;
+                    max-width: 720px;
+                    margin: 2rem auto;
+                    padding: 0 1rem;
+                    background: #0d1117;
+                    color: #c9d1d9;
+                    line-height: 1.6;
+                }
+                .hidden { display: none !important; }
+                .card {
+                    background: #161b22;
+                    border-radius: 12px;
+                    padding: 2rem;
+                    margin-bottom: 1.5rem;
+                    border: 1px solid #30363d;
+                    box-shadow: 0 0 20px rgba(0, 255, 0, 0.05);
+                }
+                .form-group { margin-bottom: 1rem; }
+                label { display: block; font-weight: bold; margin-bottom: 0.3rem; color: #58a6ff; }
+                input {
+                    width: 100%;
+                    padding: 0.7rem;
+                    background: #0d1117;
+                    border: 1px solid #30363d;
+                    border-radius: 6px;
+                    font-size: 1rem;
+                    font-family: 'Courier New', monospace;
+                    color: #c9d1d9;
+                }
+                .btn {
+                    background: #238636;
+                    color: #fff;
+                    border: none;
+                    padding: 0.7rem 1.5rem;
+                    border-radius: 6px;
+                    font-size: 1rem;
+                    cursor: pointer;
+                    margin-right: 0.5rem;
+                    font-family: 'Courier New', monospace;
+                    transition: background 0.2s;
+                }
+                .btn:hover { background: #2ea043; }
+                .btn-secondary { background: #6e7681; }
+                .btn-secondary:hover { background: #8b949e; }
+                .btn-danger { background: #da3633; }
+                .btn-danger:hover { background: #f85149; }
+                .btn-success { background: #1f6feb; }
+                .btn-success:hover { background: #58a6ff; }
+                .user-info {
+                    display: flex;
+                    align-items: center;
+                    gap: 1rem;
+                    margin-bottom: 1rem;
+                }
+                .user-avatar {
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 50%;
+                    background: #30363d;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: #58a6ff;
+                    font-weight: bold;
+                    font-size: 1.2rem;
+                }
+                .error-msg { color: #f85149; margin-top: 0.5rem; }
+                .success-msg { color: #3fb950; margin-top: 0.5rem; }
+                hr { margin: 1.5rem 0; border-color: #30363d; }
+                #paypalButtonContainer { margin-top: 1rem; }
+                .debug {
+                    background: #0d1117;
+                    padding: 0.5rem;
+                    border-radius: 6px;
+                    font-size: 0.8rem;
+                    margin-top: 1rem;
+                    color: #8b949e;
+                    border: 1px solid #30363d;
+                }
+                .debug pre { margin: 0; white-space: pre-wrap; }
+                #subscriberContent {
+                    margin-top: 2rem;
+                    padding: 1.5rem;
+                    background: #161b22;
+                    border: 2px solid #3fb950;
+                    border-radius: 12px;
+                    transition: all 0.3s ease;
+                }
+                #subscriberContent h2 {
+                    margin-top: 0;
+                    color: #58a6ff;
+                }
+                .subscriber-badge {
+                    display: inline-block;
+                    background: #3fb950;
+                    color: #0d1117;
+                    padding: 0.2rem 0.8rem;
+                    border-radius: 20px;
+                    font-size: 0.8rem;
+                    font-weight: bold;
+                    font-family: 'Courier New', monospace;
+                }
+                h1 { color: #58a6ff; }
+                .prompt { color: #3fb950; }
+            </style>
+        </head>
+        <body>
+            <h1><span class="prompt">$</span> Exclusive Content</h1>
+            <p style="color: #8b949e;">// Sign in and subscribe to unlock the private thread.</p>
+
+            <div id="authSection" class="card">
+                <h2>🔐 Sign in / Create account</h2>
+                <div id="authError" class="error-msg"></div>
+                <div id="authSuccess" class="success-msg"></div>
+                <div class="form-group">
+                    <label for="emailInput">EMAIL</label>
+                    <input type="email" id="emailInput" placeholder="you@example.com" />
+                </div>
+                <div class="form-group">
+                    <label for="passwordInput">PASSWORD</label>
+                    <input type="password" id="passwordInput" placeholder="••••••••" />
+                </div>
+                <button id="signInBtn" class="btn">Sign In</button>
+                <button id="signUpBtn" class="btn btn-secondary">Sign Up</button>
+                <button id="pingBtn" class="btn btn-success" style="margin-top:0.5rem;">ping</button>
+                <div id="debugInfo" class="debug"><pre>// Ready</pre></div>
+            </div>
+
+            <div id="checkoutSection" class="card hidden">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatarLetter">U</div>
+                    <div>
+                        <strong id="userEmailDisplay"></strong><br />
+                        <span style="color:#8b949e; font-size:0.9rem;">authenticated</span>
+                    </div>
+                </div>
+                <button id="logoutBtn" class="btn btn-danger">Logout</button>
+                <hr />
+                <h3>💳 Subscribe for $19.99</h3>
+                <p>One‑time payment – unlock the subscriber thread instantly.</p>
+                <div id="paypalButtonContainer"></div>
+            </div>
+
+            <div id="subscriberContent" class="hidden">
+                <h2>🔓 Subscriber Thread</h2>
+                <p><span class="subscriber-badge">ACTIVE</span> You have full access.</p>
+                <p>Welcome to the exclusive subscriber‑only discussion. Thank you for your support!</p>
+                <div style="background:#0d1117; padding:1rem; border-radius:6px; border:1px solid #30363d; margin-top:1rem; font-family: 'Courier New', monospace;">
+                    <p><span class="prompt">></span> Private message: This is where you put your secret content.</p>
+                </div>
+                <p style="margin-top:1rem; font-size:0.9rem; color:#8b949e;">Logged in as: <span id="subscriberEmail"></span></p>
+            </div>
+
+            <script>
+                (function() {
+                    const SUPABASE_URL = 'https://udblpaojoqwtqdryejgi.supabase.co';
+                    const SUPABASE_ANON_KEY = 'sb_publishable_w0yGrrpWfuJqQFzNXXHM7g_cogUGoeq';
+                    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    const FUNCTION_NAMES = { create: 'create-paypal-order', capture: 'capture-paypal-order' };
+
+                    const authSection = document.getElementById('authSection');
+                    const checkoutSection = document.getElementById('checkoutSection');
+                    const emailInput = document.getElementById('emailInput');
+                    const passwordInput = document.getElementById('passwordInput');
+                    const signInBtn = document.getElementById('signInBtn');
+                    const signUpBtn = document.getElementById('signUpBtn');
+                    const logoutBtn = document.getElementById('logoutBtn');
+                    const pingBtn = document.getElementById('pingBtn');
+                    const authError = document.getElementById('authError');
+                    const authSuccess = document.getElementById('authSuccess');
+                    const userEmailDisplay = document.getElementById('userEmailDisplay');
+                    const userAvatarLetter = document.getElementById('userAvatarLetter');
+                    const paypalContainer = document.getElementById('paypalButtonContainer');
+                    const debugInfo = document.getElementById('debugInfo');
+                    const subscriberDiv = document.getElementById('subscriberContent');
+                    const subscriberEmailSpan = document.getElementById('subscriberEmail');
+                    let paypalRendered = false;
+
+                    async function checkSubscriptionStatus(userId) {
+                        if (!userId) return false;
+                        const { data, error } = await supabase.from('orders').select('id').eq('user_id', userId).eq('status', 'captured').limit(1);
+                        if (error) { console.error('Subscription check error:', error); return false; }
+                        return data && data.length > 0;
+                    }
+
+                    async function callEdgeFunction(functionName, bodyData) {
+                        const { data: { session } } = await supabase.auth.getSession();
+                        if (!session) throw new Error('No active session – please sign in.');
+                        debugInfo.innerHTML = '<pre>Calling ' + functionName + '...</pre>';
+                        const { data, error } = await supabase.functions.invoke(functionName, { body: bodyData });
+                        if (error) throw new Error(error.message || 'Function invocation failed');
+                        debugInfo.innerHTML = '<pre>✅ Response: ' + JSON.stringify(data, null, 2) + '</pre>';
+                        return data;
+                    }
+
+                    async function pingFunctions() {
+                        try {
+                            debugInfo.innerHTML = '<pre>Pinging create-paypal-order...</pre>';
+                            const url = 'https://udblpaojoqwtqdryejgi.supabase.co/functions/v1/create-paypal-order?ping=true';
+                            const resp = await fetch(url);
+                            const text = await resp.text();
+                            debugInfo.innerHTML = '<pre>Ping response (status ' + resp.status + '):\\n' + text + '</pre>';
+                        } catch (e) {
+                            debugInfo.innerHTML = '<pre>Ping error: ' + e.message + '</pre>';
+                        }
+                    }
+
+                    function renderPayPalButton() {
+                        if (paypalRendered) return;
+                        if (typeof paypal === 'undefined') { console.error('PayPal SDK not loaded'); return; }
+                        paypal.Buttons({
+                            createOrder: async function(data, actions) {
+                                try {
+                                    const result = await callEdgeFunction(FUNCTION_NAMES.create, { amount: '19.99', currency: 'USD', description: 'Premium subscription' });
+                                    return result.orderId;
+                                } catch (err) { alert('Failed to create order: ' + err.message); throw err; }
+                            },
+                            onApprove: async function(data, actions) {
+                                try {
+                                    const captureResult = await callEdgeFunction(FUNCTION_NAMES.capture, { paypal_order_id: data.orderID });
+                                    alert('✅ Payment successful! You now have access.');
+                                    console.log('Capture result:', captureResult);
+                                    const { data: { user } } = await supabase.auth.getUser();
+                                    if (user) {
+                                        const isSubscriber = await checkSubscriptionStatus(user.id);
+                                        if (isSubscriber) {
+                                            subscriberDiv.classList.remove('hidden');
+                                            subscriberEmailSpan.textContent = user.email || 'user';
+                                            subscriberDiv.scrollIntoView({ behavior: 'smooth' });
+                                            paypalContainer.innerHTML = '<p style="color:#3fb950;">✅ Subscription active</p>';
+                                        }
+                                    }
+                                } catch (err) { alert('Capture failed: ' + err.message); }
+                            },
+                            onError: function(err) { var msg = 'PayPal error: ' + (err.message || JSON.stringify(err)); console.error(msg); alert(msg); }
+                        }).render(paypalContainer);
+                        paypalRendered = true;
+                    }
+
+                    async function updateUI() {
+                        const { data: { session }, error } = await supabase.auth.getSession();
+                        if (error) { console.error('Session error:', error); return; }
+                        if (session && session.user) {
+                            authSection.classList.add('hidden');
+                            checkoutSection.classList.remove('hidden');
+                            var user = session.user;
+                            userEmailDisplay.textContent = user.email || 'No email';
+                            userAvatarLetter.textContent = user.email ? user.email.charAt(0).toUpperCase() : 'U';
+                            renderPayPalButton();
+                            var isSubscriber = await checkSubscriptionStatus(user.id);
+                            if (isSubscriber) {
+                                subscriberDiv.classList.remove('hidden');
+                                subscriberEmailSpan.textContent = user.email || 'user';
+                                paypalContainer.innerHTML = '<p style="color:#3fb950;">✅ You are already a subscriber.</p>';
+                            } else {
+                                subscriberDiv.classList.add('hidden');
+                            }
+                        } else {
+                            authSection.classList.remove('hidden');
+                            checkoutSection.classList.add('hidden');
+                            paypalContainer.innerHTML = '';
+                            paypalRendered = false;
+                            authError.textContent = '';
+                            authSuccess.textContent = '';
+                            subscriberDiv.classList.add('hidden');
+                        }
+                    }
+
+                    supabase.auth.onAuthStateChange(function(event, session) { console.log('Auth event:', event); updateUI(); });
+
+                    signInBtn.addEventListener('click', async function() {
+                        var email = emailInput.value.trim();
+                        var password = passwordInput.value;
+                        if (!email || !password) { authError.textContent = 'Please enter both email and password.'; authSuccess.textContent = ''; return; }
+                        authError.textContent = '';
+                        authSuccess.textContent = 'Signing in...';
+                        var { error } = await supabase.auth.signInWithPassword({ email: email, password: password });
+                        if (error) { authError.textContent = 'Sign in failed: ' + error.message; authSuccess.textContent = ''; } else { authSuccess.textContent = 'Signed in.'; authError.textContent = ''; }
+                    });
+
+                    signUpBtn.addEventListener('click', async function() {
+                        var email = emailInput.value.trim();
+                        var password = passwordInput.value;
+                        if (!email || !password) { authError.textContent = 'Please enter both email and password.'; authSuccess.textContent = ''; return; }
+                        if (password.length < 6) { authError.textContent = 'Password must be at least 6 characters.'; authSuccess.textContent = ''; return; }
+                        authError.textContent = '';
+                        authSuccess.textContent = 'Creating account...';
+                        var { data, error } = await supabase.auth.signUp({ email: email, password: password });
+                        if (error) { authError.textContent = 'Sign up failed: ' + error.message; authSuccess.textContent = ''; } else {
+                            if (data.user && data.user.identities && data.user.identities.length === 0) { authError.textContent = 'User already registered. Please sign in.'; authSuccess.textContent = ''; } else { authSuccess.textContent = 'Account created. You may now sign in.'; authError.textContent = ''; }
+                        }
+                    });
+
+                    logoutBtn.addEventListener('click', async function() { await supabase.auth.signOut(); });
+                    pingBtn.addEventListener('click', pingFunctions);
+                    updateUI();
+                })();
+            <\/script>
+        </body>
+        </html>`;
+
+        // ─── open payment page in a new tab ───
+        function openPaymentPage() {
+            try {
+                // Create a blob from the HTML
+                const blob = new Blob([PAYMENT_PAGE_HTML], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                // Open in a new tab
+                const newWindow = window.open(url, '_blank');
+                if (!newWindow) {
+                    // If popup blocked, fallback: show a message
+                    alert('⚠️ Popup blocked. Please allow popups for this site, or click the "Buy" button again.\n\nAlternatively, you can copy this link and paste it in a new tab:\n' + url);
+                }
+                // Auto-revoke the URL after a delay (cleanup)
+                setTimeout(() => URL.revokeObjectURL(url), 60000);
+            } catch (err) {
+                alert('❌ Could not open payment page: ' + err.message);
+                console.error('Payment page error:', err);
+            }
+        }
+
+        // ================================================================
         // DEMO MODE – BLOCK ALL ACTIONS, SHOW PAYMENT MODAL
         // ================================================================
 
@@ -1316,36 +1653,49 @@
             if (e.target === overlay) hidePaymentModal();
         });
 
-        // ─── ESC key ───
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') hidePaymentModal();
         });
 
-        // ─── Banner "Unlock Now" ───
         document.getElementById('unlockBannerLink').addEventListener('click', showPaymentModal);
 
-        // ─── Payment option clicks ───
-        document.getElementById('payNowOption').addEventListener('click', () => {
-            alert('💳 Redirecting to payment page…\n\nThis is a demo. In production, you would be taken to a secure checkout.');
+        // ─── Payment option clicks: "Buy Full Access" opens the payment page ───
+        document.getElementById('payNowOption').addEventListener('click', function(e) {
+            e.stopPropagation();
             hidePaymentModal();
+            // Open the payment page
+            openPaymentPage();
         });
-        document.getElementById('requestPermOption').addEventListener('click', () => {
+
+        document.getElementById('modalBuyBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            hidePaymentModal();
+            openPaymentPage();
+        });
+
+        // ─── Request Permission ───
+        document.getElementById('requestPermOption').addEventListener('click', function(e) {
+            e.stopPropagation();
             alert('📧 Permission request sent to admin.\n\nThis is a demo. In production, an email would be sent.');
             hidePaymentModal();
         });
-        document.getElementById('demoTrialOption').addEventListener('click', () => {
-            alert('⏳ Starting your 7‑day free trial…\n\nThis is a demo. In production, your trial would begin.');
-            hidePaymentModal();
-        });
-        document.getElementById('modalBuyBtn').addEventListener('click', () => {
-            alert('💳 Proceeding to checkout…\n\nThis is a demo. No payment will be processed.');
-            hidePaymentModal();
-        });
-        document.getElementById('modalRequestBtn').addEventListener('click', () => {
+
+        document.getElementById('modalRequestBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
             alert('📧 Permission request submitted.\n\nThis is a demo. In production, an admin would review your request.');
             hidePaymentModal();
         });
-        document.getElementById('modalLearnLink').addEventListener('click', () => {
+
+        // ─── Free Trial ───
+        document.getElementById('demoTrialOption').addEventListener('click', function(e) {
+            e.stopPropagation();
+            alert('⏳ Starting your 7‑day free trial…\n\nThis is a demo. In production, your trial would begin.');
+            hidePaymentModal();
+        });
+
+        // ─── Learn More ───
+        document.getElementById('modalLearnLink').addEventListener('click', function(e) {
+            e.stopPropagation();
             alert(
                 '📖 Fed-Poster Demo\n\nAll actions are blocked because this is a demo version.\n\nTo unlock full functionality, you need to either:\n\n• Purchase a license ($19.99 one‑time)\n• Request permission from an admin\n• Start a 7‑day free trial\n\nContact: support@fed-poster.com');
             hidePaymentModal();
@@ -1353,46 +1703,25 @@
 
         // ─── INTERCEPT ALL BUTTON CLICKS ───
         document.addEventListener('click', function(e) {
-            // Find if the click target is a button or inside a button
             let target = e.target;
             while (target && target.tagName !== 'BUTTON') {
                 target = target.parentElement;
             }
             if (!target) return;
-
-            // Ignore buttons inside the payment modal (they have their own handlers)
             if (overlay.contains(target)) return;
-
-            // Ignore the close button and banner link (they have their own handlers)
             if (target.id === 'closePaymentModal' || target.id === 'unlockBannerLink') return;
-
-            // If it's a button, show the payment modal
             if (target.tagName === 'BUTTON') {
                 e.preventDefault();
                 e.stopPropagation();
-
-                // Show a small feedback before the modal (optional)
-                // Just show the modal directly
                 showPaymentModal();
                 return;
             }
-
-            // Also intercept clicks on label elements that might contain checkboxes
-            // But we already handle button clicks above
         }, true);
 
-        // ─── Intercept clicks on checkboxes inside labels ───
+        // ─── Intercept checkbox and file input clicks ───
         document.addEventListener('click', function(e) {
             const target = e.target;
-            if (target.tagName === 'INPUT' && target.type === 'checkbox') {
-                // Block checkbox clicks in demo
-                e.preventDefault();
-                e.stopPropagation();
-                showPaymentModal();
-                return;
-            }
-            // Also block file inputs
-            if (target.tagName === 'INPUT' && target.type === 'file') {
+            if (target.tagName === 'INPUT' && (target.type === 'checkbox' || target.type === 'file')) {
                 e.preventDefault();
                 e.stopPropagation();
                 showPaymentModal();
@@ -1400,21 +1729,18 @@
             }
         }, true);
 
-        // ─── Block text input focus (optional) ───
+        // ─── Block text input focus ───
         document.addEventListener('focusin', function(e) {
             const target = e.target;
             if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') {
-                // Allow the banner's unlock link to work
                 if (target.id === 'unlockBannerLink') return;
-                // Don't block if it's in the modal
                 if (overlay.contains(target)) return;
-                // Blur the input and show modal
                 target.blur();
                 showPaymentModal();
             }
         }, true);
 
-        // ─── Sidebar nav items are disabled via CSS, but also block clicks ───
+        // ─── Sidebar nav items ───
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -1423,14 +1749,13 @@
             });
         });
 
-        // ─── Also block any link clicks ───
+        // ─── Block links ───
         document.addEventListener('click', function(e) {
             let target = e.target;
             while (target && target.tagName !== 'A') {
                 target = target.parentElement;
             }
             if (target && target.tagName === 'A') {
-                // Allow modal close link
                 if (target.id === 'modalCloseLink' || target.id === 'modalLearnLink') return;
                 e.preventDefault();
                 e.stopPropagation();
@@ -1438,20 +1763,7 @@
             }
         }, true);
 
-        // ─── Update all status messages to show locked state ───
-        document.querySelectorAll('.platform-section .status').forEach(el => {
-            if (!el.classList.contains('locked')) {
-                el.className = 'status locked';
-                el.textContent = '🔒 Demo – actions require payment or permission.';
-            }
-        });
-
-        // ─── Override all button click handlers from original code ───
-        // We already block all button clicks via the global listener,
-        // but we need to make sure the original event listeners don't fire.
-        // The `capture: true` and `stopPropagation` should handle this.
-
-        // ─── Also block the "Verify All" and "Post All" specifically ───
+        // ─── Override specific unified buttons ───
         document.getElementById('unified-verify')?.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -1464,7 +1776,7 @@
         }, true);
 
         console.log('🔒 Fed-Poster DEMO MODE – All actions blocked. Payment or permission required.');
-        console.log('💡 Click any button or input to see the payment modal.');
+        console.log('💡 Click "Buy Full Access" to open the subscriber payment page.');
     </script>
 </body>
 </html>
