@@ -3,1587 +3,310 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fed-Poster – Demo (Locked)</title>
+    <title>⌨️ Tech · Subscriber Lock</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=AZ9PGqfwfBFyHG_XK-wBvAfw2r-m6CkFWjQaEkI_NRDN76vf4g6EbfkM1rWXpyYnZGUej1KNKGxjWT3G&currency=USD&intent=capture"></script>
     <style>
-        /* ─── base ─── */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Courier New', monospace;
+            max-width: 720px;
+            margin: 2rem auto;
+            padding: 0 1rem;
             background: #0d1117;
-            color: #e6edf3;
-            height: 100vh;
-            display: flex;
-            position: relative;
+            color: #c9d1d9;
+            line-height: 1.6;
         }
-
-        /* ─── DEMO BANNER ─── */
-        .demo-banner {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            background: #1a1a2e;
-            border-bottom: 2px solid #f0883e;
-            padding: 6px 20px;
+        .hidden { display: none !important; }
+        .card {
+            background: #161b22;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #30363d;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.05);
+        }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; font-weight: bold; margin-bottom: 0.3rem; color: #58a6ff; }
+        input {
+            width: 100%;
+            padding: 0.7rem;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+            color: #c9d1d9;
+        }
+        .btn {
+            background: #238636;
+            color: #fff;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            font-family: 'Courier New', monospace;
+            transition: background 0.2s;
+        }
+        .btn:hover { background: #2ea043; }
+        .btn-secondary { background: #6e7681; }
+        .btn-secondary:hover { background: #8b949e; }
+        .btn-danger { background: #da3633; }
+        .btn-danger:hover { background: #f85149; }
+        .btn-success { background: #1f6feb; }
+        .btn-success:hover { background: #58a6ff; }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #30363d;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            font-size: 13px;
-            font-weight: 500;
-            color: #f0883e;
-            letter-spacing: 0.3px;
-            flex-wrap: wrap;
-        }
-        .demo-banner .badge-locked {
-            background: #f0883e;
-            color: #0d1117;
-            padding: 1px 12px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 11px;
-            text-transform: uppercase;
-        }
-        .demo-banner .badge-locked span {
-            font-size: 14px;
-        }
-        .demo-banner .unlock-link {
             color: #58a6ff;
-            text-decoration: underline;
-            cursor: pointer;
-            font-weight: 600;
+            font-weight: bold;
+            font-size: 1.2rem;
         }
-        .demo-banner .unlock-link:hover {
-            color: #79c0ff;
+        .error-msg { color: #f85149; margin-top: 0.5rem; }
+        .success-msg { color: #3fb950; margin-top: 0.5rem; }
+        hr { margin: 1.5rem 0; border-color: #30363d; }
+        #paypalButtonContainer { margin-top: 1rem; }
+        .debug {
+            background: #0d1117;
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            margin-top: 1rem;
+            color: #8b949e;
+            border: 1px solid #30363d;
         }
-
-        /* ─── sidebar ─── */
-        .sidebar {
-            width: 240px;
+        .debug pre { margin: 0; white-space: pre-wrap; }
+        #subscriberContent {
+            margin-top: 2rem;
+            padding: 1.5rem;
             background: #161b22;
-            border-right: 1px solid #30363d;
-            display: flex;
-            flex-direction: column;
-            padding: 20px 0;
-            flex-shrink: 0;
-            overflow-y: auto;
-            margin-top: 42px;
-        }
-        .sidebar .logo {
-            padding: 0 20px 20px 20px;
-            font-size: 22px;
-            font-weight: 700;
-            border-bottom: 1px solid #30363d;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .sidebar .logo span {
-            font-size: 24px;
-        }
-        .sidebar .logo .demo-tag {
-            font-size: 9px;
-            background: #21262d;
-            color: #8b949e;
-            padding: 1px 8px;
-            border-radius: 10px;
-            font-weight: 400;
-            margin-left: 4px;
-            border: 1px solid #30363d;
-        }
-        .sidebar .nav-item {
-            padding: 8px 20px;
-            cursor: not-allowed;
-            display: flex;
-            flex-direction: column;
-            font-size: 14px;
-            color: #484f58;
-            border-left: 3px solid transparent;
-            transition: all 0.2s;
-            opacity: 0.6;
-            pointer-events: none;
-        }
-        .sidebar .nav-item .nav-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .sidebar .nav-item .nav-sub {
-            font-size: 10px;
-            color: #484f58;
-            margin-left: 28px;
-            margin-top: 2px;
-            letter-spacing: 0.3px;
-        }
-        .sidebar .nav-item.active {
-            background: #21262d;
-            color: #e6edf3;
-            border-left-color: #f0883e;
-            opacity: 0.8;
-        }
-        .sidebar .nav-item.active .nav-sub {
-            color: #8b949e;
-        }
-        .sidebar .nav-item .badge {
-            font-size: 10px;
-            background: #21262d;
-            padding: 1px 8px;
-            border-radius: 10px;
-            color: #8b949e;
-            margin-left: auto;
-        }
-        .sidebar .nav-item .badge.proxy {
-            background: #8b5cf6;
-            color: white;
-        }
-        .sidebar .nav-item .badge.buffer {
-            background: #1a73e8;
-            color: white;
-        }
-        .sidebar .nav-item .badge.wordpress {
-            background: #3858e9;
-            color: white;
-        }
-        .sidebar .nav-item .badge.other {
-            background: #6e7681;
-        }
-        .sidebar .nav-item .badge.both {
-            background: #238636;
-        }
-        .sidebar .nav-item .lock-icon {
-            font-size: 12px;
-            margin-left: 6px;
-            color: #f0883e;
-        }
-
-        /* ─── main ─── */
-        .main {
-            flex: 1;
-            padding: 30px 40px;
-            overflow-y: auto;
-            min-width: 0;
-            margin-top: 42px;
-        }
-        .main .page-title {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            flex-wrap: wrap;
-        }
-        .main .page-title .count-badge {
-            font-size: 14px;
-            color: #8b949e;
-            font-weight: 400;
-            background: #21262d;
-            padding: 2px 12px;
-            border-radius: 20px;
-            border: 1px solid #30363d;
-        }
-        .main .page-title .lock-badge {
-            font-size: 12px;
-            background: #2d1a0a;
-            color: #f0883e;
-            padding: 2px 14px;
-            border-radius: 20px;
-            border: 1px solid #f0883e;
-            font-weight: 500;
-        }
-        .main .page-sub {
-            color: #8b949e;
-            font-size: 14px;
-            margin-bottom: 24px;
-        }
-
-        .platform-section {
-            display: none;
-            max-width: 600px;
-        }
-        .platform-section.active {
-            display: block;
-        }
-
-        .platform-section .card {
-            background: #161b22;
-            border: 1px solid #30363d;
+            border: 2px solid #3fb950;
             border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 16px;
-            position: relative;
-            overflow: hidden;
+            transition: all 0.3s ease;
         }
-        .platform-section .card::after {
-            content: '🔒 DEMO';
-            position: absolute;
-            top: 8px;
-            right: 12px;
-            font-size: 9px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: #f0883e;
-            background: #1a1a2e;
-            padding: 1px 10px;
-            border-radius: 10px;
-            border: 1px solid #f0883e33;
-            opacity: 0.7;
-        }
-        .platform-section .card-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-        .platform-section .card-header h2 {
-            font-size: 17px;
-            font-weight: 600;
-        }
-        .platform-section .label-tag {
-            font-size: 10px;
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            background: #21262d;
-            color: #8b949e;
-        }
-        .platform-section .label-tag.buffer {
-            background: #1a73e8;
-            color: white;
-        }
-        .platform-section .label-tag.wordpress {
-            background: #3858e9;
-            color: white;
-        }
-        .platform-section .label-tag.both {
-            background: #238636;
-            color: white;
-        }
-        .platform-section .label-tag.other {
-            background: #6e7681;
-            color: white;
-        }
-        .platform-section .label-tag.proxy {
-            background: #8b5cf6;
-            color: white;
-        }
-
-        .platform-section .connect-info {
-            font-size: 12px;
-            color: #8b949e;
-            background: #0d1117;
-            padding: 6px 10px;
-            border-radius: 6px;
-            margin-bottom: 12px;
-            border-left: 3px solid #8b5cf6;
-        }
-        .platform-section .connect-info strong {
-            color: #c9d1d9;
-        }
-
-        .platform-section label {
-            font-size: 12px;
-            font-weight: 500;
-            display: block;
-            margin: 10px 0 3px;
-            color: #8b949e;
-        }
-        .platform-section input,
-        .platform-section textarea {
-            width: 100%;
-            padding: 8px 10px;
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 6px;
-            color: #e6edf3;
-            font-size: 13px;
-            font-family: inherit;
-            opacity: 0.7;
-            pointer-events: none;
-            user-select: none;
-        }
-        .platform-section input:focus,
-        .platform-section textarea:focus {
-            outline: none;
-            border-color: #58a6ff;
-        }
-        .platform-section textarea {
-            min-height: 60px;
-            resize: vertical;
-        }
-        .platform-section input[type="file"] {
-            padding: 6px;
-            cursor: not-allowed;
-            background: #161b22;
-            opacity: 0.5;
-            pointer-events: none;
-        }
-        .platform-section .saved-note {
-            font-size: 10px;
-            color: #484f58;
-            margin-top: 2px;
-        }
-        .platform-section .actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-        .platform-section .actions button {
-            flex: 1;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: not-allowed;
-            font-size: 12px;
-            min-width: 70px;
-            transition: background 0.2s;
-            opacity: 0.5;
-            pointer-events: none;
-        }
-        .platform-section .actions button .lock-btn {
-            font-size: 11px;
-            margin-right: 4px;
-        }
-        .platform-section .btn-primary {
-            background: #238636;
-            color: white;
-        }
-        .platform-section .btn-primary:hover {
-            background: #2ea043;
-        }
-        .platform-section .btn-primary:disabled {
-            background: #21262d;
-            color: #484f58;
-            cursor: not-allowed;
-        }
-        .platform-section .btn-secondary {
-            background: #21262d;
-            color: #c9d1d9;
-        }
-        .platform-section .btn-secondary:hover {
-            background: #30363d;
-        }
-
-        .platform-section .status {
-            margin-top: 10px;
-            padding: 8px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            display: block;
-            background: #1c1b1a;
-            color: #d29922;
-            border: 1px solid #9e6a03;
-        }
-        .platform-section .status.success {
-            background: #0d2818;
-            color: #3fb950;
-            border: 1px solid #238636;
-        }
-        .platform-section .status.error {
-            background: #2d0a0a;
-            color: #f85149;
-            border: 1px solid #da3633;
-        }
-        .platform-section .status.loading {
-            background: #0d1f2d;
+        #subscriberContent h2 {
+            margin-top: 0;
             color: #58a6ff;
-            border: 1px solid #1f6feb;
         }
-        .platform-section .status.info {
-            background: #1c1b1a;
-            color: #d29922;
-            border: 1px solid #9e6a03;
-        }
-        .platform-section .status.locked {
-            background: #1a1a2e;
-            color: #f0883e;
-            border: 1px solid #f0883e55;
-        }
-
-        .platform-section .file-info {
-            font-size: 11px;
-            color: #8b949e;
-            margin-top: 3px;
-        }
-        .platform-section .token-type {
-            font-size: 10px;
-            color: #8b949e;
-            margin-top: 2px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .platform-section .token-type .classic-badge {
-            background: #f59e0b;
+        .subscriber-badge {
+            display: inline-block;
+            background: #3fb950;
             color: #0d1117;
-            padding: 1px 8px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 10px;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
         }
-        .platform-section .token-type .fine-badge {
-            background: #8b5cf6;
-            color: white;
-            padding: 1px 8px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 10px;
-        }
-
-        .da-connected {
-            background: #0d2818;
-            border: 1px solid #238636;
-            border-radius: 6px;
-            padding: 8px 12px;
-            margin-bottom: 12px;
-            font-size: 13px;
-            color: #3fb950;
-        }
-        .da-disconnected {
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 6px;
-            padding: 8px 12px;
-            margin-bottom: 12px;
-            font-size: 13px;
-            color: #8b949e;
-        }
-
-        .check-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 8px;
-            margin: 8px 0 10px;
-            background: #0d1117;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #21262d;
-        }
-        .check-group label {
-            font-weight: 400;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 13px;
-            color: #c9d1d9;
-            margin: 0;
-            cursor: not-allowed;
-            padding: 4px 6px;
-            border-radius: 4px;
-            opacity: 0.6;
-            transition: background 0.2s;
-        }
-        .check-group label:hover {
-            background: #21262d;
-        }
-        .check-group .label-tag {
-            font-size: 8px;
-            padding: 1px 6px;
-        }
-        .verify-status {
-            margin: 10px 0;
-            font-size: 12px;
-        }
-        .verify-status .v-item {
-            padding: 3px 0;
-            border-bottom: 1px solid #21262d;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        .unified-results {
-            margin-top: 10px;
-            font-size: 12px;
-        }
-        .unified-results .result-item {
-            padding: 3px 0;
-            border-bottom: 1px solid #21262d;
-            display: flex;
-            gap: 8px;
-        }
-
-        #da-token-input {
-            width: 100%;
-            padding: 8px;
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 6px;
-            color: #e6edf3;
-            font-size: 13px;
-            margin-top: 6px;
-            opacity: 0.7;
-            pointer-events: none;
-            user-select: none;
-        }
-        #da-token-submit {
-            margin-top: 6px;
-            opacity: 0.5 !important;
-            pointer-events: none !important;
-            cursor: not-allowed !important;
-        }
-
-        @media (max-width: 700px) {
-            .sidebar {
-                width: 180px;
-            }
-            .main {
-                padding: 20px;
-            }
-            .platform-section .card {
-                padding: 16px;
-            }
-        }
-        @media (max-width: 500px) {
-            body {
-                flex-direction: column;
-            }
-            .sidebar {
-                width: 100%;
-                flex-direction: row;
-                overflow-x: auto;
-                border-right: none;
-                border-bottom: 1px solid #30363d;
-                padding: 10px 0;
-                height: auto;
-                gap: 6px;
-                flex-wrap: nowrap;
-                margin-top: 72px;
-            }
-            .sidebar .logo {
-                display: none;
-            }
-            .sidebar .nav-item {
-                padding: 8px 14px;
-                white-space: nowrap;
-                border-left: none;
-                border-bottom: 3px solid transparent;
-                flex-direction: row;
-            }
-            .sidebar .nav-item .nav-sub {
-                display: none;
-            }
-            .sidebar .nav-item.active {
-                border-bottom-color: #f0883e;
-                border-left-color: transparent;
-            }
-            .sidebar .nav-item .badge {
-                display: none;
-            }
-            .sidebar .nav-item .lock-icon {
-                display: none;
-            }
-            .main {
-                padding: 16px;
-                margin-top: 72px;
-            }
-            .demo-banner {
-                font-size: 11px;
-                padding: 4px 12px;
-            }
-            .platform-section .card::after {
-                font-size: 7px;
-                top: 4px;
-                right: 6px;
-                padding: 0 8px;
-            }
-        }
-
-        /* ─── PAYMENT OVERLAY ─── */
-        .payment-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(6px);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.3s ease;
-        }
-        .payment-overlay.active {
-            display: flex;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .payment-modal {
-            background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 16px;
-            padding: 20px 20px 16px 20px;
-            max-width: 780px;
-            width: 96%;
-            height: 92vh;
-            max-height: 800px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-        .payment-modal .close-modal {
-            position: absolute;
-            top: 10px;
-            right: 16px;
-            background: none;
-            border: none;
-            color: #8b949e;
-            font-size: 28px;
-            cursor: pointer;
-            transition: color 0.2s;
-            padding: 4px 10px;
-            border-radius: 4px;
-            z-index: 10;
-            background: rgba(13, 17, 23, 0.6);
-            line-height: 1;
-        }
-        .payment-modal .close-modal:hover {
-            color: #e6edf3;
-            background: #21262d;
-        }
-        .payment-modal iframe {
-            flex: 1;
-            width: 100%;
-            border: none;
-            border-radius: 8px;
-            background: #0d1117;
-            min-height: 400px;
-        }
-        .payment-modal .modal-footer {
-            text-align: center;
-            margin-top: 10px;
-            font-size: 11px;
-            color: #484f58;
-            padding-bottom: 4px;
-        }
-        .payment-modal .modal-footer a {
-            color: #58a6ff;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .payment-modal .modal-footer a:hover {
-            text-decoration: underline;
-        }
-
-        /* ─── DEMO UNLOCK BADGE (inline) ─── */
-        .unlock-inline {
-            font-size: 11px;
-            color: #f0883e;
-            background: #1a1a2e;
-            padding: 2px 12px;
-            border-radius: 12px;
-            border: 1px solid #f0883e44;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            margin-left: 6px;
-            font-weight: 500;
-        }
-        .unlock-inline span {
-            font-size: 12px;
-        }
-
-        /* scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0d1117;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #30363d;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #484f58;
-        }
+        h1 { color: #58a6ff; }
+        .prompt { color: #3fb950; }
     </style>
 </head>
 <body>
+    <h1><span class="prompt">$</span> Exclusive Content</h1>
+    <p style="color: #8b949e;">// Sign in and subscribe to unlock the private thread.</p>
 
-    <!-- ─── DEMO BANNER ─── -->
-    <div class="demo-banner">
-        <span class="badge-locked"><span>🔒</span> DEMO MODE</span>
-        <span>All actions are blocked. You need <strong>payment</strong> or <strong>permission</strong> to use this tool.</span>
-        <span class="unlock-link" id="unlockBannerLink">🔑 Unlock Now</span>
+    <div id="authSection" class="card">
+        <h2>🔐 Sign in / Create account</h2>
+        <div id="authError" class="error-msg"></div>
+        <div id="authSuccess" class="success-msg"></div>
+        <div class="form-group">
+            <label for="emailInput">EMAIL</label>
+            <input type="email" id="emailInput" placeholder="you@example.com" />
+        </div>
+        <div class="form-group">
+            <label for="passwordInput">PASSWORD</label>
+            <input type="password" id="passwordInput" placeholder="••••••••" />
+        </div>
+        <button id="signInBtn" class="btn">Sign In</button>
+        <button id="signUpBtn" class="btn btn-secondary">Sign Up</button>
+        <button id="pingBtn" class="btn btn-success" style="margin-top:0.5rem;">ping</button>
+        <div id="debugInfo" class="debug"><pre>// Ready</pre></div>
     </div>
 
-    <!-- ─── SIDEBAR ─── -->
-    <div class="sidebar">
-        <div class="logo">
-            <span>📨</span> Fed-Poster
-            <span class="demo-tag">DEMO</span>
+    <div id="checkoutSection" class="card hidden">
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatarLetter">U</div>
+            <div>
+                <strong id="userEmailDisplay"></strong><br />
+                <span style="color:#8b949e; font-size:0.9rem;">authenticated</span>
+            </div>
         </div>
-        <div class="nav-item active" data-target="unified">
-            <div class="nav-row">📤 Multi Platform Post <span class="badge both">All</span><span class="lock-icon">🔒</span></div>
-        </div>
-        <div class="nav-item" data-target="telegram">
-            <div class="nav-row">📱 Telegram <span class="badge other">Other</span><span class="lock-icon">🔒</span></div>
-        </div>
-        <div class="nav-item" data-target="bluesky">
-            <div class="nav-row">☁️ Bluesky <span class="badge both">Both</span><span class="lock-icon">🔒</span></div>
-        </div>
-        <div class="nav-item" data-target="mastodon">
-            <div class="nav-row">🐘 Mastodon <span class="badge both">Both</span><span class="lock-icon">🔒</span></div>
-        </div>
-        <div class="nav-item" data-target="discord">
-            <div class="nav-row">🎮 Discord <span class="badge other">Other</span><span class="lock-icon">🔒</span></div>
-        </div>
-        <div class="nav-item" data-target="github-classic">
-            <div class="nav-row">📘 GitHub Classic <span class="badge other">Other</span><span class="lock-icon">🔒</span></div>
-        </div>
-        <div class="nav-item" data-target="github-repo">
-            <div class="nav-row">📂 GitHub Repo <span class="badge other">Other</span><span class="lock-icon">🔒</span></div>
-        </div>
-        <div class="nav-item" data-target="safew">
-            <div class="nav-row">🔐 SafeW <span class="badge other">Other</span><span class="lock-icon">🔒</span></div>
-        </div>
-        <div class="nav-item" data-target="tumblr">
-            <div class="nav-row">📝 Tumblr <span class="badge both">Both</span><span class="lock-icon">🔒</span></div>
-        </div>
-        <div class="nav-item" data-target="deviantart">
-            <div class="nav-row">🎨 DeviantArt <span class="badge other">Other</span><span class="lock-icon">🔒</span></div>
-        </div>
-        <div class="nav-item" data-target="buffer">
-            <div class="nav-row">⏳ Buffer Proxy <span class="badge proxy">Proxy</span><span class="lock-icon">🔒</span></div>
-            <div class="nav-sub">→ Twitter, LinkedIn, Facebook, Instagram</div>
-        </div>
-        <div class="nav-item" data-target="wordpress">
-            <div class="nav-row">📄 WordPress Jetpack <span class="badge proxy">Proxy</span><span class="lock-icon">🔒</span></div>
-            <div class="nav-sub">→ Twitter, LinkedIn, Facebook, Tumblr</div>
-        </div>
+        <button id="logoutBtn" class="btn btn-danger">Logout</button>
+        <hr />
+        <h3>💳 Subscribe for $19.99</h3>
+        <p>One‑time payment – unlock the subscriber thread instantly.</p>
+        <div id="paypalButtonContainer"></div>
     </div>
 
-    <!-- ─── MAIN CONTENT ─── -->
-    <div class="main">
-        <div class="page-title" id="page-title">
-            Multi Platform Post
-            <span class="count-badge">🌐 12 Social Networks</span>
-            <span class="lock-badge">🔒 DEMO</span>
+    <div id="subscriberContent" class="hidden">
+        <h2>🔓 Subscriber Thread</h2>
+        <p><span class="subscriber-badge">ACTIVE</span> You have full access.</p>
+        <p>Welcome to the exclusive subscriber‑only discussion. Thank you for your support!</p>
+        <div style="background:#0d1117; padding:1rem; border-radius:6px; border:1px solid #30363d; margin-top:1rem; font-family: 'Courier New', monospace;">
+            <p><span class="prompt">></span> Private message: This is where you put your secret content.</p>
         </div>
-        <div class="page-sub" id="page-sub">
-            Post to all your connected platforms instantly.
-            <span class="unlock-inline"><span>🔒</span> Demo – actions blocked</span>
-        </div>
-
-        <!-- ====== MULTI PLATFORM POST ====== -->
-        <div class="platform-section active" id="section-unified">
-            <div class="card">
-                <div class="card-header">
-                    <h2>📤 Multi Platform Post</h2>
-                    <span class="label-tag both">All</span>
-                </div>
-                <label>Message / Content</label>
-                <textarea id="unified-msg" placeholder="Write once, post everywhere… (demo – locked)"></textarea>
-                <label>Upload Image (shared)</label>
-                <input type="file" id="unified-file" accept="image/*,video/*,audio/*" disabled />
-                <div class="file-info" id="unified-file-info">🔒 File upload disabled in demo</div>
-                <div class="check-group">
-                    <label><input type="checkbox" id="unified-tg" checked disabled /> Telegram <span class="label-tag other">Other</span></label>
-                    <label><input type="checkbox" id="unified-bsky" checked disabled /> Bluesky <span class="label-tag both">Both</span></label>
-                    <label><input type="checkbox" id="unified-mastodon" checked disabled /> Mastodon <span class="label-tag both">Both</span></label>
-                    <label><input type="checkbox" id="unified-discord" checked disabled /> Discord <span class="label-tag other">Other</span></label>
-                    <label><input type="checkbox" id="unified-github-classic" checked disabled /> GitHub Classic <span class="label-tag other">Other</span></label>
-                    <label><input type="checkbox" id="unified-github-repo" checked disabled /> GitHub Repo <span class="label-tag other">Other</span></label>
-                    <label><input type="checkbox" id="unified-safew" checked disabled /> SafeW <span class="label-tag other">Other</span></label>
-                    <label><input type="checkbox" id="unified-tumblr" checked disabled /> Tumblr <span class="label-tag both">Both</span></label>
-                </div>
-                <div class="verify-status" id="verify-status">
-                    <div class="v-item"><span>🔒</span> Verification disabled in demo.</div>
-                </div>
-                <div class="actions">
-                    <button class="btn-secondary" id="unified-verify">🔒 Verify All</button>
-                    <button class="btn-primary" id="unified-send">🔒 Post All</button>
-                </div>
-                <div id="unified-status" class="status locked">🔒 Demo – actions require payment or permission.</div>
-                <div id="unified-results" class="unified-results"></div>
-            </div>
-        </div>
-
-        <!-- ====== TELEGRAM ====== -->
-        <div class="platform-section" id="section-telegram">
-            <div class="card">
-                <div class="card-header">
-                    <h2>📱 Telegram</h2>
-                    <span class="label-tag other">Other</span>
-                </div>
-                <label>Bot Token</label>
-                <input id="tg-token" type="password" placeholder="Your bot token (demo – locked)" disabled />
-                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
-                <label>Channel / Chat ID</label>
-                <input id="tg-chat" type="text" placeholder="@channel or -100123456 (demo – locked)" disabled />
-                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
-                <label>Message</label>
-                <textarea id="tg-msg" placeholder="What to post? (demo – locked)"></textarea>
-                <label>Upload Image / Video</label>
-                <input type="file" id="tg-file" accept="image/*,video/*" disabled />
-                <div class="file-info" id="tg-file-info">🔒 File upload disabled in demo</div>
-                <div class="actions">
-                    <button class="btn-secondary" id="tg-test">🔒 Test</button>
-                    <button class="btn-primary" id="tg-send">🔒 Send</button>
-                </div>
-                <div id="tg-status" class="status locked">🔒 Demo – locked. Purchase to use.</div>
-            </div>
-        </div>
-
-        <!-- ====== BLUESKY ====== -->
-        <div class="platform-section" id="section-bluesky">
-            <div class="card">
-                <div class="card-header">
-                    <h2>☁️ Bluesky</h2>
-                    <span class="label-tag both">Both</span>
-                </div>
-                <label>Handle</label>
-                <input id="bsky-handle" type="text" placeholder="your-handle.bsky.social (demo – locked)" disabled />
-                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
-                <label>App Password</label>
-                <input id="bsky-password" type="password" placeholder="xxxx-xxxx-xxxx-xxxx (demo – locked)" disabled />
-                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
-                <label>Message</label>
-                <textarea id="bsky-msg" placeholder="What to post? (demo – locked)"></textarea>
-                <label>Upload Image</label>
-                <input type="file" id="bsky-file" accept="image/*" disabled />
-                <div class="file-info" id="bsky-file-info">🔒 File upload disabled in demo</div>
-                <div class="actions">
-                    <button class="btn-secondary" id="bsky-test">🔒 Test</button>
-                    <button class="btn-primary" id="bsky-send">🔒 Send</button>
-                </div>
-                <div id="bsky-status" class="status locked">🔒 Demo – locked. Purchase to use.</div>
-            </div>
-        </div>
-
-        <!-- ====== MASTODON ====== -->
-        <div class="platform-section" id="section-mastodon">
-            <div class="card">
-                <div class="card-header">
-                    <h2>🐘 Mastodon</h2>
-                    <span class="label-tag both">Both</span>
-                </div>
-                <label>Instance URL</label>
-                <input id="mastodon-instance" type="text" placeholder="https://mastodon.social (demo – locked)" disabled />
-                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
-                <label>Access Token</label>
-                <input id="mastodon-token" type="password" placeholder="Your access token (demo – locked)" disabled />
-                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
-                <label>Message</label>
-                <textarea id="mastodon-msg" placeholder="What to post? (demo – locked)"></textarea>
-                <label>Upload Image / Video / Audio</label>
-                <input type="file" id="mastodon-file" accept="image/*,video/*,audio/*" disabled />
-                <div class="file-info" id="mastodon-file-info">🔒 File upload disabled in demo</div>
-                <div class="actions">
-                    <button class="btn-secondary" id="mastodon-test">🔒 Test</button>
-                    <button class="btn-primary" id="mastodon-send">🔒 Send</button>
-                </div>
-                <div id="mastodon-status" class="status locked">🔒 Demo – locked. Purchase to use.</div>
-            </div>
-        </div>
-
-        <!-- ====== DISCORD ====== -->
-        <div class="platform-section" id="section-discord">
-            <div class="card">
-                <div class="card-header">
-                    <h2>🎮 Discord</h2>
-                    <span class="label-tag other">Other</span>
-                </div>
-                <label>Webhook URL</label>
-                <input id="discord-webhook" type="text" placeholder="https://discord.com/api/webhooks/... (demo – locked)" disabled />
-                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
-                <label>Message</label>
-                <textarea id="discord-msg" placeholder="What to post? (demo – locked)"></textarea>
-                <div class="actions">
-                    <button class="btn-secondary" id="discord-test">🔒 Test</button>
-                    <button class="btn-primary" id="discord-send">🔒 Send</button>
-                </div>
-                <div id="discord-status" class="status locked">🔒 Demo – locked. Purchase to use.</div>
-            </div>
-        </div>
-
-        <!-- ====== GITHUB CLASSIC ====== -->
-        <div class="platform-section" id="section-github-classic">
-            <div class="card">
-                <div class="card-header">
-                    <h2>📘 GitHub Classic</h2>
-                    <span class="label-tag other">Other</span>
-                </div>
-                <label>Token</label>
-                <input id="github-classic-token" type="password" placeholder="ghp_xxxx (demo – locked)" disabled />
-                <div class="token-type">🔒 Auto‑saved · <span class="classic-badge">Classic</span> · gist scope</div>
-                <label>Filename</label>
-                <input id="github-classic-filename" type="text" placeholder="post.md (demo – locked)" disabled />
-                <label>Description</label>
-                <input id="github-classic-desc" type="text" placeholder="My Gist description (demo – locked)" disabled />
-                <label>Content</label>
-                <textarea id="github-classic-msg" placeholder="Write your Gist content… (demo – locked)"></textarea>
-                <label style="display:flex; align-items:center; gap:8px; margin-top:6px; cursor:not-allowed; opacity:0.6;">
-                    <input type="checkbox" id="github-classic-public" checked disabled /> Public Gist
-                </label>
-                <div class="actions">
-                    <button class="btn-secondary" id="github-classic-test">🔒 Test</button>
-                    <button class="btn-primary" id="github-classic-send">🔒 Send</button>
-                </div>
-                <div id="github-classic-status" class="status locked">🔒 Demo – locked. Purchase to use.</div>
-            </div>
-        </div>
-
-        <!-- ====== GITHUB REPO ====== -->
-        <div class="platform-section" id="section-github-repo">
-            <div class="card">
-                <div class="card-header">
-                    <h2>📂 GitHub Repo</h2>
-                    <span class="label-tag other">Other</span>
-                </div>
-                <label>Token</label>
-                <input id="github-repo-token" type="password" placeholder="github_pat_xxxx (demo – locked)" disabled />
-                <div class="token-type">🔒 Auto‑saved · <span class="fine-badge">Fine-grained</span> · repo + code</div>
-                <label>Repository (owner/repo)</label>
-                <input id="github-repo-name" type="text" placeholder="username/repo (demo – locked)" disabled />
-                <label>File Path</label>
-                <input id="github-repo-path" type="text" placeholder="post.md (demo – locked)" disabled />
-                <label>Commit Message</label>
-                <input id="github-repo-msg" type="text" placeholder="Posted from Fed-Poster (demo – locked)" disabled />
-                <label>Branch</label>
-                <input id="github-repo-branch" type="text" placeholder="main (demo – locked)" disabled />
-                <label>Content</label>
-                <textarea id="github-repo-content" placeholder="Write your file content… (demo – locked)"></textarea>
-                <div class="actions">
-                    <button class="btn-secondary" id="github-repo-test">🔒 Test</button>
-                    <button class="btn-primary" id="github-repo-send">🔒 Send</button>
-                </div>
-                <div id="github-repo-status" class="status locked">🔒 Demo – locked. Purchase to use.</div>
-            </div>
-        </div>
-
-        <!-- ====== SAFEW ====== -->
-        <div class="platform-section" id="section-safew">
-            <div class="card">
-                <div class="card-header">
-                    <h2>🔐 SafeW</h2>
-                    <span class="label-tag other">Other</span>
-                </div>
-                <label>Bot Token</label>
-                <input id="safew-token" type="password" placeholder="Your bot token (demo – locked)" disabled />
-                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
-                <label>Chat ID</label>
-                <input id="safew-chat" type="text" placeholder="@username or chat_id (demo – locked)" disabled />
-                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
-                <label>Message</label>
-                <textarea id="safew-msg" placeholder="What to post? (demo – locked)"></textarea>
-                <div class="actions">
-                    <button class="btn-secondary" id="safew-test">🔒 Test</button>
-                    <button class="btn-primary" id="safew-send">🔒 Send</button>
-                </div>
-                <div id="safew-status" class="status locked">🔒 Demo – locked. Purchase to use.</div>
-            </div>
-        </div>
-
-        <!-- ====== TUMBLR ====== -->
-        <div class="platform-section" id="section-tumblr">
-            <div class="card">
-                <div class="card-header">
-                    <h2>📝 Tumblr</h2>
-                    <span class="label-tag both">Both</span>
-                </div>
-                <label>Blog Name</label>
-                <input id="tumblr-blog" type="text" placeholder="yourblog.tumblr.com (demo – locked)" disabled />
-                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
-                <label>Consumer Key</label>
-                <input id="tumblr-ckey" type="text" placeholder="Consumer Key (demo – locked)" disabled />
-                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
-                <label>Consumer Secret</label>
-                <input id="tumblr-csecret" type="password" placeholder="Consumer Secret (demo – locked)" disabled />
-                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
-                <label>Access Token</label>
-                <input id="tumblr-atoken" type="text" placeholder="Access Token (demo – locked)" disabled />
-                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
-                <label>Access Token Secret</label>
-                <input id="tumblr-asecret" type="password" placeholder="Access Token Secret (demo – locked)" disabled />
-                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
-                <label>Post Title</label>
-                <input id="tumblr-title" type="text" placeholder="Title (demo – locked)" disabled />
-                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
-                <label>Content</label>
-                <textarea id="tumblr-msg" placeholder="Write your post… (demo – locked)"></textarea>
-                <div class="actions">
-                    <button class="btn-secondary" id="tumblr-test">🔒 Test</button>
-                    <button class="btn-primary" id="tumblr-send">🔒 Send</button>
-                </div>
-                <div id="tumblr-status" class="status locked">🔒 Demo – locked. Purchase to use.</div>
-            </div>
-        </div>
-
-        <!-- ====== DEVIANTART ====== -->
-        <div class="platform-section" id="section-deviantart">
-            <div class="card">
-                <div class="card-header">
-                    <h2>🎨 DeviantArt</h2>
-                    <span class="label-tag other">Other</span>
-                </div>
-                <div id="deviantart-status-display" class="da-disconnected">
-                    🔒 Demo – connect disabled.
-                </div>
-                <div class="actions" style="margin-bottom:10px;">
-                    <button class="btn-secondary" id="deviantart-connect">🔒 Connect</button>
-                    <button class="btn-secondary" id="deviantart-disconnect">🚪 Disconnect</button>
-                </div>
-                <label>Title</label>
-                <input id="deviantart-title" type="text" placeholder="Artwork title (demo – locked)" disabled />
-                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
-                <label>Description</label>
-                <textarea id="deviantart-desc" placeholder="Artist comments… (demo – locked)"></textarea>
-                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
-                <label>Tags (comma separated)</label>
-                <input id="deviantart-tags" type="text" placeholder="digital art, fanart (demo – locked)" disabled />
-                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
-                <label>Upload Image</label>
-                <input type="file" id="deviantart-file" accept="image/*" disabled />
-                <div class="file-info" id="deviantart-file-info">🔒 File upload disabled in demo</div>
-                <div class="actions">
-                    <button class="btn-primary" id="deviantart-send" disabled>🔒 Send</button>
-                </div>
-                <div id="deviantart-status" class="status locked">🔒 Demo – locked. Purchase to use.</div>
-            </div>
-        </div>
-
-        <!-- ====== BUFFER PROXY ====== -->
-        <div class="platform-section" id="section-buffer">
-            <div class="card">
-                <div class="card-header">
-                    <h2>⏳ Buffer Proxy</h2>
-                    <span class="label-tag proxy">Proxy</span>
-                </div>
-                <div class="connect-info">
-                    🔗 <strong>Connects to:</strong> Twitter, LinkedIn, Facebook, Instagram
-                </div>
-                <div style="font-size: 11px; color: #8b949e; margin-bottom: 10px; background: #0d1117; padding: 6px 10px; border-radius: 4px;">
-                    ⚡ Sends via Buffer API – Buffer pays the platform fees
-                </div>
-                <label>Access Token</label>
-                <input id="buffer-token" type="password" placeholder="Your Buffer access token (demo – locked)" disabled />
-                <div class="saved-note">🔒 Auto‑saved (disabled)</div>
-                <label>Profile IDs (comma separated – find in Buffer URL)</label>
-                <input id="buffer-profiles" type="text" placeholder="12345, 67890 (demo – locked)" disabled />
-                <div class="saved-note">💡 Go to Buffer dashboard → click a profile → copy number from URL</div>
-                <label>Message</label>
-                <textarea id="buffer-msg" placeholder="What to post? (demo – locked)"></textarea>
-                <div class="actions">
-                    <button class="btn-secondary" id="buffer-test">🔒 Test</button>
-                    <button class="btn-primary" id="buffer-send">🔒 Send</button>
-                </div>
-                <div id="buffer-status" class="status locked">🔒 Demo – locked. Purchase to use.</div>
-            </div>
-        </div>
-
-        <!-- ====== WORDPRESS JETPACK ====== -->
-        <div class="platform-section" id="section-wordpress">
-            <div class="card">
-                <div class="card-header">
-                    <h2>📄 WordPress Jetpack</h2>
-                    <span class="label-tag proxy">Proxy</span>
-                </div>
-                <div class="connect-info">
-                    🔗 <strong>Connects to:</strong> Twitter, LinkedIn, Facebook, Tumblr (via Jetpack Social)
-                </div>
-                <div style="font-size: 11px; color: #8b949e; margin-bottom: 10px; background: #0d1117; padding: 6px 10px; border-radius: 4px;">
-                    ✍️ Creates a post → Jetpack auto‑shares to connected social accounts
-                </div>
-                <label>WP Site URL</label>
-                <input id="wp-url" type="text" placeholder="https://your-site.com (demo – locked)" disabled />
-                <label>Application Password</label>
-                <input id="wp-password" type="password" placeholder="xxxx xxxx xxxx xxxx (demo – locked)" disabled />
-                <label>Post Title</label>
-                <input id="wp-title" type="text" placeholder="My Post Title (demo – locked)" disabled />
-                <label>Post Content (supports HTML)</label>
-                <textarea id="wp-content" placeholder="Write your blog post... (demo – locked)"></textarea>
-                <label style="display:flex; align-items:center; gap:8px; margin-top:6px; cursor:not-allowed; opacity:0.6;">
-                    <input type="checkbox" id="wp-publicize" checked disabled /> Auto-share to connected social accounts (Jetpack)
-                </label>
-                <div class="actions">
-                    <button class="btn-secondary" id="wp-test">🔒 Test</button>
-                    <button class="btn-primary" id="wp-send">🔒 Publish</button>
-                </div>
-                <div id="wp-status" class="status locked">🔒 Demo – locked. Purchase to use.</div>
-            </div>
-        </div>
+        <p style="margin-top:1rem; font-size:0.9rem; color:#8b949e;">Logged in as: <span id="subscriberEmail"></span></p>
     </div>
 
-    <!-- ─── PAYMENT OVERLAY (with iframe) ─── -->
-    <div class="payment-overlay" id="paymentOverlay">
-        <div class="payment-modal">
-            <button class="close-modal" id="closePaymentModal">✕</button>
-            <iframe id="paymentIframe" src="about:blank"></iframe>
-            <div class="modal-footer">
-                <a id="modalCloseLink">← Back to dashboard</a> &nbsp;·&nbsp; <a id="modalReloadLink">⟳ Reload payment</a>
-            </div>
-        </div>
-    </div>
-
+    <!-- Script identical to other themes – copy from pink version, but we'll keep it concise -->
     <script>
-        // ================================================================
-        // PAYMENT PAGE – embedded as a blob URL
-        // ================================================================
+        (function() {
+            const SUPABASE_URL = 'https://udblpaojoqwtqdryejgi.supabase.co';
+            const SUPABASE_ANON_KEY = 'sb_publishable_w0yGrrpWfuJqQFzNXXHM7g_cogUGoeq';
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            const FUNCTION_NAMES = { create: 'create-paypal-order', capture: 'capture-paypal-order' };
 
-        // The full payment page HTML (provided by the user)
-        const PAYMENT_PAGE_HTML = `<!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <title>⌨️ Tech · Subscriber Lock</title>
-            <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>
-            <script src="https://www.paypal.com/sdk/js?client-id=AZ9PGqfwfBFyHG_XK-wBvAfw2r-m6CkFWjQaEkI_NRDN76vf4g6EbfkM1rWXpyYnZGUej1KNKGxjWT3G&currency=USD&intent=capture"><\/script>
-            <style>
-                * { box-sizing: border-box; }
-                body {
-                    font-family: 'Courier New', monospace;
-                    max-width: 720px;
-                    margin: 2rem auto;
-                    padding: 0 1rem;
-                    background: #0d1117;
-                    color: #c9d1d9;
-                    line-height: 1.6;
-                }
-                .hidden { display: none !important; }
-                .card {
-                    background: #161b22;
-                    border-radius: 12px;
-                    padding: 2rem;
-                    margin-bottom: 1.5rem;
-                    border: 1px solid #30363d;
-                    box-shadow: 0 0 20px rgba(0, 255, 0, 0.05);
-                }
-                .form-group { margin-bottom: 1rem; }
-                label { display: block; font-weight: bold; margin-bottom: 0.3rem; color: #58a6ff; }
-                input {
-                    width: 100%;
-                    padding: 0.7rem;
-                    background: #0d1117;
-                    border: 1px solid #30363d;
-                    border-radius: 6px;
-                    font-size: 1rem;
-                    font-family: 'Courier New', monospace;
-                    color: #c9d1d9;
-                }
-                .btn {
-                    background: #238636;
-                    color: #fff;
-                    border: none;
-                    padding: 0.7rem 1.5rem;
-                    border-radius: 6px;
-                    font-size: 1rem;
-                    cursor: pointer;
-                    margin-right: 0.5rem;
-                    font-family: 'Courier New', monospace;
-                    transition: background 0.2s;
-                }
-                .btn:hover { background: #2ea043; }
-                .btn-secondary { background: #6e7681; }
-                .btn-secondary:hover { background: #8b949e; }
-                .btn-danger { background: #da3633; }
-                .btn-danger:hover { background: #f85149; }
-                .btn-success { background: #1f6feb; }
-                .btn-success:hover { background: #58a6ff; }
-                .user-info {
-                    display: flex;
-                    align-items: center;
-                    gap: 1rem;
-                    margin-bottom: 1rem;
-                }
-                .user-avatar {
-                    width: 48px;
-                    height: 48px;
-                    border-radius: 50%;
-                    background: #30363d;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    color: #58a6ff;
-                    font-weight: bold;
-                    font-size: 1.2rem;
-                }
-                .error-msg { color: #f85149; margin-top: 0.5rem; }
-                .success-msg { color: #3fb950; margin-top: 0.5rem; }
-                hr { margin: 1.5rem 0; border-color: #30363d; }
-                #paypalButtonContainer { margin-top: 1rem; }
-                .debug {
-                    background: #0d1117;
-                    padding: 0.5rem;
-                    border-radius: 6px;
-                    font-size: 0.8rem;
-                    margin-top: 1rem;
-                    color: #8b949e;
-                    border: 1px solid #30363d;
-                }
-                .debug pre { margin: 0; white-space: pre-wrap; }
-                #subscriberContent {
-                    margin-top: 2rem;
-                    padding: 1.5rem;
-                    background: #161b22;
-                    border: 2px solid #3fb950;
-                    border-radius: 12px;
-                    transition: all 0.3s ease;
-                }
-                #subscriberContent h2 {
-                    margin-top: 0;
-                    color: #58a6ff;
-                }
-                .subscriber-badge {
-                    display: inline-block;
-                    background: #3fb950;
-                    color: #0d1117;
-                    padding: 0.2rem 0.8rem;
-                    border-radius: 20px;
-                    font-size: 0.8rem;
-                    font-weight: bold;
-                    font-family: 'Courier New', monospace;
-                }
-                h1 { color: #58a6ff; }
-                .prompt { color: #3fb950; }
-            </style>
-        </head>
-        <body>
-            <h1><span class="prompt">$</span> Exclusive Content</h1>
-            <p style="color: #8b949e;">// Sign in and subscribe to unlock the private thread.</p>
+            const authSection = document.getElementById('authSection');
+            const checkoutSection = document.getElementById('checkoutSection');
+            const emailInput = document.getElementById('emailInput');
+            const passwordInput = document.getElementById('passwordInput');
+            const signInBtn = document.getElementById('signInBtn');
+            const signUpBtn = document.getElementById('signUpBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const pingBtn = document.getElementById('pingBtn');
+            const authError = document.getElementById('authError');
+            const authSuccess = document.getElementById('authSuccess');
+            const userEmailDisplay = document.getElementById('userEmailDisplay');
+            const userAvatarLetter = document.getElementById('userAvatarLetter');
+            const paypalContainer = document.getElementById('paypalButtonContainer');
+            const debugInfo = document.getElementById('debugInfo');
+            const subscriberDiv = document.getElementById('subscriberContent');
+            const subscriberEmailSpan = document.getElementById('subscriberEmail');
+            let paypalRendered = false;
 
-            <div id="authSection" class="card">
-                <h2>🔐 Sign in / Create account</h2>
-                <div id="authError" class="error-msg"></div>
-                <div id="authSuccess" class="success-msg"></div>
-                <div class="form-group">
-                    <label for="emailInput">EMAIL</label>
-                    <input type="email" id="emailInput" placeholder="you@example.com" />
-                </div>
-                <div class="form-group">
-                    <label for="passwordInput">PASSWORD</label>
-                    <input type="password" id="passwordInput" placeholder="••••••••" />
-                </div>
-                <button id="signInBtn" class="btn">Sign In</button>
-                <button id="signUpBtn" class="btn btn-secondary">Sign Up</button>
-                <button id="pingBtn" class="btn btn-success" style="margin-top:0.5rem;">ping</button>
-                <div id="debugInfo" class="debug"><pre>// Ready</pre></div>
-            </div>
+            async function checkSubscriptionStatus(userId) {
+                if (!userId) return false;
+                const { data, error } = await supabase.from('orders').select('id').eq('user_id', userId).eq('status', 'captured').limit(1);
+                if (error) { console.error('Subscription check error:', error); return false; }
+                return data && data.length > 0;
+            }
 
-            <div id="checkoutSection" class="card hidden">
-                <div class="user-info">
-                    <div class="user-avatar" id="userAvatarLetter">U</div>
-                    <div>
-                        <strong id="userEmailDisplay"></strong><br />
-                        <span style="color:#8b949e; font-size:0.9rem;">authenticated</span>
-                    </div>
-                </div>
-                <button id="logoutBtn" class="btn btn-danger">Logout</button>
-                <hr />
-                <h3>💳 Subscribe for $19.99</h3>
-                <p>One‑time payment – unlock the subscriber thread instantly.</p>
-                <div id="paypalButtonContainer"></div>
-            </div>
+            async function callEdgeFunction(functionName, bodyData) {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!session) throw new Error('No active session – please sign in.');
+                debugInfo.innerHTML = `<pre>Calling ${functionName}...</pre>`;
+                const { data, error } = await supabase.functions.invoke(functionName, { body: bodyData });
+                if (error) throw new Error(error.message || 'Function invocation failed');
+                debugInfo.innerHTML = `<pre>✅ Response: ${JSON.stringify(data, null, 2)}</pre>`;
+                return data;
+            }
 
-            <div id="subscriberContent" class="hidden">
-                <h2>🔓 Subscriber Thread</h2>
-                <p><span class="subscriber-badge">ACTIVE</span> You have full access.</p>
-                <p>Welcome to the exclusive subscriber‑only discussion. Thank you for your support!</p>
-                <div style="background:#0d1117; padding:1rem; border-radius:6px; border:1px solid #30363d; margin-top:1rem; font-family: 'Courier New', monospace;">
-                    <p><span class="prompt">></span> Private message: This is where you put your secret content.</p>
-                </div>
-                <p style="margin-top:1rem; font-size:0.9rem; color:#8b949e;">Logged in as: <span id="subscriberEmail"></span></p>
-            </div>
+            async function pingFunctions() {
+                try {
+                    debugInfo.innerHTML = `<pre>Pinging create-paypal-order...</pre>`;
+                    const url = `https://udblpaojoqwtqdryejgi.supabase.co/functions/v1/create-paypal-order?ping=true`;
+                    const resp = await fetch(url);
+                    const text = await resp.text();
+                    debugInfo.innerHTML = `<pre>Ping response (status ${resp.status}):\n${text}</pre>`;
+                } catch (e) {
+                    debugInfo.innerHTML = `<pre>Ping error: ${e.message}</pre>`;
+                }
+            }
 
-            <script>
-                (function() {
-                    const SUPABASE_URL = 'https://udblpaojoqwtqdryejgi.supabase.co';
-                    const SUPABASE_ANON_KEY = 'sb_publishable_w0yGrrpWfuJqQFzNXXHM7g_cogUGoeq';
-                    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                    const FUNCTION_NAMES = { create: 'create-paypal-order', capture: 'capture-paypal-order' };
-
-                    const authSection = document.getElementById('authSection');
-                    const checkoutSection = document.getElementById('checkoutSection');
-                    const emailInput = document.getElementById('emailInput');
-                    const passwordInput = document.getElementById('passwordInput');
-                    const signInBtn = document.getElementById('signInBtn');
-                    const signUpBtn = document.getElementById('signUpBtn');
-                    const logoutBtn = document.getElementById('logoutBtn');
-                    const pingBtn = document.getElementById('pingBtn');
-                    const authError = document.getElementById('authError');
-                    const authSuccess = document.getElementById('authSuccess');
-                    const userEmailDisplay = document.getElementById('userEmailDisplay');
-                    const userAvatarLetter = document.getElementById('userAvatarLetter');
-                    const paypalContainer = document.getElementById('paypalButtonContainer');
-                    const debugInfo = document.getElementById('debugInfo');
-                    const subscriberDiv = document.getElementById('subscriberContent');
-                    const subscriberEmailSpan = document.getElementById('subscriberEmail');
-                    let paypalRendered = false;
-
-                    async function checkSubscriptionStatus(userId) {
-                        if (!userId) return false;
-                        const { data, error } = await supabase.from('orders').select('id').eq('user_id', userId).eq('status', 'captured').limit(1);
-                        if (error) { console.error('Subscription check error:', error); return false; }
-                        return data && data.length > 0;
-                    }
-
-                    async function callEdgeFunction(functionName, bodyData) {
-                        const { data: { session } } = await supabase.auth.getSession();
-                        if (!session) throw new Error('No active session – please sign in.');
-                        debugInfo.innerHTML = '<pre>Calling ' + functionName + '...</pre>';
-                        const { data, error } = await supabase.functions.invoke(functionName, { body: bodyData });
-                        if (error) throw new Error(error.message || 'Function invocation failed');
-                        debugInfo.innerHTML = '<pre>✅ Response: ' + JSON.stringify(data, null, 2) + '</pre>';
-                        return data;
-                    }
-
-                    async function pingFunctions() {
+            function renderPayPalButton() {
+                if (paypalRendered) return;
+                if (typeof paypal === 'undefined') { console.error('PayPal SDK not loaded'); return; }
+                paypal.Buttons({
+                    createOrder: async function(data, actions) {
                         try {
-                            debugInfo.innerHTML = '<pre>Pinging create-paypal-order...</pre>';
-                            const url = 'https://udblpaojoqwtqdryejgi.supabase.co/functions/v1/create-paypal-order?ping=true';
-                            const resp = await fetch(url);
-                            const text = await resp.text();
-                            debugInfo.innerHTML = '<pre>Ping response (status ' + resp.status + '):\\n' + text + '</pre>';
-                        } catch (e) {
-                            debugInfo.innerHTML = '<pre>Ping error: ' + e.message + '</pre>';
-                        }
-                    }
-
-                    function renderPayPalButton() {
-                        if (paypalRendered) return;
-                        if (typeof paypal === 'undefined') { console.error('PayPal SDK not loaded'); return; }
-                        paypal.Buttons({
-                            createOrder: async function(data, actions) {
-                                try {
-                                    const result = await callEdgeFunction(FUNCTION_NAMES.create, { amount: '19.99', currency: 'USD', description: 'Premium subscription' });
-                                    return result.orderId;
-                                } catch (err) { alert('Failed to create order: ' + err.message); throw err; }
-                            },
-                            onApprove: async function(data, actions) {
-                                try {
-                                    const captureResult = await callEdgeFunction(FUNCTION_NAMES.capture, { paypal_order_id: data.orderID });
-                                    alert('✅ Payment successful! You now have access.');
-                                    console.log('Capture result:', captureResult);
-                                    const { data: { user } } = await supabase.auth.getUser();
-                                    if (user) {
-                                        const isSubscriber = await checkSubscriptionStatus(user.id);
-                                        if (isSubscriber) {
-                                            subscriberDiv.classList.remove('hidden');
-                                            subscriberEmailSpan.textContent = user.email || 'user';
-                                            subscriberDiv.scrollIntoView({ behavior: 'smooth' });
-                                            paypalContainer.innerHTML = '<p style="color:#3fb950;">✅ Subscription active</p>';
-                                        }
-                                    }
-                                } catch (err) { alert('Capture failed: ' + err.message); }
-                            },
-                            onError: function(err) { var msg = 'PayPal error: ' + (err.message || JSON.stringify(err)); console.error(msg); alert(msg); }
-                        }).render(paypalContainer);
-                        paypalRendered = true;
-                    }
-
-                    async function updateUI() {
-                        const { data: { session }, error } = await supabase.auth.getSession();
-                        if (error) { console.error('Session error:', error); return; }
-                        if (session && session.user) {
-                            authSection.classList.add('hidden');
-                            checkoutSection.classList.remove('hidden');
-                            var user = session.user;
-                            userEmailDisplay.textContent = user.email || 'No email';
-                            userAvatarLetter.textContent = user.email ? user.email.charAt(0).toUpperCase() : 'U';
-                            renderPayPalButton();
-                            var isSubscriber = await checkSubscriptionStatus(user.id);
-                            if (isSubscriber) {
-                                subscriberDiv.classList.remove('hidden');
-                                subscriberEmailSpan.textContent = user.email || 'user';
-                                paypalContainer.innerHTML = '<p style="color:#3fb950;">✅ You are already a subscriber.</p>';
-                            } else {
-                                subscriberDiv.classList.add('hidden');
+                            const result = await callEdgeFunction(FUNCTION_NAMES.create, { amount: '19.99', currency: 'USD', description: 'Premium subscription' });
+                            return result.orderId;
+                        } catch (err) { alert('Failed to create order: ' + err.message); throw err; }
+                    },
+                    onApprove: async function(data, actions) {
+                        try {
+                            const captureResult = await callEdgeFunction(FUNCTION_NAMES.capture, { paypal_order_id: data.orderID });
+                            alert('✅ Payment successful! You now have access.');
+                            console.log('Capture result:', captureResult);
+                            const { data: { user } } = await supabase.auth.getUser();
+                            if (user) {
+                                const isSubscriber = await checkSubscriptionStatus(user.id);
+                                if (isSubscriber) {
+                                    subscriberDiv.classList.remove('hidden');
+                                    subscriberEmailSpan.textContent = user.email || 'user';
+                                    subscriberDiv.scrollIntoView({ behavior: 'smooth' });
+                                    paypalContainer.innerHTML = '<p style="color:#3fb950;">✅ Subscription active</p>';
+                                }
                             }
-                        } else {
-                            authSection.classList.remove('hidden');
-                            checkoutSection.classList.add('hidden');
-                            paypalContainer.innerHTML = '';
-                            paypalRendered = false;
-                            authError.textContent = '';
-                            authSuccess.textContent = '';
-                            subscriberDiv.classList.add('hidden');
-                        }
+                        } catch (err) { alert('Capture failed: ' + err.message); }
+                    },
+                    onError: function(err) { const msg = 'PayPal error: ' + (err.message || JSON.stringify(err)); console.error(msg); alert(msg); }
+                }).render(paypalContainer);
+                paypalRendered = true;
+            }
+
+            async function updateUI() {
+                const { data: { session }, error } = await supabase.auth.getSession();
+                if (error) { console.error('Session error:', error); return; }
+                if (session && session.user) {
+                    authSection.classList.add('hidden');
+                    checkoutSection.classList.remove('hidden');
+                    const user = session.user;
+                    userEmailDisplay.textContent = user.email || 'No email';
+                    userAvatarLetter.textContent = user.email ? user.email.charAt(0).toUpperCase() : 'U';
+                    renderPayPalButton();
+                    const isSubscriber = await checkSubscriptionStatus(user.id);
+                    if (isSubscriber) {
+                        subscriberDiv.classList.remove('hidden');
+                        subscriberEmailSpan.textContent = user.email || 'user';
+                        paypalContainer.innerHTML = '<p style="color:#3fb950;">✅ You are already a subscriber.</p>';
+                    } else {
+                        subscriberDiv.classList.add('hidden');
                     }
-
-                    supabase.auth.onAuthStateChange(function(event, session) { console.log('Auth event:', event); updateUI(); });
-
-                    signInBtn.addEventListener('click', async function() {
-                        var email = emailInput.value.trim();
-                        var password = passwordInput.value;
-                        if (!email || !password) { authError.textContent = 'Please enter both email and password.'; authSuccess.textContent = ''; return; }
-                        authError.textContent = '';
-                        authSuccess.textContent = 'Signing in...';
-                        var { error } = await supabase.auth.signInWithPassword({ email: email, password: password });
-                        if (error) { authError.textContent = 'Sign in failed: ' + error.message; authSuccess.textContent = ''; } else { authSuccess.textContent = 'Signed in.'; authError.textContent = ''; }
-                    });
-
-                    signUpBtn.addEventListener('click', async function() {
-                        var email = emailInput.value.trim();
-                        var password = passwordInput.value;
-                        if (!email || !password) { authError.textContent = 'Please enter both email and password.'; authSuccess.textContent = ''; return; }
-                        if (password.length < 6) { authError.textContent = 'Password must be at least 6 characters.'; authSuccess.textContent = ''; return; }
-                        authError.textContent = '';
-                        authSuccess.textContent = 'Creating account...';
-                        var { data, error } = await supabase.auth.signUp({ email: email, password: password });
-                        if (error) { authError.textContent = 'Sign up failed: ' + error.message; authSuccess.textContent = ''; } else {
-                            if (data.user && data.user.identities && data.user.identities.length === 0) { authError.textContent = 'User already registered. Please sign in.'; authSuccess.textContent = ''; } else { authSuccess.textContent = 'Account created. You may now sign in.'; authError.textContent = ''; }
-                        }
-                    });
-
-                    logoutBtn.addEventListener('click', async function() { await supabase.auth.signOut(); });
-                    pingBtn.addEventListener('click', pingFunctions);
-                    updateUI();
-                })();
-            <\/script>
-        </body>
-        </html>`;
-
-        // ─── Create a blob URL for the payment page ───
-        let paymentBlobUrl = null;
-
-        function getPaymentBlobUrl() {
-            if (!paymentBlobUrl) {
-                const blob = new Blob([PAYMENT_PAGE_HTML], { type: 'text/html' });
-                paymentBlobUrl = URL.createObjectURL(blob);
+                } else {
+                    authSection.classList.remove('hidden');
+                    checkoutSection.classList.add('hidden');
+                    paypalContainer.innerHTML = '';
+                    paypalRendered = false;
+                    authError.textContent = '';
+                    authSuccess.textContent = '';
+                    subscriberDiv.classList.add('hidden');
+                }
             }
-            return paymentBlobUrl;
-        }
 
-        // ─── Open payment modal with iframe ───
-        function showPaymentModal() {
-            const iframe = document.getElementById('paymentIframe');
-            iframe.src = getPaymentBlobUrl();
-            document.getElementById('paymentOverlay').classList.add('active');
-        }
+            supabase.auth.onAuthStateChange((event, session) => { console.log('Auth event:', event); updateUI(); });
 
-        function hidePaymentModal() {
-            document.getElementById('paymentOverlay').classList.remove('active');
-            // Optionally reset iframe src to stop any scripts
-            const iframe = document.getElementById('paymentIframe');
-            iframe.src = 'about:blank';
-        }
-
-        // ─── Event listeners ───
-        document.getElementById('closePaymentModal').addEventListener('click', hidePaymentModal);
-        document.getElementById('modalCloseLink').addEventListener('click', hidePaymentModal);
-        document.getElementById('paymentOverlay').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('paymentOverlay')) hidePaymentModal();
-        });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') hidePaymentModal();
-        });
-
-        // Reload payment iframe
-        document.getElementById('modalReloadLink').addEventListener('click', function(e) {
-            e.preventDefault();
-            const iframe = document.getElementById('paymentIframe');
-            iframe.src = 'about:blank';
-            setTimeout(() => { iframe.src = getPaymentBlobUrl(); }, 100);
-        });
-
-        // ─── Banner "Unlock Now" ───
-        document.getElementById('unlockBannerLink').addEventListener('click', showPaymentModal);
-
-        // ================================================================
-        // DEMO MODE – BLOCK ALL ACTIONS, SHOW PAYMENT MODAL
-        // ================================================================
-
-        // ─── INTERCEPT ALL BUTTON CLICKS ───
-        document.addEventListener('click', function(e) {
-            let target = e.target;
-            while (target && target.tagName !== 'BUTTON') {
-                target = target.parentElement;
-            }
-            if (!target) return;
-            if (document.getElementById('paymentOverlay').contains(target)) return;
-            if (target.id === 'closePaymentModal' || target.id === 'unlockBannerLink') return;
-            if (target.tagName === 'BUTTON') {
-                e.preventDefault();
-                e.stopPropagation();
-                showPaymentModal();
-                return;
-            }
-        }, true);
-
-        // ─── Intercept checkbox and file input clicks ───
-        document.addEventListener('click', function(e) {
-            const target = e.target;
-            if (target.tagName === 'INPUT' && (target.type === 'checkbox' || target.type === 'file')) {
-                e.preventDefault();
-                e.stopPropagation();
-                showPaymentModal();
-                return;
-            }
-        }, true);
-
-        // ─── Block text input focus ───
-        document.addEventListener('focusin', function(e) {
-            const target = e.target;
-            if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') {
-                if (target.id === 'unlockBannerLink') return;
-                if (document.getElementById('paymentOverlay').contains(target)) return;
-                target.blur();
-                showPaymentModal();
-            }
-        }, true);
-
-        // ─── Sidebar nav items ───
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                showPaymentModal();
+            signInBtn.addEventListener('click', async () => {
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+                if (!email || !password) { authError.textContent = 'Please enter both email and password.'; authSuccess.textContent = ''; return; }
+                authError.textContent = '';
+                authSuccess.textContent = 'Signing in...';
+                const { error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) { authError.textContent = 'Sign in failed: ' + error.message; authSuccess.textContent = ''; } else { authSuccess.textContent = 'Signed in.'; authError.textContent = ''; }
             });
-        });
 
-        // ─── Block links ───
-        document.addEventListener('click', function(e) {
-            let target = e.target;
-            while (target && target.tagName !== 'A') {
-                target = target.parentElement;
-            }
-            if (target && target.tagName === 'A') {
-                if (target.id === 'modalCloseLink' || target.id === 'modalReloadLink') return;
-                e.preventDefault();
-                e.stopPropagation();
-                showPaymentModal();
-            }
-        }, true);
+            signUpBtn.addEventListener('click', async () => {
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+                if (!email || !password) { authError.textContent = 'Please enter both email and password.'; authSuccess.textContent = ''; return; }
+                if (password.length < 6) { authError.textContent = 'Password must be at least 6 characters.'; authSuccess.textContent = ''; return; }
+                authError.textContent = '';
+                authSuccess.textContent = 'Creating account...';
+                const { data, error } = await supabase.auth.signUp({ email, password });
+                if (error) { authError.textContent = 'Sign up failed: ' + error.message; authSuccess.textContent = ''; } else {
+                    if (data.user && data.user.identities && data.user.identities.length === 0) { authError.textContent = 'User already registered. Please sign in.'; authSuccess.textContent = ''; } else { authSuccess.textContent = 'Account created. You may now sign in.'; authError.textContent = ''; }
+                }
+            });
 
-        // ─── Override specific unified buttons ───
-        document.getElementById('unified-verify')?.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            showPaymentModal();
-        }, true);
-        document.getElementById('unified-send')?.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            showPaymentModal();
-        }, true);
-
-        console.log('🔒 Fed-Poster DEMO MODE – All actions blocked. Payment or permission required.');
-        console.log('💡 Click any locked action to open the payment page in the modal.');
+            logoutBtn.addEventListener('click', async () => { await supabase.auth.signOut(); });
+            pingBtn.addEventListener('click', pingFunctions);
+            updateUI();
+        })();
     </script>
 </body>
 </html>
