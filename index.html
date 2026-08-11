@@ -3,310 +3,1911 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>⌨️ Tech · Subscriber Lock</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://www.paypal.com/sdk/js?client-id=AZ9PGqfwfBFyHG_XK-wBvAfw2r-m6CkFWjQaEkI_NRDN76vf4g6EbfkM1rWXpyYnZGUej1KNKGxjWT3G&currency=USD&intent=capture"></script>
+    <title>FED-Poster Premium — Social Media Management</title>
     <style>
-        * { box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #05050a;
+            --surface: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.06);
+            --text: #f0f0f8;
+            --text-dim: #8888aa;
+            --accent: #6c8cff;
+            --accent-soft: #8aa4ff;
+            --accent-glow: rgba(108, 140, 255, 0.3);
+            --green: #2ecc71;
+            --green-dim: rgba(46, 204, 113, 0.12);
+            --orange: #f39c12;
+            --red: #ff6b6b;
+            --pink: #ff6bcd;
+            --cyan: #6bcfff;
+            --radius: 24px;
+            --radius-sm: 12px;
+            --shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.9);
+            --transition: 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
         body {
-            font-family: 'Courier New', monospace;
-            max-width: 720px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-            background: #0d1117;
-            color: #c9d1d9;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
             line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
         }
-        .hidden { display: none !important; }
-        .card {
-            background: #161b22;
-            border-radius: 12px;
-            padding: 2rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid #30363d;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.05);
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse at 20% 40%, rgba(108, 140, 255, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 70%, rgba(46, 204, 113, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 10%, rgba(255, 107, 205, 0.05) 0%, transparent 40%);
+            animation: bgShift 25s ease-in-out infinite alternate;
         }
-        .form-group { margin-bottom: 1rem; }
-        label { display: block; font-weight: bold; margin-bottom: 0.3rem; color: #58a6ff; }
-        input {
+        @keyframes bgShift {
+            0% {
+                transform: scale(1) rotate(0deg);
+            }
+            100% {
+                transform: scale(1.15) rotate(3deg);
+            }
+        }
+
+        .particles {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            opacity: 0.15;
+            animation: float linear infinite;
+        }
+        .particle:nth-child(1) {
+            left: 10%;
+            top: 20%;
+            animation-duration: 18s;
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+        }
+        .particle:nth-child(2) {
+            left: 80%;
+            top: 60%;
+            animation-duration: 22s;
+            width: 3px;
+            height: 3px;
+            background: var(--pink);
+        }
+        .particle:nth-child(3) {
+            left: 30%;
+            top: 80%;
+            animation-duration: 16s;
+            width: 5px;
+            height: 5px;
+            background: var(--cyan);
+        }
+        .particle:nth-child(4) {
+            left: 70%;
+            top: 10%;
+            animation-duration: 20s;
+            width: 4px;
+            height: 4px;
+            background: var(--green);
+        }
+        .particle:nth-child(5) {
+            left: 50%;
+            top: 50%;
+            animation-duration: 24s;
+            width: 7px;
+            height: 7px;
+            background: var(--orange);
+            opacity: 0.08;
+        }
+        .particle:nth-child(6) {
+            left: 5%;
+            top: 90%;
+            animation-duration: 28s;
+            width: 5px;
+            height: 5px;
+            background: #fff;
+            opacity: 0.05;
+        }
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0.1;
+            }
+            25% {
+                transform: translate(30px, -60px) scale(1.4);
+                opacity: 0.3;
+            }
+            50% {
+                transform: translate(-20px, -120px) scale(0.8);
+                opacity: 0.15;
+            }
+            75% {
+                transform: translate(50px, -180px) scale(1.2);
+                opacity: 0.35;
+            }
+            100% {
+                transform: translate(0, -250px) scale(1);
+                opacity: 0.1;
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
             width: 100%;
-            padding: 0.7rem;
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-family: 'Courier New', monospace;
-            color: #c9d1d9;
         }
-        .btn {
-            background: #238636;
+
+        .card {
+            background: rgba(5, 5, 10, 0.7);
+            backdrop-filter: blur(24px) saturate(1.6);
+            -webkit-backdrop-filter: blur(24px) saturate(1.6);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 36px 40px 44px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg,
+                    transparent,
+                    var(--accent),
+                    var(--pink),
+                    var(--cyan),
+                    var(--accent),
+                    transparent);
+            background-size: 300% 100%;
+            animation: shimmer 4s ease-in-out infinite;
+            opacity: 0.6;
+        }
+        @keyframes shimmer {
+            0% {
+                background-position: 0% 0%;
+            }
+            100% {
+                background-position: 300% 0%;
+            }
+        }
+
+        /* ─── Header ─── */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #fff 30%, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(108, 140, 255, 0.2);
+        }
+        .logo .badge-os {
+            background: rgba(108, 140, 255, 0.15);
+            border: 1px solid rgba(108, 140, 255, 0.25);
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            -webkit-text-fill-color: var(--accent);
+            letter-spacing: 0.5px;
+            margin-left: 6px;
+            animation: pulseBadge 3s ease-in-out infinite;
+        }
+        @keyframes pulseBadge {
+            0%,
+            100% {
+                border-color: rgba(108, 140, 255, 0.25);
+            }
+            50% {
+                border-color: rgba(108, 140, 255, 0.7);
+                box-shadow: 0 0 20px var(--accent-glow);
+            }
+        }
+        .nav {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .nav a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        .nav a:hover {
             color: #fff;
-            border: none;
-            padding: 0.7rem 1.5rem;
-            border-radius: 6px;
-            font-size: 1rem;
-            cursor: pointer;
-            margin-right: 0.5rem;
-            font-family: 'Courier New', monospace;
-            transition: background 0.2s;
         }
-        .btn:hover { background: #2ea043; }
-        .btn-secondary { background: #6e7681; }
-        .btn-secondary:hover { background: #8b949e; }
-        .btn-danger { background: #da3633; }
-        .btn-danger:hover { background: #f85149; }
-        .btn-success { background: #1f6feb; }
-        .btn-success:hover { background: #58a6ff; }
-        .user-info {
+        .nav .btn-github {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            padding: 6px 16px;
+            border-radius: 60px;
+            font-size: 0.75rem;
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+        .nav .btn-github:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--accent);
+            transform: scale(1.05);
+        }
+        .nav .btn-login {
+            background: transparent;
+            border: 1px solid var(--border);
+            padding: 8px 20px;
+            border-radius: 60px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: var(--transition);
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .nav .btn-login:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--accent);
+        }
+        .nav .btn-cta-header {
+            background: linear-gradient(135deg, var(--accent), var(--pink));
+            border: none;
+            padding: 8px 22px;
+            border-radius: 60px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 0 30px rgba(108, 140, 255, 0.3);
+            text-decoration: none;
+            background-size: 200% 200%;
+            animation: gradShift 3s ease-in-out infinite;
+        }
+        .nav .btn-cta-header:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 0 50px rgba(108, 140, 255, 0.5);
+        }
+        @keyframes gradShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* ─── Hero ─── */
+        .hero {
+            text-align: center;
+            padding: 20px 0 10px;
+            position: relative;
+        }
+        .hero .price-badge {
+            display: inline-block;
+            background: var(--green-dim);
+            border: 1px solid rgba(46, 204, 113, 0.25);
+            padding: 6px 24px;
+            border-radius: 60px;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--green);
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+            box-shadow: 0 0 40px rgba(46, 204, 113, 0.1);
+            animation: priceGlow 4s ease-in-out infinite;
+        }
+        @keyframes priceGlow {
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(46, 204, 113, 0.1);
+            }
+            50% {
+                box-shadow: 0 0 50px rgba(46, 204, 113, 0.25);
+                border-color: rgba(46, 204, 113, 0.5);
+            }
+        }
+        .hero .price-badge small {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: var(--text-dim);
+        }
+        .hero h1 {
+            font-size: 3.6rem;
+            font-weight: 900;
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            margin-bottom: 12px;
+        }
+        .hero h1 .gradient {
+            background: linear-gradient(135deg, var(--accent), var(--pink), var(--cyan), var(--accent));
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rainbowShift 3s ease-in-out infinite;
+        }
+        @keyframes rainbowShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        .hero .subhead {
+            font-size: 1.15rem;
+            color: var(--text-dim);
+            max-width: 640px;
+            margin: 0 auto 20px;
+        }
+        .hero .subhead strong {
+            color: #fff;
+        }
+        .hero .cta-group {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--pink));
+            border: none;
+            padding: 14px 44px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #fff;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 36px rgba(108, 140, 255, 0.3);
+            background-size: 200% 200%;
+            animation: gradShift 4s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(135deg, var(--accent), var(--pink), var(--cyan));
+            background-size: 300% 300%;
+            filter: blur(10px);
+            opacity: 0;
+            z-index: -1;
+            transition: var(--transition);
+            animation: rainbowShift 3s ease-in-out infinite;
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 8px 60px rgba(108, 140, 255, 0.5);
+        }
+        .btn-primary:hover::after {
+            opacity: 0.6;
+        }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            padding: 14px 36px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #fff;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            border-color: var(--accent);
+        }
+        .hero .trust-row {
+            display: flex;
+            justify-content: center;
+            gap: 28px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+        .hero .trust-row span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+        }
+        .hero .trust-row span:hover {
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        /* ─── Carousel ─── */
+        .carousel-section {
+            margin: 30px 0 20px;
+            overflow: hidden;
+            padding: 10px 0;
+            position: relative;
+        }
+        .carousel-track {
+            display: flex;
+            gap: 16px;
+            width: max-content;
+            animation: scroll 30s linear infinite;
+        }
+        .carousel-section:hover .carousel-track {
+            animation-play-state: paused;
+        }
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+        .carousel-item {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            gap: 6px;
+            padding: 6px 18px;
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(4px);
+            white-space: nowrap;
+            transition: var(--transition);
+            cursor: default;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
-        .user-avatar {
-            width: 48px;
-            height: 48px;
+        .carousel-item:hover {
+            border-color: var(--accent);
+            color: #fff;
+            transform: scale(1.12);
+            background: rgba(108, 140, 255, 0.12);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+        .carousel-item .emoji {
+            font-size: 1.1rem;
+        }
+
+        /* ─── About FED-Poster ─── */
+        .about-section {
+            margin: 40px 0 30px;
+            padding: 30px 24px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--surface);
+            transition: var(--transition);
+        }
+        .about-section:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 40px rgba(108, 140, 255, 0.04);
+        }
+        .about-section h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .about-section h2 .gradient {
+            background: linear-gradient(135deg, var(--accent), var(--pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .about-section>p {
+            text-align: center;
+            color: var(--text-dim);
+            max-width: 700px;
+            margin: 0 auto 24px;
+            font-size: 1.05rem;
+        }
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .about-grid .item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 18px 16px;
+            text-align: center;
+            transition: var(--transition);
+        }
+        .about-grid .item:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            background: rgba(108, 140, 255, 0.04);
+        }
+        .about-grid .item .icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .about-grid .item h4 {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+        .about-grid .item p {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        /* ─── FAKE SOCIAL POSTER EMBED ─── */
+        .poster-embed {
+            margin: 30px 0 30px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: rgba(255, 255, 255, 0.02);
+            padding: 28px 24px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .poster-embed:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 50px rgba(108, 140, 255, 0.05);
+        }
+        .poster-embed .embed-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .poster-embed .embed-header h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .poster-embed .embed-header h3 .live-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            background: #30363d;
+            background: var(--green);
+            animation: pulseDot 2s ease-in-out infinite;
+        }
+        @keyframes pulseDot {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+        }
+        .poster-embed .embed-header .status {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            background: rgba(255, 255, 255, 0.04);
+            padding: 4px 14px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .composer {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+        .composer textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+            padding: 4px 0;
+        }
+        .composer textarea::placeholder {
+            color: var(--text-dim);
+            opacity: 0.5;
+        }
+        .composer .composer-tools {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+            border-top: 1px solid var(--border);
+            padding-top: 12px;
+        }
+        .composer .composer-tools .left {
+            display: flex;
+            gap: 8px;
+        }
+        .composer .composer-tools .tool-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 12px;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .composer .composer-tools .tool-btn:hover {
+            border-color: var(--accent);
+            color: #fff;
+            background: rgba(108, 140, 255, 0.08);
+        }
+        .composer .composer-tools .char-count {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .platform-picker {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 12px 0 16px;
+        }
+        .platform-picker .plat-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 14px;
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .platform-picker .plat-btn:hover {
+            border-color: var(--accent);
+            color: #fff;
+        }
+        .platform-picker .plat-btn.active {
+            border-color: var(--accent);
+            background: rgba(108, 140, 255, 0.15);
+            color: #fff;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+        .platform-picker .plat-btn .emoji {
+            font-size: 0.9rem;
+        }
+
+        .poster-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .poster-actions .btn-publish {
+            background: linear-gradient(135deg, var(--accent), var(--pink));
+            border: none;
+            padding: 10px 32px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #fff;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 30px rgba(108, 140, 255, 0.2);
+        }
+        .poster-actions .btn-publish:hover {
+            transform: scale(1.04);
+            box-shadow: 0 8px 50px rgba(108, 140, 255, 0.4);
+        }
+        .poster-actions .btn-publish:active {
+            transform: scale(0.95);
+        }
+        .poster-actions .btn-schedule {
+            background: transparent;
+            border: 1px solid var(--border);
+            padding: 10px 24px;
+            border-radius: 60px;
+            color: var(--text-dim);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .poster-actions .btn-schedule:hover {
+            border-color: var(--accent);
+            color: #fff;
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        /* Fake Feed */
+        .fake-feed {
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+            margin-top: 6px;
+        }
+        .fake-feed .feed-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            animation: slideUp 0.4s ease;
+            transition: var(--transition);
+        }
+        .fake-feed .feed-item:last-child {
+            border-bottom: none;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .fake-feed .feed-item .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--pink));
+            flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #58a6ff;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-        .error-msg { color: #f85149; margin-top: 0.5rem; }
-        .success-msg { color: #3fb950; margin-top: 0.5rem; }
-        hr { margin: 1.5rem 0; border-color: #30363d; }
-        #paypalButtonContainer { margin-top: 1rem; }
-        .debug {
-            background: #0d1117;
-            padding: 0.5rem;
-            border-radius: 6px;
             font-size: 0.8rem;
-            margin-top: 1rem;
-            color: #8b949e;
-            border: 1px solid #30363d;
+            font-weight: 700;
         }
-        .debug pre { margin: 0; white-space: pre-wrap; }
-        #subscriberContent {
-            margin-top: 2rem;
-            padding: 1.5rem;
-            background: #161b22;
-            border: 2px solid #3fb950;
-            border-radius: 12px;
-            transition: all 0.3s ease;
+        .fake-feed .feed-item .content {
+            flex: 1;
         }
-        #subscriberContent h2 {
-            margin-top: 0;
-            color: #58a6ff;
+        .fake-feed .feed-item .content .name {
+            font-weight: 600;
+            font-size: 0.85rem;
         }
-        .subscriber-badge {
+        .fake-feed .feed-item .content .name span {
+            color: var(--text-dim);
+            font-weight: 400;
+            font-size: 0.7rem;
+        }
+        .fake-feed .feed-item .content .text {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin: 2px 0 4px;
+        }
+        .fake-feed .feed-item .content .platform-tags {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .fake-feed .feed-item .content .platform-tags .tag {
+            font-size: 0.55rem;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 1px 8px;
+            border-radius: 30px;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+        }
+        .fake-feed .feed-item .content .platform-tags .tag.active-tag {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .fake-feed .empty-feed {
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            padding: 20px 0;
+            opacity: 0.5;
+        }
+
+        /* ─── Features Grid ─── */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin: 44px 0 36px;
+        }
+        .feature-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 22px 16px;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-item:hover {
+            border-color: var(--accent);
+            transform: translateY(-6px) scale(1.02);
+            background: rgba(255, 255, 255, 0.04);
+            box-shadow: 0 0 40px rgba(108, 140, 255, 0.05);
+        }
+        .feature-item .icon {
+            font-size: 2.4rem;
+            display: block;
+            margin-bottom: 6px;
+            transition: var(--transition);
+        }
+        .feature-item:hover .icon {
+            transform: scale(1.15) rotate(-5deg);
+        }
+        .feature-item h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+        .feature-item p {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+        .feature-item .highlight {
+            color: var(--accent);
+            font-weight: 600;
+        }
+        .feature-item .tag-new {
             display: inline-block;
-            background: #3fb950;
-            color: #0d1117;
-            padding: 0.2rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            font-family: 'Courier New', monospace;
+            background: var(--accent-glow);
+            color: var(--accent);
+            font-size: 0.55rem;
+            font-weight: 700;
+            padding: 1px 10px;
+            border-radius: 30px;
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+            animation: pulseTag 2s ease-in-out infinite;
         }
-        h1 { color: #58a6ff; }
-        .prompt { color: #3fb950; }
+        @keyframes pulseTag {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* ─── Compare Table ─── */
+        .compare-section {
+            margin: 40px 0 32px;
+        }
+        .compare-section h2 {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+        .compare-section h2 .gradient {
+            background: linear-gradient(135deg, var(--accent), var(--pink), var(--cyan));
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rainbowShift 4s ease-in-out infinite;
+        }
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--surface);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            min-width: 720px;
+        }
+        th,
+        td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            font-weight: 700;
+            color: var(--text-dim);
+            background: rgba(255, 255, 255, 0.02);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        td:first-child {
+            font-weight: 600;
+            color: #fff;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .highlight-cell {
+            background: rgba(108, 140, 255, 0.07);
+            border-left: 2px solid var(--accent);
+        }
+        .highlight-cell .premium-tag {
+            background: linear-gradient(135deg, var(--accent), var(--pink));
+            color: #fff;
+            font-size: 0.55rem;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-weight: 700;
+            margin-left: 6px;
+        }
+        .check {
+            color: var(--green);
+            font-weight: 700;
+        }
+        .cross {
+            color: var(--red);
+            opacity: 0.4;
+        }
+        .price-highlight {
+            color: var(--green);
+            font-weight: 800;
+            font-size: 1rem;
+            text-shadow: 0 0 20px rgba(46, 204, 113, 0.2);
+        }
+
+        /* ─── Pricing ─── */
+        .pricing-section {
+            margin: 44px 0 30px;
+            text-align: center;
+        }
+        .pricing-section h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        .pricing-section .sub {
+            color: var(--text-dim);
+            margin-bottom: 28px;
+        }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        @media (max-width: 600px) {
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                max-width: 380px;
+            }
+        }
+        .pricing-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px 24px;
+            transition: var(--transition);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+        .pricing-card:hover {
+            transform: translateY(-6px);
+        }
+        .pricing-card.premium {
+            border: 2px solid transparent;
+            background: rgba(108, 140, 255, 0.03);
+            position: relative;
+            animation: holographicBorder 4s linear infinite;
+        }
+        @keyframes holographicBorder {
+            0% {
+                border-color: rgba(108, 140, 255, 0.5);
+                box-shadow: 0 0 30px rgba(108, 140, 255, 0.1);
+            }
+            25% {
+                border-color: rgba(255, 107, 205, 0.5);
+                box-shadow: 0 0 40px rgba(255, 107, 205, 0.15);
+            }
+            50% {
+                border-color: rgba(107, 207, 255, 0.5);
+                box-shadow: 0 0 30px rgba(107, 207, 255, 0.1);
+            }
+            75% {
+                border-color: rgba(46, 204, 113, 0.4);
+                box-shadow: 0 0 40px rgba(46, 204, 113, 0.1);
+            }
+            100% {
+                border-color: rgba(108, 140, 255, 0.5);
+                box-shadow: 0 0 30px rgba(108, 140, 255, 0.1);
+            }
+        }
+        .pricing-card.premium::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg,
+                    rgba(108, 140, 255, 0.08),
+                    rgba(255, 107, 205, 0.08),
+                    rgba(107, 207, 255, 0.08),
+                    rgba(108, 140, 255, 0.08));
+            background-size: 400% 400%;
+            animation: holographicShimmer 6s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+            border-radius: var(--radius);
+        }
+        @keyframes holographicShimmer {
+            0% {
+                background-position: 0% 0%;
+            }
+            25% {
+                background-position: 100% 0%;
+            }
+            50% {
+                background-position: 100% 100%;
+            }
+            75% {
+                background-position: 0% 100%;
+            }
+            100% {
+                background-position: 0% 0%;
+            }
+        }
+        .pricing-card.premium::after {
+            content: '✦ HOLOGRAPHIC EDITION ✦';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--accent), var(--pink), var(--cyan));
+            background-size: 300% 300%;
+            animation: rainbowShift 3s ease-in-out infinite;
+            color: #fff;
+            font-size: 0.55rem;
+            font-weight: 800;
+            padding: 2px 16px;
+            border-radius: 40px;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            z-index: 2;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .pricing-card.premium .plan-name {
+            color: var(--accent);
+            position: relative;
+            z-index: 1;
+        }
+        .pricing-card.premium .price {
+            position: relative;
+            z-index: 1;
+        }
+        .pricing-card.premium .desc {
+            position: relative;
+            z-index: 1;
+        }
+        .pricing-card.premium ul {
+            position: relative;
+            z-index: 1;
+        }
+        .pricing-card.premium .btn-primary {
+            position: relative;
+            z-index: 1;
+        }
+        .pricing-card.premium .free-note {
+            position: relative;
+            z-index: 1;
+        }
+        .pricing-card .plan-name {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-dim);
+            font-weight: 600;
+        }
+        .pricing-card .price {
+            font-size: 2.8rem;
+            font-weight: 900;
+            margin: 4px 0 2px;
+        }
+        .pricing-card .price small {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--text-dim);
+        }
+        .pricing-card .desc {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+        }
+        .pricing-card ul {
+            list-style: none;
+            font-size: 0.85rem;
+            margin-bottom: 18px;
+            position: relative;
+            z-index: 1;
+        }
+        .pricing-card ul li {
+            padding: 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pricing-card ul li::before {
+            content: '✓';
+            color: var(--green);
+            font-weight: 700;
+        }
+        .pricing-card ul li.muted {
+            opacity: 0.4;
+        }
+        .pricing-card ul li.muted::before {
+            content: '✕';
+            color: var(--red);
+        }
+        .pricing-card .btn-primary {
+            width: 100%;
+            padding: 12px;
+            font-size: 0.9rem;
+            justify-content: center;
+        }
+        .pricing-card .btn-outline {
+            width: 100%;
+            padding: 12px;
+            font-size: 0.9rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 60px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .pricing-card .btn-outline:hover {
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.05);
+            transform: scale(1.02);
+        }
+        .pricing-card .free-note {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            margin-top: 10px;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            padding-top: 10px;
+        }
+
+        /* ─── Ecosystem ─── */
+        .ecosystem {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 36px 0 20px;
+        }
+        .eco-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 18px 20px;
+            text-align: center;
+            transition: var(--transition);
+        }
+        .eco-item:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 0 30px rgba(108, 140, 255, 0.05);
+        }
+        .eco-item .icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 4px;
+            transition: var(--transition);
+        }
+        .eco-item:hover .icon {
+            transform: scale(1.15) rotate(-8deg);
+        }
+        .eco-item h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+        .eco-item p {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+        }
+        .eco-item .badge-eco {
+            display: inline-block;
+            background: rgba(108, 140, 255, 0.1);
+            color: var(--accent);
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 2px 12px;
+            border-radius: 30px;
+            margin-top: 4px;
+            border: 1px solid rgba(108, 140, 255, 0.1);
+            animation: pulseBadge 3s ease-in-out infinite;
+        }
+
+        /* ─── Footer ─── */
+        .footer {
+            margin-top: 40px;
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+        .footer a {
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .footer a:hover {
+            color: #fff;
+            text-shadow: 0 0 20px rgba(108, 140, 255, 0.3);
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 700px) {
+            .card {
+                padding: 20px 16px 28px;
+            }
+            .hero h1 {
+                font-size: 2.4rem;
+            }
+            .hero .subhead {
+                font-size: 1rem;
+            }
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            .nav {
+                justify-content: center;
+            }
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+            .features {
+                grid-template-columns: 1fr 1fr;
+            }
+            .ecosystem {
+                grid-template-columns: 1fr 1fr;
+            }
+            .about-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .carousel-item {
+                font-size: 0.7rem;
+                padding: 4px 12px;
+            }
+            .pricing-card.premium::after {
+                font-size: 0.45rem;
+                padding: 1px 12px;
+                top: -8px;
+            }
+            .poster-embed {
+                padding: 16px;
+            }
+            .composer textarea {
+                font-size: 0.85rem;
+                min-height: 60px;
+            }
+        }
+        @media (max-width: 450px) {
+            .features {
+                grid-template-columns: 1fr;
+            }
+            .ecosystem {
+                grid-template-columns: 1fr;
+            }
+            .about-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1><span class="prompt">$</span> Exclusive Content</h1>
-    <p style="color: #8b949e;">// Sign in and subscribe to unlock the private thread.</p>
 
-    <div id="authSection" class="card">
-        <h2>🔐 Sign in / Create account</h2>
-        <div id="authError" class="error-msg"></div>
-        <div id="authSuccess" class="success-msg"></div>
-        <div class="form-group">
-            <label for="emailInput">EMAIL</label>
-            <input type="email" id="emailInput" placeholder="you@example.com" />
-        </div>
-        <div class="form-group">
-            <label for="passwordInput">PASSWORD</label>
-            <input type="password" id="passwordInput" placeholder="••••••••" />
-        </div>
-        <button id="signInBtn" class="btn">Sign In</button>
-        <button id="signUpBtn" class="btn btn-secondary">Sign Up</button>
-        <button id="pingBtn" class="btn btn-success" style="margin-top:0.5rem;">ping</button>
-        <div id="debugInfo" class="debug"><pre>// Ready</pre></div>
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
     </div>
 
-    <div id="checkoutSection" class="card hidden">
-        <div class="user-info">
-            <div class="user-avatar" id="userAvatarLetter">U</div>
-            <div>
-                <strong id="userEmailDisplay"></strong><br />
-                <span style="color:#8b949e; font-size:0.9rem;">authenticated</span>
+    <div class="container">
+        <div class="card">
+
+            <header class="header">
+                <div class="logo">
+                    FED-Poster <span class="badge-os">FED·OS</span>
+                </div>
+                <nav class="nav">
+                    <a href="#features">Features</a>
+                    <a href="#compare">Compare</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="#" class="btn-github">⭐ GitHub</a>
+                    <a href="#" class="btn-login">Log in</a>
+                    <a href="#" class="btn-cta-header">Get Premium →</a>
+                </nav>
+            </header>
+
+            <section class="hero">
+                <div class="price-badge">
+                    $20 <small>/ month</small>
+                </div>
+                <h1>
+                    Social media that <br />
+                    <span class="gradient">actually works</span>
+                </h1>
+                <p class="subhead">
+                    <strong>FED-Poster Premium</strong> gives you 10 channels, 1,000 posts, unlimited AI,
+                    120‑day analytics, and full support. <br />
+                    <span style="color:var(--text-dim);">Free tier forever — upgrade when you need more.</span>
+                </p>
+                <div class="cta-group">
+                    <button class="btn-primary">🚀 Start free trial</button>
+                    <button class="btn-secondary">See free plan</button>
+                </div>
+                <div class="trust-row">
+                    <span>🔒 No credit card required</span>
+                    <span>⚡ 30‑second signup</span>
+                    <span>🆓 Free forever plan</span>
+                    <span>📱 Web · Mobile · Desktop</span>
+                </div>
+            </section>
+
+            <div class="carousel-section">
+                <div class="carousel-track" id="carouselTrack"></div>
             </div>
+
+            <!-- ─── What is FED-Poster? ─── -->
+            <section class="about-section">
+                <h2>What is <span class="gradient">FED-Poster</span>?</h2>
+                <p>
+                    FED-Poster is the flagship publishing tool of the FED-OS ecosystem.
+                    It's completely <strong>open-source</strong>, <strong>free to use forever</strong>,
+                    and packed with features that rival expensive SaaS platforms.
+                </p>
+                <div class="about-grid">
+                    <div class="item">
+                        <span class="icon">📡</span>
+                        <h4>Cross-Platform</h4>
+                        <p>Publish to X, Facebook, Instagram, LinkedIn, YouTube, Pinterest, Bluesky, Threads, TikTok, Mastodon & more.</p>
+                    </div>
+                    <div class="item">
+                        <span class="icon">🔓</span>
+                        <h4>Open-Source</h4>
+                        <p>Fully transparent codebase. Self-host the engine and skip the SaaS tax entirely.</p>
+                    </div>
+                    <div class="item">
+                        <span class="icon">🆓</span>
+                        <h4>Free Forever</h4>
+                        <p>Unlimited posting, unlimited channels, no hidden fees — free tier never expires.</p>
+                    </div>
+                    <div class="item">
+                        <span class="icon">🧩</span>
+                        <h4>FED-OS Native</h4>
+                        <p>Seamlessly integrates with FED-Remover, FED-AI, and the entire FED-OS toolkit.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ─── FAKE SOCIAL POSTER EMBED ─── -->
+            <div class="poster-embed">
+                <div class="embed-header">
+                    <h3>
+                        <span class="live-dot"></span>
+                        FED-Poster Dashboard
+                    </h3>
+                    <span class="status">🟢 Live demo · 2,341 posts published</span>
+                </div>
+
+                <!-- Composer -->
+                <div class="composer">
+                    <textarea id="postContent" placeholder="What's happening? Write your post here…" rows="3">Just launched my new project! 🚀 Super excited to share this with everyone. #buildinpublic #opensource</textarea>
+                    <div class="composer-tools">
+                        <div class="left">
+                            <button class="tool-btn">📷 Media</button>
+                            <button class="tool-btn">🔗 Link</button>
+                            <button class="tool-btn"># Hashtag</button>
+                            <button class="tool-btn">🤖 AI Generate</button>
+                        </div>
+                        <span class="char-count" id="charCount">146 / 280</span>
+                    </div>
+                </div>
+
+                <!-- Platform Picker -->
+                <div class="platform-picker" id="platformPicker">
+                    <button class="plat-btn active" data-platform="X"><span class="emoji">🐦</span> X</button>
+                    <button class="plat-btn" data-platform="Facebook"><span class="emoji">📘</span> FB</button>
+                    <button class="plat-btn active" data-platform="Instagram"><span class="emoji">📸</span> IG</button>
+                    <button class="plat-btn" data-platform="LinkedIn"><span class="emoji">💼</span> LI</button>
+                    <button class="plat-btn" data-platform="YouTube"><span class="emoji">▶️</span> YT</button>
+                    <button class="plat-btn" data-platform="Pinterest"><span class="emoji">📌</span> Pin</button>
+                    <button class="plat-btn active" data-platform="Bluesky"><span class="emoji">🦋</span> BS</button>
+                    <button class="plat-btn" data-platform="Threads"><span class="emoji">🧵</span> TH</button>
+                    <button class="plat-btn" data-platform="TikTok"><span class="emoji">📱</span> TT</button>
+                    <button class="plat-btn" data-platform="Mastodon"><span class="emoji">🌐</span> Mast</button>
+                </div>
+
+                <!-- Actions -->
+                <div class="poster-actions">
+                    <button class="btn-publish" id="publishBtn">🚀 Publish Now</button>
+                    <button class="btn-schedule">📅 Schedule</button>
+                    <button class="btn-schedule" id="clearFeedBtn" style="margin-left:auto;">🗑️ Clear feed</button>
+                </div>
+
+                <!-- Fake Feed -->
+                <div class="fake-feed" id="fakeFeed">
+                    <div class="feed-item">
+                        <div class="avatar">FD</div>
+                        <div class="content">
+                            <div class="name">FED-Poster <span>· just now</span></div>
+                            <div class="text">Welcome to FED-Poster! This is your live dashboard. Toggle platforms, write a post, and hit publish to see it appear here. 🚀</div>
+                            <div class="platform-tags">
+                                <span class="tag active-tag">🐦 X</span>
+                                <span class="tag active-tag">📸 IG</span>
+                                <span class="tag active-tag">🦋 BS</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feed-item">
+                        <div class="avatar" style="background:linear-gradient(135deg,var(--pink),var(--cyan));">AI</div>
+                        <div class="content">
+                            <div class="name">FED-AI <span>· 2 min ago</span></div>
+                            <div class="text">💡 Did you know? FED-Poster supports unlimited AI credits on the Premium plan. Generate posts, images, and hashtags instantly.</div>
+                            <div class="platform-tags">
+                                <span class="tag active-tag">📘 FB</span>
+                                <span class="tag active-tag">💼 LI</span>
+                                <span class="tag active-tag">🌐 Mast</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── Features Grid ─── -->
+            <div id="features" class="features">
+                <div class="feature-item">
+                    <span class="icon">📱</span>
+                    <h3>10 channels</h3>
+                    <p>Connect all major platforms, including <span class="highlight">Bluesky &amp; Threads</span>.</p>
+                </div>
+                <div class="feature-item">
+                    <span class="icon">📅</span>
+                    <h3>1,000 posts</h3>
+                    <p><span class="highlight">150% more</span> than Postiz. Schedule everything.</p>
+                </div>
+                <div class="feature-item">
+                    <span class="icon">🤖</span>
+                    <h3>Unlimited AI</h3>
+                    <p>Generate text &amp; images — <span class="highlight">no extra cost</span>.</p>
+                </div>
+                <div class="feature-item">
+                    <span class="icon">📊</span>
+                    <h3>120‑day analytics</h3>
+                    <p><span class="highlight">25% more</span> history than Buffer.</p>
+                </div>
+                <div class="feature-item">
+                    <span class="icon">👥</span>
+                    <h3>Team members</h3>
+                    <p>Exclusive <span class="highlight">by‑request</span> approval for serious teams.</p>
+                    <span class="tag-new">VIP</span>
+                </div>
+                <div class="feature-item">
+                    <span class="icon">🔓</span>
+                    <h3>Open‑source engine</h3>
+                    <p>Self‑host the core — <span class="highlight">skip the SaaS tax</span>.</p>
+                    <span class="tag-new">GitHub</span>
+                </div>
+                <div class="feature-item">
+                    <span class="icon">📲</span>
+                    <h3>Everywhere</h3>
+                    <p>Web, iOS, Android, Desktop — <span class="highlight">full sync</span>.</p>
+                </div>
+                <div class="feature-item">
+                    <span class="icon">🧩</span>
+                    <h3>FED‑OS ecosystem</h3>
+                    <p>Includes <span class="highlight">FED‑Remover</span> (silence remover) &amp; more.</p>
+                    <span class="tag-new">fedpromptly.com</span>
+                </div>
+            </div>
+
+            <!-- ─── Compare Table ─── -->
+            <section id="compare" class="compare-section">
+                <h2>Compare vs <span class="gradient">the competition</span></h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Buffer</th>
+                                <th>Hootsuite</th>
+                                <th>Postiz</th>
+                                <th>FED‑Poster (Free)</th>
+                                <th style="background:rgba(108,140,255,0.08);">FED‑Poster Premium</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Price</td>
+                                <td>$30/mo</td>
+                                <td>$99/mo</td>
+                                <td>$29/mo</td>
+                                <td><strong>Free</strong></td>
+                                <td class="highlight-cell"><strong class="price-highlight">$20/mo</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Platforms</td>
+                                <td>7</td>
+                                <td>8</td>
+                                <td>8</td>
+                                <td>12+</td>
+                                <td class="highlight-cell"><strong>10</strong> <span class="premium-tag">+Bluesky</span></td>
+                            </tr>
+                            <tr>
+                                <td>Channels</td>
+                                <td>5</td>
+                                <td>10</td>
+                                <td>5</td>
+                                <td>Unlimited</td>
+                                <td class="highlight-cell"><strong>10</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Monthly posts</td>
+                                <td>Unlimited</td>
+                                <td>Unlimited</td>
+                                <td>400</td>
+                                <td>Unlimited</td>
+                                <td class="highlight-cell"><strong>1,000</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Analytics</td>
+                                <td>90 days</td>
+                                <td>30 days</td>
+                                <td>30 days</td>
+                                <td>None</td>
+                                <td class="highlight-cell"><strong>120 days</strong></td>
+                            </tr>
+                            <tr>
+                                <td>AI credits</td>
+                                <td>40/mo</td>
+                                <td>50/mo</td>
+                                <td>50/mo</td>
+                                <td>None</td>
+                                <td class="highlight-cell"><strong>Unlimited</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Team members</td>
+                                <td>1 user</td>
+                                <td>1 user</td>
+                                <td>1 user</td>
+                                <td>1 user</td>
+                                <td class="highlight-cell"><strong>By request</strong> <span class="premium-tag">VIP</span></td>
+                            </tr>
+                            <tr>
+                                <td>API requests</td>
+                                <td>7,500/mo</td>
+                                <td>8,000/mo</td>
+                                <td>5,000/mo</td>
+                                <td>Unlimited</td>
+                                <td class="highlight-cell"><strong>9,500/mo</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Open source</td>
+                                <td><span class="cross">✕</span></td>
+                                <td><span class="cross">✕</span></td>
+                                <td><span class="check">✓</span></td>
+                                <td><span class="check">✓</span></td>
+                                <td class="highlight-cell"><span class="check">✓</span> (engine)</td>
+                            </tr>
+                            <tr>
+                                <td>Mobile + Desktop</td>
+                                <td><span class="check">✓</span></td>
+                                <td><span class="check">✓</span></td>
+                                <td><span class="cross">✕</span></td>
+                                <td><span class="cross">✕</span></td>
+                                <td class="highlight-cell"><span class="check">✓</span> All platforms</td>
+                            </tr>
+                            <tr>
+                                <td>Support</td>
+                                <td>Email</td>
+                                <td>Email</td>
+                                <td>Community</td>
+                                <td>None</td>
+                                <td class="highlight-cell"><strong>Priority</strong> <span class="premium-tag">24/7</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p style="text-align:center;font-size:0.75rem;color:var(--text-dim);margin-top:12px;">
+                    FED‑Poster (free) gives you a taste — Premium gives you the full power. <br />
+                    <strong style="color:#fff;">$20/mo is 30% cheaper than Postiz and 33% cheaper than Buffer.</strong>
+                </p>
+            </section>
+
+            <!-- ─── Pricing ─── -->
+            <section id="pricing" class="pricing-section">
+                <h2>Choose your plan</h2>
+                <p class="sub">Free forever. Upgrade when you grow.</p>
+                <div class="pricing-grid">
+                    <div class="pricing-card">
+                        <div class="plan-name">Free</div>
+                        <div class="price">$0 <small>/ month</small></div>
+                        <div class="desc">For casual users and testing</div>
+                        <ul>
+                            <li>3 social channels</li>
+                            <li>50 posts / month</li>
+                            <li>65 AI credits</li>
+                            <li>7‑day analytics</li>
+                            <li>Web access only</li>
+                            <li class="muted">No team members</li>
+                            <li class="muted">No priority support</li>
+                        </ul>
+                        <button class="btn-outline">Get started free</button>
+                        <div class="free-note">🆓 No credit card · Forever free</div>
+                    </div>
+                    <div class="pricing-card premium">
+                        <div class="plan-name">Premium</div>
+                        <div class="price">$20 <small>/ month</small></div>
+                        <div class="desc">Everything you need to dominate social</div>
+                        <ul>
+                            <li>10 social channels</li>
+                            <li>1,000 posts / month</li>
+                            <li><strong>Unlimited</strong> AI credits</li>
+                            <li>120‑day analytics</li>
+                            <li>Web · Mobile · Desktop</li>
+                            <li>Team members (by request)</li>
+                            <li>Priority 24/7 support</li>
+                            <li>9,500 API requests / month</li>
+                        </ul>
+                        <button class="btn-primary">🚀 Start 14‑day trial</button>
+                        <div class="free-note">⚡ First 500 users lock $20/mo forever</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ─── Ecosystem ─── -->
+            <div class="ecosystem">
+                <div class="eco-item">
+                    <span class="icon">🔇</span>
+                    <h4>FED‑Remover</h4>
+                    <p>AI‑powered silence remover for videos — no word cutting.</p>
+                    <span class="badge-eco">Coming soon</span>
+                </div>
+                <div class="eco-item">
+                    <span class="icon">📡</span>
+                    <h4>FED‑Poster</h4>
+                    <p>The free tier — unlimited posting, no analytics, community support.</p>
+                    <span class="badge-eco">Live</span>
+                </div>
+                <div class="eco-item">
+                    <span class="icon">📚</span>
+                    <h4>GitHub + Wiki</h4>
+                    <p>Full open‑source engine, API docs, and community guides.</p>
+                    <span class="badge-eco">⭐ Star us</span>
+                </div>
+                <div class="eco-item">
+                    <span class="icon">🧠</span>
+                    <h4>FED‑OS</h4>
+                    <p>The ecosystem — more tools rolling out exclusively on fedpromptly.com.</p>
+                    <span class="badge-eco">Explore</span>
+                </div>
+            </div>
+
+            <footer class="footer">
+                <span>&copy; 2026 FED‑OS · fedpromptly.com</span>
+                <span>
+                    <a href="#">Privacy</a> · <a href="#">Terms</a> ·
+                    <a href="#">GitHub</a> · <a href="#">Wiki</a> ·
+                    <a href="#">Blog</a>
+                </span>
+            </footer>
+
         </div>
-        <button id="logoutBtn" class="btn btn-danger">Logout</button>
-        <hr />
-        <h3>💳 Subscribe for $19.99</h3>
-        <p>One‑time payment – unlock the subscriber thread instantly.</p>
-        <div id="paypalButtonContainer"></div>
     </div>
 
-    <div id="subscriberContent" class="hidden">
-        <h2>🔓 Subscriber Thread</h2>
-        <p><span class="subscriber-badge">ACTIVE</span> You have full access.</p>
-        <p>Welcome to the exclusive subscriber‑only discussion. Thank you for your support!</p>
-        <div style="background:#0d1117; padding:1rem; border-radius:6px; border:1px solid #30363d; margin-top:1rem; font-family: 'Courier New', monospace;">
-            <p><span class="prompt">></span> Private message: This is where you put your secret content.</p>
-        </div>
-        <p style="margin-top:1rem; font-size:0.9rem; color:#8b949e;">Logged in as: <span id="subscriberEmail"></span></p>
-    </div>
-
-    <!-- Script identical to other themes – copy from pink version, but we'll keep it concise -->
     <script>
-        (function() {
-            const SUPABASE_URL = 'https://udblpaojoqwtqdryejgi.supabase.co';
-            const SUPABASE_ANON_KEY = 'sb_publishable_w0yGrrpWfuJqQFzNXXHM7g_cogUGoeq';
-            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            const FUNCTION_NAMES = { create: 'create-paypal-order', capture: 'capture-paypal-order' };
+        // ─── Carousel ───
+        const platforms = [
+            { emoji: '🐦', name: 'X' },
+            { emoji: '📘', name: 'Facebook' },
+            { emoji: '📸', name: 'Instagram' },
+            { emoji: '💼', name: 'LinkedIn' },
+            { emoji: '▶️', name: 'YouTube' },
+            { emoji: '📌', name: 'Pinterest' },
+            { emoji: '🦋', name: 'Bluesky' },
+            { emoji: '🧵', name: 'Threads' },
+            { emoji: '📱', name: 'TikTok' },
+            { emoji: '🌐', name: 'Mastodon' }
+        ];
+        const track = document.getElementById('carouselTrack');
+        [...platforms, ...platforms].forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'carousel-item';
+            div.innerHTML = `<span class="emoji">${p.emoji}</span> ${p.name}`;
+            track.appendChild(div);
+        });
 
-            const authSection = document.getElementById('authSection');
-            const checkoutSection = document.getElementById('checkoutSection');
-            const emailInput = document.getElementById('emailInput');
-            const passwordInput = document.getElementById('passwordInput');
-            const signInBtn = document.getElementById('signInBtn');
-            const signUpBtn = document.getElementById('signUpBtn');
-            const logoutBtn = document.getElementById('logoutBtn');
-            const pingBtn = document.getElementById('pingBtn');
-            const authError = document.getElementById('authError');
-            const authSuccess = document.getElementById('authSuccess');
-            const userEmailDisplay = document.getElementById('userEmailDisplay');
-            const userAvatarLetter = document.getElementById('userAvatarLetter');
-            const paypalContainer = document.getElementById('paypalButtonContainer');
-            const debugInfo = document.getElementById('debugInfo');
-            const subscriberDiv = document.getElementById('subscriberContent');
-            const subscriberEmailSpan = document.getElementById('subscriberEmail');
-            let paypalRendered = false;
+        // ─── Platform Toggle ───
+        document.querySelectorAll('.plat-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.classList.toggle('active');
+            });
+        });
 
-            async function checkSubscriptionStatus(userId) {
-                if (!userId) return false;
-                const { data, error } = await supabase.from('orders').select('id').eq('user_id', userId).eq('status', 'captured').limit(1);
-                if (error) { console.error('Subscription check error:', error); return false; }
-                return data && data.length > 0;
+        // ─── Character Counter ───
+        const textarea = document.getElementById('postContent');
+        const charCount = document.getElementById('charCount');
+        textarea.addEventListener('input', () => {
+            const len = textarea.value.length;
+            charCount.textContent = `${len} / 280`;
+            charCount.style.color = len > 280 ? 'var(--red)' : 'var(--text-dim)';
+        });
+
+        // ─── Publish / Fake Feed ───
+        const feed = document.getElementById('fakeFeed');
+        const publishBtn = document.getElementById('publishBtn');
+        const clearBtn = document.getElementById('clearFeedBtn');
+
+        const avatars = ['FD', 'AI', '🔥', '🚀', '💡', '✨', '⚡', '🧠'];
+        const names = ['FED-Poster', 'FED-AI', 'FED-OS', 'Pulse Bot', 'Community', 'Dev Team', 'Automation', 'FED-Remover'];
+
+        function getRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+        function getActivePlatforms() {
+            const active = [];
+            document.querySelectorAll('.plat-btn.active').forEach(btn => {
+                active.push(btn.dataset.platform);
+            });
+            return active;
+        }
+
+        function getEmojiForPlatform(name) {
+            const map = {
+                'X': '🐦',
+                'Facebook': '📘',
+                'Instagram': '📸',
+                'LinkedIn': '💼',
+                'YouTube': '▶️',
+                'Pinterest': '📌',
+                'Bluesky': '🦋',
+                'Threads': '🧵',
+                'TikTok': '📱',
+                'Mastodon': '🌐'
+            };
+            return map[name] || '📡';
+        }
+
+        publishBtn.addEventListener('click', () => {
+            const text = textarea.value.trim() || 'Just testing FED-Poster! 🚀';
+            const activePlats = getActivePlatforms();
+            if (activePlats.length === 0) {
+                alert('⚠️ Select at least one platform to publish to!');
+                return;
             }
 
-            async function callEdgeFunction(functionName, bodyData) {
-                const { data: { session } } = await supabase.auth.getSession();
-                if (!session) throw new Error('No active session – please sign in.');
-                debugInfo.innerHTML = `<pre>Calling ${functionName}...</pre>`;
-                const { data, error } = await supabase.functions.invoke(functionName, { body: bodyData });
-                if (error) throw new Error(error.message || 'Function invocation failed');
-                debugInfo.innerHTML = `<pre>✅ Response: ${JSON.stringify(data, null, 2)}</pre>`;
-                return data;
+            const item = document.createElement('div');
+            item.className = 'feed-item';
+            const avatarChar = getRandom(avatars);
+            const name = getRandom(names);
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+            let tagsHtml = activePlats.map(p =>
+                `<span class="tag active-tag">${getEmojiForPlatform(p)} ${p}</span>`
+            ).join('');
+
+            item.innerHTML = `
+                <div class="avatar" style="background:linear-gradient(135deg,${getRandom(['var(--accent)','var(--pink)','var(--cyan)','var(--green)','var(--orange)'])},${getRandom(['var(--accent)','var(--pink)','var(--cyan)'])});">${avatarChar}</div>
+                <div class="content">
+                    <div class="name">${name} <span>· ${timeStr}</span></div>
+                    <div class="text">${text}</div>
+                    <div class="platform-tags">${tagsHtml}</div>
+                </div>
+            `;
+            feed.prepend(item);
+            // limit feed to 10 items
+            while (feed.children.length > 10) {
+                feed.removeChild(feed.lastChild);
             }
+            // remove empty state if exists
+            const empty = feed.querySelector('.empty-feed');
+            if (empty) empty.remove();
 
-            async function pingFunctions() {
-                try {
-                    debugInfo.innerHTML = `<pre>Pinging create-paypal-order...</pre>`;
-                    const url = `https://udblpaojoqwtqdryejgi.supabase.co/functions/v1/create-paypal-order?ping=true`;
-                    const resp = await fetch(url);
-                    const text = await resp.text();
-                    debugInfo.innerHTML = `<pre>Ping response (status ${resp.status}):\n${text}</pre>`;
-                } catch (e) {
-                    debugInfo.innerHTML = `<pre>Ping error: ${e.message}</pre>`;
-                }
-            }
-
-            function renderPayPalButton() {
-                if (paypalRendered) return;
-                if (typeof paypal === 'undefined') { console.error('PayPal SDK not loaded'); return; }
-                paypal.Buttons({
-                    createOrder: async function(data, actions) {
-                        try {
-                            const result = await callEdgeFunction(FUNCTION_NAMES.create, { amount: '19.99', currency: 'USD', description: 'Premium subscription' });
-                            return result.orderId;
-                        } catch (err) { alert('Failed to create order: ' + err.message); throw err; }
-                    },
-                    onApprove: async function(data, actions) {
-                        try {
-                            const captureResult = await callEdgeFunction(FUNCTION_NAMES.capture, { paypal_order_id: data.orderID });
-                            alert('✅ Payment successful! You now have access.');
-                            console.log('Capture result:', captureResult);
-                            const { data: { user } } = await supabase.auth.getUser();
-                            if (user) {
-                                const isSubscriber = await checkSubscriptionStatus(user.id);
-                                if (isSubscriber) {
-                                    subscriberDiv.classList.remove('hidden');
-                                    subscriberEmailSpan.textContent = user.email || 'user';
-                                    subscriberDiv.scrollIntoView({ behavior: 'smooth' });
-                                    paypalContainer.innerHTML = '<p style="color:#3fb950;">✅ Subscription active</p>';
-                                }
-                            }
-                        } catch (err) { alert('Capture failed: ' + err.message); }
-                    },
-                    onError: function(err) { const msg = 'PayPal error: ' + (err.message || JSON.stringify(err)); console.error(msg); alert(msg); }
-                }).render(paypalContainer);
-                paypalRendered = true;
-            }
-
-            async function updateUI() {
-                const { data: { session }, error } = await supabase.auth.getSession();
-                if (error) { console.error('Session error:', error); return; }
-                if (session && session.user) {
-                    authSection.classList.add('hidden');
-                    checkoutSection.classList.remove('hidden');
-                    const user = session.user;
-                    userEmailDisplay.textContent = user.email || 'No email';
-                    userAvatarLetter.textContent = user.email ? user.email.charAt(0).toUpperCase() : 'U';
-                    renderPayPalButton();
-                    const isSubscriber = await checkSubscriptionStatus(user.id);
-                    if (isSubscriber) {
-                        subscriberDiv.classList.remove('hidden');
-                        subscriberEmailSpan.textContent = user.email || 'user';
-                        paypalContainer.innerHTML = '<p style="color:#3fb950;">✅ You are already a subscriber.</p>';
-                    } else {
-                        subscriberDiv.classList.add('hidden');
-                    }
-                } else {
-                    authSection.classList.remove('hidden');
-                    checkoutSection.classList.add('hidden');
-                    paypalContainer.innerHTML = '';
-                    paypalRendered = false;
-                    authError.textContent = '';
-                    authSuccess.textContent = '';
-                    subscriberDiv.classList.add('hidden');
-                }
-            }
-
-            supabase.auth.onAuthStateChange((event, session) => { console.log('Auth event:', event); updateUI(); });
-
-            signInBtn.addEventListener('click', async () => {
-                const email = emailInput.value.trim();
-                const password = passwordInput.value;
-                if (!email || !password) { authError.textContent = 'Please enter both email and password.'; authSuccess.textContent = ''; return; }
-                authError.textContent = '';
-                authSuccess.textContent = 'Signing in...';
-                const { error } = await supabase.auth.signInWithPassword({ email, password });
-                if (error) { authError.textContent = 'Sign in failed: ' + error.message; authSuccess.textContent = ''; } else { authSuccess.textContent = 'Signed in.'; authError.textContent = ''; }
+            // animate
+            item.style.animation = 'none';
+            requestAnimationFrame(() => {
+                item.style.animation = 'slideUp 0.4s ease';
             });
 
-            signUpBtn.addEventListener('click', async () => {
-                const email = emailInput.value.trim();
-                const password = passwordInput.value;
-                if (!email || !password) { authError.textContent = 'Please enter both email and password.'; authSuccess.textContent = ''; return; }
-                if (password.length < 6) { authError.textContent = 'Password must be at least 6 characters.'; authSuccess.textContent = ''; return; }
-                authError.textContent = '';
-                authSuccess.textContent = 'Creating account...';
-                const { data, error } = await supabase.auth.signUp({ email, password });
-                if (error) { authError.textContent = 'Sign up failed: ' + error.message; authSuccess.textContent = ''; } else {
-                    if (data.user && data.user.identities && data.user.identities.length === 0) { authError.textContent = 'User already registered. Please sign in.'; authSuccess.textContent = ''; } else { authSuccess.textContent = 'Account created. You may now sign in.'; authError.textContent = ''; }
-                }
-            });
+            // short publish feedback
+            publishBtn.textContent = '✅ Published!';
+            setTimeout(() => {
+                publishBtn.textContent = '🚀 Publish Now';
+            }, 1200);
+        });
 
-            logoutBtn.addEventListener('click', async () => { await supabase.auth.signOut(); });
-            pingBtn.addEventListener('click', pingFunctions);
-            updateUI();
-        })();
+        clearBtn.addEventListener('click', () => {
+            feed.innerHTML = `
+                <div class="empty-feed">📭 No posts yet. Write something and hit publish!</div>
+            `;
+        });
+
+        // ─── Smooth Scroll ───
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // ─── CTA Buttons ───
+        document.querySelectorAll('.btn-primary, .btn-cta-header').forEach(btn => {
+            btn.addEventListener('click', () => {
+                alert('🚀 Welcome to FED-Poster Premium! Sign-up flow starts here.');
+            });
+        });
+        document.querySelectorAll('.btn-outline, .btn-secondary').forEach(btn => {
+            btn.addEventListener('click', () => {
+                alert('🆓 You selected the Free plan. Redirecting to dashboard...');
+            });
+        });
     </script>
+
 </body>
 </html>
