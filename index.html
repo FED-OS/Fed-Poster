@@ -1,102 +1,1598 @@
-<!-- fed-poster-embed.html -->
-<div id="fed-poster-widget" style="font-family: Arial; max-width: 500px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background: #f9f9f9;">
-  <h3 style="margin: 0 0 15px 0;">📤 FED-POSTER</h3>
-  
-  <!-- User enters their API Key -->
-  <input id="fed-api-key" type="text" placeholder="Enter your FED-POSTER API Key" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;">
-  
-  <!-- Select Platform -->
-  <select id="fed-platform" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
-    <option value="telegram">Telegram</option>
-    <option value="discord">Discord</option>
-    <option value="gist">GitHub Gist</option>
-    <option value="mastodon">Mastodon</option>
-    <option value="bluesky">Bluesky</option>
-    <option value="stoat">Stoat</option>
-  </select>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FED-POSTER · 500+ Platforms</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        /* ───────────── RESET & BASE ───────────── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <!-- User enters their destination -->
-  <input id="fed-destination" type="text" placeholder="Chat ID / Webhook URL / Instance" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;">
-  
-  <!-- User enters their content -->
-  <textarea id="fed-content" rows="4" placeholder="Enter your post content..." style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;"></textarea>
-  
-  <button id="fed-post-btn" style="background: #007bff; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px;">🚀 Post Now</button>
-  
-  <div id="fed-result" style="margin-top: 15px; padding: 10px; background: white; border-radius: 5px; border: 1px solid #eee; min-height: 30px; font-size: 14px; white-space: pre-wrap;"></div>
-</div>
+        :root {
+            --bg-primary: #07090f;
+            --bg-secondary: #0e111c;
+            --bg-card: #161b2b;
+            --bg-card-hover: #1e2438;
+            --text-primary: #edf0fa;
+            --text-secondary: #8890b0;
+            --accent-1: #7c5cfc;
+            --accent-2: #5b8def;
+            --accent-3: #f472b6;
+            --gradient-main: linear-gradient(135deg, #7c5cfc, #5b8def, #f472b6);
+            --gradient-gold: linear-gradient(135deg, #f59e0b, #fbbf24);
+            --gradient-discount: linear-gradient(135deg, #ef4444, #dc2626);
+            --radius: 20px;
+            --radius-sm: 12px;
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            --transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
 
-<script>
-document.getElementById('fed-post-btn').addEventListener('click', async function() {
-  const apiKey = document.getElementById('fed-api-key').value.trim();
-  const platform = document.getElementById('fed-platform').value;
-  const destination = document.getElementById('fed-destination').value.trim();
-  const content = document.getElementById('fed-content').value.trim();
-  const resultDiv = document.getElementById('fed-result');
+        html {
+            scroll-behavior: smooth;
+        }
 
-  // Validation
-  if (!apiKey) { resultDiv.innerHTML = '❌ Please enter your API Key.'; return; }
-  if (!content) { resultDiv.innerHTML = '❌ Please enter content.'; return; }
-  if (!destination) { resultDiv.innerHTML = '❌ Please enter destination (Chat ID / Webhook URL / Instance).'; return; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
 
-  resultDiv.innerHTML = '⏳ Posting...';
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 28px;
+        }
 
-  // Build request body
-  let body = { platform, content: { text: content } };
+        /* ───────────── SCROLLBAR ───────────── */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-1);
+            border-radius: 10px;
+        }
 
-  switch (platform) {
-    case 'telegram':
-      body.content.chat_id = destination;
-      break;
-    case 'discord':
-      body.content.webhook_url = destination;
-      break;
-    case 'gist':
-      body.content.filename = 'post.txt';
-      body.content.description = 'FED-POSTER Gist';
-      break;
-    case 'mastodon':
-      body.content.instance = destination;
-      const mastodonToken = prompt('Enter your Mastodon Access Token:');
-      if (!mastodonToken) { resultDiv.innerHTML = '❌ Cancelled.'; return; }
-      body.content.access_token = mastodonToken;
-      break;
-    case 'bluesky':
-      body.content.pds = destination || 'https://bsky.social';
-      const bskyToken = prompt('Enter your Bluesky Access Token:');
-      const did = prompt('Enter your Bluesky DID:');
-      if (!bskyToken || !did) { resultDiv.innerHTML = '❌ Cancelled.'; return; }
-      body.content.access_token = bskyToken;
-      body.content.did = did;
-      break;
-    case 'stoat':
-      body.content.webhook_url = destination;
-      break;
-    default:
-      resultDiv.innerHTML = '❌ Unknown platform.';
-      return;
-  }
+        /* ───────────── BUTTONS ───────────── */
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 40px;
+            background: var(--gradient-main);
+            border: none;
+            border-radius: 60px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 8px 32px rgba(124, 92, 252, 0.35);
+        }
 
-  try {
-    // ✅ UPDATED: This is your live Supabase Edge Function URL
-    const response = await fetch('https://vfhxnzthcksflmylkede.supabase.co/functions/v1/post', {
-      method: 'POST',
-      headers: {
-        'x-api-key': apiKey,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
-    });
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 14px 48px rgba(124, 92, 252, 0.5);
+        }
 
-    const data = await response.json();
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 60px;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
 
-    if (response.ok && data.success) {
-      resultDiv.innerHTML = `✅ Posted successfully!<br>Remaining credits today: ${data.credits_remaining}`;
-    } else {
-      resultDiv.innerHTML = `❌ Error: ${data.error || 'Unknown error'}`;
-    }
-  } catch (error) {
-    resultDiv.innerHTML = `❌ Network Error: ${error.message}`;
-  }
-});
-</script>
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .btn-gold {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 40px;
+            background: var(--gradient-gold);
+            border: none;
+            border-radius: 60px;
+            color: #0a0c14;
+            font-weight: 700;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 8px 32px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 14px 48px rgba(245, 158, 11, 0.45);
+        }
+
+        /* ─── DISCOUNT BADGE ─── */
+        .discount-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--gradient-discount);
+            color: #fff;
+            font-weight: 800;
+            font-size: 0.75rem;
+            padding: 4px 16px;
+            border-radius: 100px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35);
+            animation: pulse-badge 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .discount-badge i {
+            font-size: 0.7rem;
+        }
+
+        .discount-strikethrough {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+            font-weight: 400;
+            font-size: 0.85rem;
+            margin-right: 6px;
+        }
+
+        /* ───────────── HEADER / NAV ───────────── */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 16px 0;
+            z-index: 1000;
+            background: rgba(7, 9, 15, 0.65);
+            backdrop-filter: blur(22px) saturate(1.6);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        nav .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 900;
+            font-size: 1.6rem;
+            letter-spacing: -0.5px;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-logo i {
+            font-size: 1.4rem;
+            -webkit-text-fill-color: initial;
+            color: var(--accent-1);
+        }
+
+        .nav-logo .badge-small {
+            font-size: 0.55rem;
+            font-weight: 700;
+            background: var(--gradient-discount);
+            -webkit-text-fill-color: #fff;
+            padding: 2px 10px;
+            border-radius: 100px;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links .btn-primary {
+            padding: 10px 24px;
+            font-size: 0.8rem;
+        }
+
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* ───────────── HERO ───────────── */
+        .hero {
+            padding: 150px 0 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            left: -20%;
+            width: 900px;
+            height: 900px;
+            background: radial-gradient(circle, rgba(124, 92, 252, 0.07), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            right: -15%;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(91, 141, 239, 0.05), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(124, 92, 252, 0.12);
+            border: 1px solid rgba(124, 92, 252, 0.15);
+            padding: 6px 20px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent-1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .hero .discount-float {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.12);
+            padding: 8px 24px 8px 20px;
+            border-radius: 100px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #f87171;
+        }
+
+        .hero .discount-float .big {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: #ef4444;
+        }
+
+        .hero h1 {
+            font-size: clamp(4rem, 10vw, 7rem);
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -3px;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 6px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+
+        .hero .subtitle span {
+            color: var(--accent-1);
+            font-weight: 700;
+        }
+
+        .hero .tagline {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 16px auto 32px;
+            line-height: 1.8;
+        }
+
+        .hero .tagline strong {
+            color: var(--text-primary);
+        }
+
+        .hero-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 56px;
+            margin-top: 48px;
+            padding-top: 32px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .hero-stats div {
+            text-align: center;
+        }
+
+        .hero-stats .number {
+            font-size: 2.2rem;
+            font-weight: 900;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-stats .label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* ───────────── PLATFORMS SECTION ───────────── */
+        .platforms-section {
+            padding: 60px 0 80px;
+            background: var(--bg-secondary);
+        }
+
+        .platforms-section .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .platforms-section .section-header h2 {
+            font-size: clamp(2rem, 3.5vw, 2.8rem);
+            font-weight: 800;
+        }
+
+        .platforms-section .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 24px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .platform-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+            border: 1px solid transparent;
+            transition: var(--transition);
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .platform-item:hover {
+            background: rgba(124, 92, 252, 0.06);
+            border-color: rgba(124, 92, 252, 0.1);
+            color: var(--text-primary);
+            transform: scale(1.02);
+        }
+
+        .platform-item i {
+            font-size: 1.1rem;
+            width: 22px;
+            text-align: center;
+            color: var(--accent-1);
+        }
+
+        .platform-item .fa-youtube { color: #ff0000; }
+        .platform-item .fa-tiktok { color: #25f4ee; }
+        .platform-item .fa-instagram { color: #e4405f; }
+        .platform-item .fa-twitter { color: #1da1f2; }
+        .platform-item .fa-facebook { color: #1877f2; }
+        .platform-item .fa-linkedin { color: #0a66c2; }
+        .platform-item .fa-reddit { color: #ff4500; }
+        .platform-item .fa-discord { color: #5865f2; }
+        .platform-item .fa-telegram { color: #26a5e4; }
+        .platform-item .fa-whatsapp { color: #25d366; }
+        .platform-item .fa-pinterest { color: #bd081c; }
+        .platform-item .fa-twitch { color: #9146ff; }
+        .platform-item .fa-quora { color: #b92b27; }
+        .platform-item .fa-medium { color: #00ab6c; }
+        .platform-item .fa-wordpress { color: #21759b; }
+        .platform-item .fa-github { color: #f0f6fc; }
+        .platform-item .fa-globe { color: var(--text-secondary); }
+
+        .platform-badge {
+            display: inline-block;
+            font-size: 0.65rem;
+            font-weight: 600;
+            background: rgba(124, 92, 252, 0.12);
+            color: var(--accent-1);
+            padding: 2px 10px;
+            border-radius: 100px;
+            margin-left: auto;
+        }
+
+        .platforms-footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .platforms-footer strong {
+            color: var(--text-primary);
+        }
+
+        /* ───────────── FEATURES (HORIZONTAL) ───────────── */
+        .features-section {
+            padding: 60px 0 80px;
+            background: var(--bg-primary);
+        }
+
+        .features-section .section-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .features-section .section-header h2 {
+            font-size: clamp(2rem, 3.5vw, 2.8rem);
+            font-weight: 800;
+        }
+
+        .features-section .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+
+        .features-scroll {
+            display: flex;
+            gap: 28px;
+            overflow-x: auto;
+            padding: 12px 4px 20px 4px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+        }
+
+        .features-scroll::-webkit-scrollbar {
+            height: 4px;
+        }
+        .features-scroll::-webkit-scrollbar-thumb {
+            background: var(--accent-1);
+            border-radius: 10px;
+        }
+
+        .feature-card {
+            flex: 0 0 360px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 32px 28px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            scroll-snap-align: start;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            background: var(--bg-card-hover);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .feature-card .icon-wrap {
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+            background: rgba(124, 92, 252, 0.12);
+            color: var(--accent-1);
+        }
+
+        .feature-card:nth-child(2) .icon-wrap {
+            background: rgba(91, 141, 239, 0.12);
+            color: var(--accent-2);
+        }
+        .feature-card:nth-child(3) .icon-wrap {
+            background: rgba(244, 114, 182, 0.12);
+            color: var(--accent-3);
+        }
+        .feature-card:nth-child(4) .icon-wrap {
+            background: rgba(245, 158, 11, 0.12);
+            color: #fbbf24;
+        }
+
+        .feature-card h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .feature-card > p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.7;
+            margin-bottom: 18px;
+        }
+
+        .feature-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .feature-chips .chip {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 4px 14px;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .feature-chips .chip i {
+            font-size: 0.6rem;
+            color: var(--accent-1);
+        }
+
+        .feature-card .btn-card {
+            margin-top: auto;
+            align-self: flex-start;
+            padding: 10px 24px;
+            font-size: 0.85rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 60px;
+            color: var(--text-primary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card .btn-card:hover {
+            background: rgba(124, 92, 252, 0.12);
+            border-color: rgba(124, 92, 252, 0.2);
+            color: #fff;
+            gap: 12px;
+        }
+
+        /* ───────────── MONETIZATION ───────────── */
+        .monetization-section {
+            padding: 80px 0;
+            background: var(--bg-secondary);
+        }
+
+        .monetization-section .section-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .monetization-section .section-header h2 {
+            font-size: clamp(2rem, 3.5vw, 2.8rem);
+            font-weight: 800;
+        }
+
+        .monetization-section .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+
+        .monetization-scroll {
+            display: flex;
+            gap: 24px;
+            overflow-x: auto;
+            padding: 12px 4px 20px 4px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .monetization-scroll::-webkit-scrollbar {
+            height: 4px;
+        }
+        .monetization-scroll::-webkit-scrollbar-thumb {
+            background: var(--accent-2);
+            border-radius: 10px;
+        }
+
+        .monetization-card {
+            flex: 0 0 300px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 28px 24px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            scroll-snap-align: start;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .monetization-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.08);
+            background: var(--bg-card-hover);
+        }
+
+        .monetization-card .emoji {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .monetization-card h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .monetization-card .price-wrap {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+
+        .monetization-card .price {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--accent-1);
+        }
+
+        .monetization-card .price .discount-strikethrough {
+            font-size: 1rem;
+            color: #6b7280;
+        }
+
+        .monetization-card .price .half-off {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            padding: 2px 10px;
+            border-radius: 100px;
+        }
+
+        .monetization-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .monetization-card .discount-ribbon {
+            position: absolute;
+            top: 12px;
+            right: -28px;
+            transform: rotate(45deg);
+            background: var(--gradient-discount);
+            color: #fff;
+            font-weight: 800;
+            font-size: 0.6rem;
+            padding: 4px 40px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        /* ───────────── INCOME GRID ───────────── */
+        .income-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 40px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 32px 28px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .income-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 12px 8px;
+        }
+
+        .income-item .label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .income-item .value {
+            font-size: 1.3rem;
+            font-weight: 800;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .income-item .value.gold {
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .income-item .value .strike {
+            text-decoration: line-through;
+            color: #6b7280;
+            font-weight: 400;
+            font-size: 0.75rem;
+            -webkit-text-fill-color: #6b7280;
+        }
+
+        .income-total {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            margin-top: 8px;
+        }
+
+        .income-total .total-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .income-total .total-value {
+            font-size: 2.2rem;
+            font-weight: 900;
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .income-total .total-value .strike {
+            text-decoration: line-through;
+            color: #6b7280;
+            font-weight: 400;
+            font-size: 1.2rem;
+            -webkit-text-fill-color: #6b7280;
+        }
+
+        .income-total .savings-badge {
+            display: inline-block;
+            margin-top: 6px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.08);
+            padding: 4px 20px;
+            border-radius: 100px;
+            -webkit-text-fill-color: #ef4444;
+        }
+
+        /* ───────────── ACTION PLAN ───────────── */
+        .plan-section {
+            padding: 80px 0;
+            background: var(--bg-primary);
+        }
+
+        .plan-section .section-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .plan-section .section-header h2 {
+            font-size: clamp(2rem, 3.5vw, 2.8rem);
+            font-weight: 800;
+        }
+
+        .plan-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .plan-step {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 24px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .plan-step:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .plan-step .week {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-1);
+            margin-bottom: 8px;
+        }
+
+        .plan-step h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .plan-step p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* ───────────── CTA ───────────── */
+        .cta-section {
+            padding: 80px 0;
+            background: var(--bg-secondary);
+            text-align: center;
+        }
+
+        .cta-box {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 56px 40px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-box::before {
+            content: '';
+            position: absolute;
+            top: -60%;
+            left: -30%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(124, 92, 252, 0.06), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .cta-box .cta-discount {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(239, 68, 68, 0.06);
+            border: 1px solid rgba(239, 68, 68, 0.1);
+            padding: 6px 24px 6px 20px;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #f87171;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .cta-box .cta-discount .big {
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: #ef4444;
+        }
+
+        .cta-box h2 {
+            font-size: clamp(2rem, 3vw, 2.8rem);
+            font-weight: 800;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .cta-box p {
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+            position: relative;
+            font-size: 1.05rem;
+        }
+
+        .cta-box .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            justify-content: center;
+            position: relative;
+        }
+
+        .cta-box .fine-print {
+            margin-top: 20px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            position: relative;
+        }
+
+        .cta-box .fine-print strong {
+            color: #ef4444;
+        }
+
+        /* ───────────── FOOTER ───────────── */
+        footer {
+            padding: 32px 0 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            background: var(--bg-primary);
+        }
+
+        footer .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        footer .copy {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        footer .copy strong {
+            color: var(--text-primary);
+        }
+
+        footer .socials {
+            display: flex;
+            gap: 12px;
+        }
+
+        footer .socials a {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        footer .socials a:hover {
+            background: rgba(124, 92, 252, 0.1);
+            color: #fff;
+        }
+
+        /* ───────────── RESPONSIVE ───────────── */
+        @media (max-width: 1024px) {
+            .plan-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .feature-card {
+                flex: 0 0 300px;
+            }
+            .monetization-card {
+                flex: 0 0 260px;
+            }
+            .platform-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--bg-primary);
+                padding: 24px;
+                gap: 16px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            }
+
+            .nav-links.open {
+                display: flex;
+            }
+
+            .nav-toggle {
+                display: block;
+            }
+
+            .hero h1 {
+                font-size: 3.6rem;
+                letter-spacing: -1px;
+            }
+
+            .hero-stats {
+                gap: 24px;
+                flex-wrap: wrap;
+            }
+
+            .hero-stats .number {
+                font-size: 1.6rem;
+            }
+
+            .plan-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .income-grid {
+                grid-template-columns: 1fr 1fr;
+                padding: 24px 16px;
+            }
+
+            .cta-box {
+                padding: 32px 20px;
+            }
+
+            footer .container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .platform-grid {
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+                padding: 16px 12px;
+            }
+
+            .platform-item {
+                font-size: 0.75rem;
+                padding: 8px 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+
+            .hero .tagline {
+                font-size: 1rem;
+            }
+
+            .feature-card {
+                flex: 0 0 260px;
+                padding: 24px 18px;
+            }
+
+            .monetization-card {
+                flex: 0 0 240px;
+            }
+
+            .income-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .platform-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 8px;
+            }
+
+            .nav-logo {
+                font-size: 1.2rem;
+            }
+            .nav-logo .badge-small {
+                font-size: 0.45rem;
+                padding: 1px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ═══════════ NAV ═══════════ -->
+    <nav id="navbar">
+        <div class="container">
+            <a href="#" class="nav-logo">
+                <i class="fas fa-bolt"></i> FED-OS
+                <span class="badge-small">50% OFF</span>
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#platforms">Platforms</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#monetize">Monetize</a></li>
+                <li><a href="#plan">Action Plan</a></li>
+                <li><a href="#cta" class="btn-primary">Get Started</a></li>
+            </ul>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ═══════════ HERO ═══════════ -->
+    <section class="hero" id="hero">
+        <div class="container">
+            <div class="discount-float">
+                <span class="big">⚡ 50% OFF</span>
+                <span>— launch sale ends soon</span>
+            </div>
+            <div class="badge">
+                <i class="fas fa-rocket"></i> Launch Today
+            </div>
+            <h1>FED-POSTER</h1>
+            <p class="subtitle">by <span>fedpromptly.com</span></p>
+            <p class="tagline">
+                <strong>500+ platforms.</strong> One dashboard. <br />
+                Post once. Go everywhere. <br />
+                <span style="color: var(--accent-1);">This changes everything.</span>
+            </p>
+            <div class="hero-buttons">
+                <a href="#cta" class="btn-gold">
+                    <i class="fas fa-dollar-sign"></i> Start Earning — 50% Off
+                </a>
+                <a href="#platforms" class="btn-secondary">
+                    <i class="fas fa-list-ul"></i> See All 500+ Platforms
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div>
+                    <div class="number">500+</div>
+                    <div class="label">Platforms Supported</div>
+                </div>
+                <div>
+                    <div class="number">1</div>
+                    <div class="label">Unified Workflow</div>
+                </div>
+                <div>
+                    <div class="number">100%</div>
+                    <div class="label">Open Source</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════ PLATFORMS LIST (TOP 50+) ═══════════ -->
+    <section class="platforms-section" id="platforms">
+        <div class="container">
+            <div class="section-header">
+                <h2>🌍 500+ Platforms. Starting with the Top 50.</h2>
+                <p>Every major social network, forum, blog, and community — all in one dashboard.</p>
+            </div>
+            <div class="platform-grid">
+                <div class="platform-item"><i class="fab fa-facebook"></i> Facebook</div>
+                <div class="platform-item"><i class="fab fa-youtube"></i> YouTube</div>
+                <div class="platform-item"><i class="fab fa-whatsapp"></i> WhatsApp</div>
+                <div class="platform-item"><i class="fab fa-instagram"></i> Instagram</div>
+                <div class="platform-item"><i class="fab fa-tiktok"></i> TikTok</div>
+                <div class="platform-item"><i class="fab fa-weixin"></i> WeChat</div>
+                <div class="platform-item"><i class="fab fa-telegram"></i> Telegram</div>
+                <div class="platform-item"><i class="fab fa-snapchat"></i> Snapchat</div>
+                <div class="platform-item"><i class="fas fa-qq"></i> QQ</div>
+                <div class="platform-item"><i class="fas fa-film"></i> Douyin</div>
+                <div class="platform-item"><i class="fas fa-weibo"></i> Sina Weibo</div>
+                <div class="platform-item"><i class="fas fa-video"></i> Kuaishou</div>
+                <div class="platform-item"><i class="fab fa-twitter"></i> X (Twitter)</div>
+                <div class="platform-item"><i class="fab fa-reddit"></i> Reddit</div>
+                <div class="platform-item"><i class="fab fa-linkedin"></i> LinkedIn</div>
+                <div class="platform-item"><i class="fab fa-pinterest"></i> Pinterest</div>
+                <div class="platform-item"><i class="fab fa-discord"></i> Discord</div>
+                <div class="platform-item"><i class="fab fa-twitch"></i> Twitch</div>
+                <div class="platform-item"><i class="fab fa-tumblr"></i> Tumblr</div>
+                <div class="platform-item"><i class="fab fa-quora"></i> Quora</div>
+                <div class="platform-item"><i class="fab fa-medium"></i> Medium</div>
+                <div class="platform-item"><i class="fab fa-viber"></i> Viber</div>
+                <div class="platform-item"><i class="fab fa-line"></i> LINE</div>
+                <div class="platform-item"><i class="fas fa-comment"></i> KakaoTalk</div>
+                <div class="platform-item"><i class="fas fa-music"></i> Likee</div>
+                <div class="platform-item"><i class="fas fa-share-alt"></i> ShareChat</div>
+                <div class="platform-item"><i class="fas fa-heart"></i> Badoo</div>
+                <div class="platform-item"><i class="fas fa-camera"></i> Flickr</div>
+                <div class="platform-item"><i class="fas fa-microphone"></i> Clubhouse</div>
+                <div class="platform-item"><i class="fas fa-users"></i> Amino</div>
+                <div class="platform-item"><i class="fas fa-heart"></i> Bumble</div>
+                <div class="platform-item"><i class="fas fa-fire"></i> Tinder</div>
+                <div class="platform-item"><i class="fas fa-pen"></i> Plurk</div>
+                <div class="platform-item"><i class="fas fa-globe"></i> MeWe</div>
+                <div class="platform-item"><i class="fas fa-thread"></i> Threads</div>
+                <div class="platform-item"><i class="fas fa-cloud"></i> Bluesky</div>
+                <div class="platform-item"><i class="fab fa-mastodon"></i> Mastodon</div>
+                <div class="platform-item"><i class="fab fa-vk"></i> VK</div>
+                <div class="platform-item"><i class="fas fa-users"></i> Odnoklassniki</div>
+                <div class="platform-item"><i class="fas fa-user-friends"></i> Renren</div>
+                <div class="platform-item"><i class="fas fa-smile"></i> Mixi</div>
+                <div class="platform-item"><i class="fas fa-globe"></i> Cyworld</div>
+                <div class="platform-item"><i class="fas fa-user-plus"></i> Friendster</div>
+                <div class="platform-item"><i class="fas fa-history"></i> Orkut</div>
+                <div class="platform-item"><i class="fas fa-music"></i> Myspace</div>
+                <div class="platform-item"><i class="fas fa-flag"></i> Truth Social</div>
+                <div class="platform-item"><i class="fas fa-comment"></i> Parler</div>
+                <div class="platform-item"><i class="fas fa-comment-dots"></i> Gab</div>
+                <div class="platform-item"><i class="fas fa-video"></i> Rumble</div>
+                <div class="platform-item"><i class="fas fa-play-circle"></i> Dailymotion</div>
+                <div class="platform-item"><i class="fab fa-wordpress"></i> WordPress</div>
+                <div class="platform-item"><i class="fab fa-blogger"></i> Blogger</div>
+                <div class="platform-item"><i class="fab fa-github"></i> GitHub</div>
+                <div class="platform-item"><i class="fab fa-gitlab"></i> GitLab</div>
+                <div class="platform-item"><i class="fas fa-code"></i> Stack Overflow</div>
+                <div class="platform-item"><i class="fas fa-rss"></i> RSS Feeds</div>
+                <div class="platform-item"><i class="fas fa-envelope"></i> Email Newsletters</div>
+                <div class="platform-item"><i class="fas fa-bullhorn"></i> Slack</div>
+                <div class="platform-item"><i class="fas fa-comment-dots"></i> Telegram Channels</div>
+                <div class="platform-item"><i class="fas fa-globe"></i> 450+ More...</div>
+            </div>
+            <div class="platforms-footer">
+                <strong>+ 450+ more</strong> niche platforms, forums, and communities.
+                <span style="color: var(--accent-1);">Full list available on request.</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════ FEATURES ═══════════ -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Your Distribution Engine</h2>
+                <p>Everything you need to blast content to the entire internet.</p>
+            </div>
+            <div class="features-scroll">
+                <div class="feature-card">
+                    <div class="icon-wrap"><i class="fas fa-globe-americas"></i></div>
+                    <h3>500+ Platforms</h3>
+                    <p>Twitter, TikTok, LinkedIn, Reddit, Discord, WordPress, and hundreds more — all from one dashboard.</p>
+                    <div class="feature-chips">
+                        <span class="chip"><i class="fas fa-check-circle"></i> Social</span>
+                        <span class="chip"><i class="fas fa-check-circle"></i> Blogs</span>
+                        <span class="chip"><i class="fas fa-check-circle"></i> Forums</span>
+                        <span class="chip"><i class="fas fa-check-circle"></i> Communities</span>
+                    </div>
+                    <button class="btn-card">Explore Platforms <i class="fas fa-arrow-right"></i></button>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon-wrap"><i class="fas fa-bolt"></i></div>
+                    <h3>One Unified Workflow</h3>
+                    <p>Post once, it goes everywhere. 10 minutes of work = 500+ publications. No more manual cross-posting.</p>
+                    <div class="feature-chips">
+                        <span class="chip"><i class="fas fa-check-circle"></i> Bulk Schedule</span>
+                        <span class="chip"><i class="fas fa-check-circle"></i> Auto-format</span>
+                        <span class="chip"><i class="fas fa-check-circle"></i> Analytics</span>
+                    </div>
+                    <button class="btn-card">See Workflow <i class="fas fa-arrow-right"></i></button>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon-wrap"><i class="fab fa-tiktok"></i></div>
+                    <h3>TikTok Integration</h3>
+                    <p>The most powerful short-form video platform on earth — now fully integrated into your distribution engine.</p>
+                    <div class="feature-chips">
+                        <span class="chip"><i class="fas fa-check-circle"></i> Auto-upload</span>
+                        <span class="chip"><i class="fas fa-check-circle"></i> Hashtag optimizer</span>
+                        <span class="chip"><i class="fas fa-check-circle"></i> Trend alerts</span>
+                    </div>
+                    <button class="btn-card">Go Viral <i class="fas fa-arrow-right"></i></button>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon-wrap"><i class="fas fa-code"></i></div>
+                    <h3>Open Source</h3>
+                    <p>Fork it, customize it, build on it. Your reputation and network grow with every contribution.</p>
+                    <div class="feature-chips">
+                        <span class="chip"><i class="fas fa-check-circle"></i> GitHub</span>
+                        <span class="chip"><i class="fas fa-check-circle"></i> Community</span>
+                        <span class="chip"><i class="fas fa-check-circle"></i> Extensible</span>
+                    </div>
+                    <button class="btn-card">View on GitHub <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════ MONETIZATION (HALF PRICE) ═══════════ -->
+    <section class="monetization-section" id="monetize">
+        <div class="container">
+            <div class="section-header">
+                <h2>How to Monetize <span style="color: var(--accent-1);">FED-POSTER</span></h2>
+                <p>Six proven income streams — now <span style="color: #ef4444; font-weight: 700;">50% off</span> launch pricing.</p>
+            </div>
+
+            <div class="monetization-scroll">
+                <div class="monetization-card">
+                    <div class="discount-ribbon">50% OFF</div>
+                    <div class="emoji">💳</div>
+                    <h4>SaaS Access</h4>
+                    <div class="price-wrap">
+                        <span class="price"><span class="discount-strikethrough">$97</span> $49</span>
+                        <span class="half-off">/mo</span>
+                    </div>
+                    <p>Sell access to the tool. Clients pay monthly to post their content to 500+ platforms.</p>
+                </div>
+
+                <div class="monetization-card">
+                    <div class="discount-ribbon">50% OFF</div>
+                    <div class="emoji">🔧</div>
+                    <h4>Custom Setup</h4>
+                    <div class="price-wrap">
+                        <span class="price"><span class="discount-strikethrough">$500</span> $250</span>
+                    </div>
+                    <p>Install and configure FED-POSTER for businesses. One-time setup fee + upsell opportunities.</p>
+                </div>
+
+                <div class="monetization-card">
+                    <div class="discount-ribbon">50% OFF</div>
+                    <div class="emoji">✍️</div>
+                    <h4>Done-For-You</h4>
+                    <div class="price-wrap">
+                        <span class="price"><span class="discount-strikethrough">$497</span> $249</span>
+                        <span class="half-off">/mo</span>
+                    </div>
+                    <p>Create content + distribute it. Full-service package for busy entrepreneurs.</p>
+                </div>
+
+                <div class="monetization-card">
+                    <div class="discount-ribbon">50% OFF</div>
+                    <div class="emoji">🏷️</div>
+                    <h4>White-Label</h4>
+                    <div class="price-wrap">
+                        <span class="price"><span class="discount-strikethrough">$2,000</span> $1,000</span>
+                    </div>
+                    <p>Let agencies rebrand FED-POSTER as their own. They keep 100% of what they sell.</p>
+                </div>
+
+                <div class="monetization-card">
+                    <div class="discount-ribbon">50% OFF</div>
+                    <div class="emoji">🤝</div>
+                    <h4>Affiliate Program</h4>
+                    <div class="price-wrap">
+                        <span class="price"><span class="discount-strikethrough">20%</span> 10%</span>
+                        <span class="half-off">rev-share</span>
+                    </div>
+                    <p>Refer paying clients and earn recurring commissions. Passive income at scale.</p>
+                </div>
+
+                <div class="monetization-card">
+                    <div class="discount-ribbon">50% OFF</div>
+                    <div class="emoji">🔌</div>
+                    <h4>Custom Integrations</h4>
+                    <div class="price-wrap">
+                        <span class="price"><span class="discount-strikethrough">$1,000+</span> $500+</span>
+                    </div>
+                    <p>Add niche platforms for businesses that need specific integrations.</p>
+                </div>
+            </div>
+
+            <!-- Income Grid (halved) -->
+            <div class="income-grid">
+                <div class="income-item">
+                    <span class="label">Gig Platforms (Toloka/UHRS)</span>
+                    <span class="value">$750 – $1,500</span>
+                </div>
+                <div class="income-item">
+                    <span class="label">FED-POSTER SaaS</span>
+                    <span class="value">$250 – $2,500+</span>
+                </div>
+                <div class="income-item">
+                    <span class="label">Setup Services</span>
+                    <span class="value">$500 – $1,500</span>
+                </div>
+                <div class="income-item">
+                    <span class="label">Done-For-You Content</span>
+                    <span class="value">$500 – $2,500+</span>
+                </div>
+                <div class="income-item">
+                    <span class="label">White-Label Sales</span>
+                    <span class="value">$1,000 – $2,500</span>
+                </div>
+                <div class="income-total">
+                    <div class="total-label">Total Monthly Potential <span style="color: #ef4444; font-weight: 700;">(50% OFF Launch)</span></div>
+                    <div class="total-value">
+                        <span class="strike">$6,000 – $21,000+</span>
+                        <br />
+                        $3,000 – $10,500+
+                    </div>
+                    <div class="savings-badge">🔥 You save 50% on all plans</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════ ACTION PLAN ═══════════ -->
+    <section class="plan-section" id="plan">
+        <div class="container">
+            <div class="section-header">
+                <h2>Your 30-Day Action Plan</h2>
+                <p>From zero to recurring income — one week at a time.</p>
+            </div>
+            <div class="plan-grid">
+                <div class="plan-step">
+                    <div class="week">Week 1</div>
+                    <h4>💰 Grind &amp; Build</h4>
+                    <p>Grind Toloka/Mindrift for daily cash. Post demos of FED-POSTER on X/TikTok/LinkedIn. Build awareness.</p>
+                </div>
+                <div class="plan-step">
+                    <div class="week">Week 2</div>
+                    <h4>📋 List &amp; Launch</h4>
+                    <p>List FED-POSTER services on Fiverr, Upwork, Contra. Offer free 7-day trial to first 10 clients. Get testimonials.</p>
+                </div>
+                <div class="plan-step">
+                    <div class="week">Week 3</div>
+                    <h4>🌐 Landing Page</h4>
+                    <p>Launch fedpromptly.com for FED-POSTER. Add "Book a Call" button. Start cold outreach to agencies and creators.</p>
+                </div>
+                <div class="plan-step">
+                    <div class="week">Week 4</div>
+                    <h4>🚀 Scale &amp; Recur</h4>
+                    <p>First paying clients onboard. Start recurring monthly revenue. Reduce gig hours as FED-POSTER income scales.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════ CTA ═══════════ -->
+    <section class="cta-section" id="cta">
+        <div class="container">
+            <div class="cta-box">
+                <div class="cta-discount">
+                    <span class="big">⚡ 50% OFF</span>
+                    <span>— launch pricing ends soon</span>
+                </div>
+                <h2>You Built the Engine. Now Fuel It.</h2>
+                <p>
+                    <strong>FED-POSTER</strong> is your core engine for independent income. <br />
+                    Start posting to 500+ platforms — and start earning — today at <strong style="color: #ef4444;">half price</strong>.
+                </p>
+                <div class="btn-group">
+                    <a href="#" class="btn-gold">
+                        <i class="fas fa-dollar-sign"></i> Start Earning — 50% Off
+                    </a>
+                    <a href="#" class="btn-secondary">
+                        <i class="fas fa-calendar-alt"></i> Book a Call
+                    </a>
+                </div>
+                <div class="fine-print">
+                    <i class="fas fa-check-circle" style="color:var(--accent-1);"></i> No credit card required
+                    <span style="margin:0 10px;">·</span>
+                    <i class="fas fa-check-circle" style="color:var(--accent-1);"></i> 14-day free trial
+                    <span style="margin:0 10px;">·</span>
+                    <i class="fas fa-check-circle" style="color:var(--accent-1);"></i> Open source
+                    <br />
+                    <strong style="color: #ef4444;">🎉 50% off all plans — launch special</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════ FOOTER ═══════════ -->
+    <footer>
+        <div class="container">
+            <div class="copy">
+                &copy; 2026 <strong>FED-POSTER</strong> by fedpromptly.com. All rights reserved.
+            </div>
+            <div class="socials">
+                <a href="#" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
+                <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                <a href="#" aria-label="Discord"><i class="fab fa-discord"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ═══════════ JAVASCRIPT ═══════════ -->
+    <script>
+        // ─── Nav Toggle ───────────────────────────────
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        navToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('open');
+            const icon = navToggle.querySelector('i');
+            icon.className = navLinks.classList.contains('open') ? 'fas fa-times' : 'fas fa-bars';
+        });
+
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('open');
+                document.querySelector('#navToggle i').className = 'fas fa-bars';
+            });
+        });
+
+        // ─── Smooth Scroll ─────────────────────────────
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                const target = document.querySelector(targetId);
+                if (target) {
+                    e.preventDefault();
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // ─── Nav Background ─────────────────────────────
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 40) {
+                nav.style.background = 'rgba(7, 9, 15, 0.85)';
+                nav.style.backdropFilter = 'blur(24px) saturate(1.6)';
+            } else {
+                nav.style.background = 'rgba(7, 9, 15, 0.65)';
+                nav.style.backdropFilter = 'blur(22px) saturate(1.4)';
+            }
+        });
+
+        // ─── Card Button CTA ────────────────────────────
+        document.querySelectorAll('.btn-card').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('cta').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        });
+
+        console.log('🚀 FED-POSTER · 500+ platforms · 50% OFF launch pricing');
+    </script>
+
+</body>
+</html>
