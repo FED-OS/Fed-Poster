@@ -82,6 +82,7 @@
             cursor: pointer;
             transition: var(--transition);
             box-shadow: 0 8px 32px rgba(124, 92, 252, 0.35);
+            text-decoration: none;
         }
 
         .btn-primary:hover {
@@ -102,6 +103,7 @@
             font-size: 1.05rem;
             cursor: pointer;
             transition: var(--transition);
+            text-decoration: none;
         }
 
         .btn-secondary:hover {
@@ -124,6 +126,7 @@
             cursor: pointer;
             transition: var(--transition);
             box-shadow: 0 8px 32px rgba(245, 158, 11, 0.3);
+            text-decoration: none;
         }
 
         .btn-gold:hover {
@@ -225,6 +228,7 @@
             font-weight: 500;
             color: var(--text-secondary);
             transition: var(--transition);
+            text-decoration: none;
         }
 
         .nav-links a:hover {
@@ -466,17 +470,6 @@
         .platform-item .fa-github { color: #f0f6fc; }
         .platform-item .fa-globe { color: var(--text-secondary); }
 
-        .platform-badge {
-            display: inline-block;
-            font-size: 0.65rem;
-            font-weight: 600;
-            background: rgba(124, 92, 252, 0.12);
-            color: var(--accent-1);
-            padding: 2px 10px;
-            border-radius: 100px;
-            margin-left: auto;
-        }
-
         .platforms-footer {
             text-align: center;
             margin-top: 24px;
@@ -626,6 +619,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            text-decoration: none;
         }
 
         .feature-card .btn-card:hover {
@@ -635,28 +629,28 @@
             gap: 12px;
         }
 
-        /* ───────────── MONETIZATION ───────────── */
-        .monetization-section {
+        /* ───────────── PRICING / TIERS (formerly Monetization) ───────────── */
+        .pricing-section {
             padding: 80px 0;
             background: var(--bg-secondary);
         }
 
-        .monetization-section .section-header {
+        .pricing-section .section-header {
             text-align: center;
             margin-bottom: 48px;
         }
 
-        .monetization-section .section-header h2 {
+        .pricing-section .section-header h2 {
             font-size: clamp(2rem, 3.5vw, 2.8rem);
             font-weight: 800;
         }
 
-        .monetization-section .section-header p {
+        .pricing-section .section-header p {
             color: var(--text-secondary);
             font-size: 1.05rem;
         }
 
-        .monetization-scroll {
+        .pricing-scroll {
             display: flex;
             gap: 24px;
             overflow-x: auto;
@@ -665,15 +659,15 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        .monetization-scroll::-webkit-scrollbar {
+        .pricing-scroll::-webkit-scrollbar {
             height: 4px;
         }
-        .monetization-scroll::-webkit-scrollbar-thumb {
+        .pricing-scroll::-webkit-scrollbar-thumb {
             background: var(--accent-2);
             border-radius: 10px;
         }
 
-        .monetization-card {
+        .pricing-card {
             flex: 0 0 300px;
             background: var(--bg-card);
             border-radius: var(--radius);
@@ -683,26 +677,28 @@
             transition: var(--transition);
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        .monetization-card:hover {
+        .pricing-card:hover {
             transform: translateY(-4px);
             border-color: rgba(255, 255, 255, 0.08);
             background: var(--bg-card-hover);
         }
 
-        .monetization-card .emoji {
+        .pricing-card .emoji {
             font-size: 2rem;
             margin-bottom: 10px;
         }
 
-        .monetization-card h4 {
+        .pricing-card h4 {
             font-size: 1.1rem;
             font-weight: 700;
             margin-bottom: 6px;
         }
 
-        .monetization-card .price-wrap {
+        .pricing-card .price-wrap {
             display: flex;
             align-items: baseline;
             gap: 8px;
@@ -710,18 +706,18 @@
             margin-bottom: 8px;
         }
 
-        .monetization-card .price {
+        .pricing-card .price {
             font-size: 1.4rem;
             font-weight: 800;
             color: var(--accent-1);
         }
 
-        .monetization-card .price .discount-strikethrough {
+        .pricing-card .price .discount-strikethrough {
             font-size: 1rem;
             color: #6b7280;
         }
 
-        .monetization-card .price .half-off {
+        .pricing-card .price .half-off {
             font-size: 0.7rem;
             font-weight: 700;
             color: #ef4444;
@@ -730,13 +726,14 @@
             border-radius: 100px;
         }
 
-        .monetization-card p {
+        .pricing-card p {
             font-size: 0.85rem;
             color: var(--text-secondary);
             line-height: 1.6;
+            flex-grow: 1;
         }
 
-        .monetization-card .discount-ribbon {
+        .pricing-card .discount-ribbon {
             position: absolute;
             top: 12px;
             right: -28px;
@@ -751,153 +748,84 @@
             box-shadow: 0 2px 12px rgba(239, 68, 68, 0.3);
         }
 
-        /* ───────────── INCOME GRID ───────────── */
-        .income-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-top: 40px;
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            padding: 32px 28px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-        }
-
-        .income-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        .pricing-card .btn-pricing {
+            margin-top: 20px;
+            width: 100%;
             text-align: center;
-            padding: 12px 8px;
-        }
-
-        .income-item .label {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
-
-        .income-item .value {
-            font-size: 1.3rem;
-            font-weight: 800;
+            padding: 12px;
             background: var(--gradient-main);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .income-item .value.gold {
-            background: var(--gradient-gold);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .income-item .value .strike {
-            text-decoration: line-through;
-            color: #6b7280;
-            font-weight: 400;
-            font-size: 0.75rem;
-            -webkit-text-fill-color: #6b7280;
-        }
-
-        .income-total {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding-top: 16px;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-            margin-top: 8px;
-        }
-
-        .income-total .total-label {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        .income-total .total-value {
-            font-size: 2.2rem;
-            font-weight: 900;
-            background: var(--gradient-gold);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .income-total .total-value .strike {
-            text-decoration: line-through;
-            color: #6b7280;
-            font-weight: 400;
-            font-size: 1.2rem;
-            -webkit-text-fill-color: #6b7280;
-        }
-
-        .income-total .savings-badge {
-            display: inline-block;
-            margin-top: 6px;
-            font-size: 0.85rem;
+            border: none;
+            border-radius: 60px;
+            color: #fff;
             font-weight: 700;
-            color: #ef4444;
-            background: rgba(239, 68, 68, 0.08);
-            padding: 4px 20px;
-            border-radius: 100px;
-            -webkit-text-fill-color: #ef4444;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
         }
 
-        /* ───────────── ACTION PLAN ───────────── */
-        .plan-section {
+        .pricing-card .btn-pricing:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(124, 92, 252, 0.3);
+        }
+
+        .pricing-card .btn-pricing.gold {
+            background: var(--gradient-gold);
+            color: #0a0c14;
+        }
+
+        /* ───────────── BENEFITS (replaces Action Plan) ───────────── */
+        .benefits-section {
             padding: 80px 0;
             background: var(--bg-primary);
         }
 
-        .plan-section .section-header {
+        .benefits-section .section-header {
             text-align: center;
             margin-bottom: 48px;
         }
 
-        .plan-section .section-header h2 {
+        .benefits-section .section-header h2 {
             font-size: clamp(2rem, 3.5vw, 2.8rem);
             font-weight: 800;
         }
 
-        .plan-grid {
+        .benefits-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
         }
 
-        .plan-step {
+        .benefit-item {
             background: var(--bg-card);
             border-radius: var(--radius);
-            padding: 24px 20px;
+            padding: 32px 24px;
             border: 1px solid rgba(255, 255, 255, 0.04);
             text-align: center;
             transition: var(--transition);
         }
 
-        .plan-step:hover {
+        .benefit-item:hover {
             transform: translateY(-4px);
             border-color: rgba(255, 255, 255, 0.08);
+            background: var(--bg-card-hover);
         }
 
-        .plan-step .week {
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .benefit-item .icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
             color: var(--accent-1);
+        }
+
+        .benefit-item h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
             margin-bottom: 8px;
         }
 
-        .plan-step h4 {
-            font-size: 1rem;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .plan-step p {
-            font-size: 0.85rem;
+        .benefit-item p {
+            font-size: 0.9rem;
             color: var(--text-secondary);
-            line-height: 1.6;
+            line-height: 1.7;
         }
 
         /* ───────────── CTA ───────────── */
@@ -984,6 +912,57 @@
             color: #ef4444;
         }
 
+        /* ───────────── KOFI MODAL ───────────── */
+        #kofi-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        #kofi-modal .modal-content {
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px;
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        }
+
+        #kofi-modal .modal-content .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #333;
+            cursor: pointer;
+            transition: var(--transition);
+            z-index: 10;
+        }
+
+        #kofi-modal .modal-content .close-btn:hover {
+            transform: rotate(90deg);
+            color: #000;
+        }
+
+        #kofi-modal .modal-content iframe {
+            border: none;
+            width: 100%;
+            padding: 4px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
         /* ───────────── FOOTER ───────────── */
         footer {
             padding: 32px 0 24px;
@@ -1023,6 +1002,7 @@
             background: rgba(255, 255, 255, 0.04);
             color: var(--text-secondary);
             transition: var(--transition);
+            text-decoration: none;
         }
 
         footer .socials a:hover {
@@ -1032,7 +1012,7 @@
 
         /* ───────────── RESPONSIVE ───────────── */
         @media (max-width: 1024px) {
-            .plan-grid {
+            .benefits-grid {
                 grid-template-columns: 1fr 1fr;
             }
         }
@@ -1041,8 +1021,8 @@
             .feature-card {
                 flex: 0 0 300px;
             }
-            .monetization-card {
-                flex: 0 0 260px;
+            .pricing-card {
+                flex: 0 0 280px;
             }
             .platform-grid {
                 grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -1085,13 +1065,8 @@
                 font-size: 1.6rem;
             }
 
-            .plan-grid {
+            .benefits-grid {
                 grid-template-columns: 1fr;
-            }
-
-            .income-grid {
-                grid-template-columns: 1fr 1fr;
-                padding: 24px 16px;
             }
 
             .cta-box {
@@ -1128,12 +1103,8 @@
                 padding: 24px 18px;
             }
 
-            .monetization-card {
-                flex: 0 0 240px;
-            }
-
-            .income-grid {
-                grid-template-columns: 1fr;
+            .pricing-card {
+                flex: 0 0 260px;
             }
 
             .platform-grid {
@@ -1163,8 +1134,7 @@
             <ul class="nav-links" id="navLinks">
                 <li><a href="#platforms">Platforms</a></li>
                 <li><a href="#features">Features</a></li>
-                <li><a href="#monetize">Monetize</a></li>
-                <li><a href="#plan">Action Plan</a></li>
+                <li><a href="#pricing">Pricing</a></li>
                 <li><a href="#cta" class="btn-primary">Get Started</a></li>
             </ul>
             <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
@@ -1191,10 +1161,10 @@
                 <span style="color: var(--accent-1);">This changes everything.</span>
             </p>
             <div class="hero-buttons">
-                <a href="#cta" class="btn-gold">
+                <a href="#" class="btn-gold" onclick="openKofi()">
                     <i class="fas fa-dollar-sign"></i> Start Earning — 50% Off
                 </a>
-                <a href="#platforms" class="btn-secondary">
+                <a href="https://www.fedpromptly.com/forum" target="_blank" class="btn-secondary">
                     <i class="fas fa-list-ul"></i> See All 500+ Platforms
                 </a>
             </div>
@@ -1309,7 +1279,7 @@
                         <span class="chip"><i class="fas fa-check-circle"></i> Forums</span>
                         <span class="chip"><i class="fas fa-check-circle"></i> Communities</span>
                     </div>
-                    <button class="btn-card">Explore Platforms <i class="fas fa-arrow-right"></i></button>
+                    <a href="https://www.fedpromptly.com/forum" target="_blank" class="btn-card">Explore Platforms <i class="fas fa-arrow-right"></i></a>
                 </div>
 
                 <div class="feature-card">
@@ -1321,7 +1291,7 @@
                         <span class="chip"><i class="fas fa-check-circle"></i> Auto-format</span>
                         <span class="chip"><i class="fas fa-check-circle"></i> Analytics</span>
                     </div>
-                    <button class="btn-card">See Workflow <i class="fas fa-arrow-right"></i></button>
+                    <a href="#pricing" class="btn-card">See Workflow <i class="fas fa-arrow-right"></i></a>
                 </div>
 
                 <div class="feature-card">
@@ -1333,7 +1303,7 @@
                         <span class="chip"><i class="fas fa-check-circle"></i> Hashtag optimizer</span>
                         <span class="chip"><i class="fas fa-check-circle"></i> Trend alerts</span>
                     </div>
-                    <button class="btn-card">Go Viral <i class="fas fa-arrow-right"></i></button>
+                    <a href="#pricing" class="btn-card">Go Viral <i class="fas fa-arrow-right"></i></a>
                 </div>
 
                 <div class="feature-card">
@@ -1345,147 +1315,92 @@
                         <span class="chip"><i class="fas fa-check-circle"></i> Community</span>
                         <span class="chip"><i class="fas fa-check-circle"></i> Extensible</span>
                     </div>
-                    <button class="btn-card">View on GitHub <i class="fas fa-arrow-right"></i></button>
+                    <a href="https://github.com/fedpromptly/fed-poster" target="_blank" class="btn-card">View on GitHub <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ═══════════ MONETIZATION (HALF PRICE) ═══════════ -->
-    <section class="monetization-section" id="monetize">
+    <!-- ═══════════ PRICING TIERS (formerly Monetization) ═══════════ -->
+    <section class="pricing-section" id="pricing">
         <div class="container">
             <div class="section-header">
-                <h2>How to Monetize <span style="color: var(--accent-1);">FED-POSTER</span></h2>
-                <p>Six proven income streams — now <span style="color: #ef4444; font-weight: 700;">50% off</span> launch pricing.</p>
+                <h2>Choose Your <span style="color: var(--accent-1);">FED-POSTER</span> Plan</h2>
+                <p>Launch pricing — everything is <span style="color: #ef4444; font-weight: 700;">50% off</span> for a limited time.</p>
             </div>
 
-            <div class="monetization-scroll">
-                <div class="monetization-card">
+            <div class="pricing-scroll">
+                <div class="pricing-card">
                     <div class="discount-ribbon">50% OFF</div>
-                    <div class="emoji">💳</div>
-                    <h4>SaaS Access</h4>
+                    <div class="emoji">🚀</div>
+                    <h4>Starter</h4>
                     <div class="price-wrap">
                         <span class="price"><span class="discount-strikethrough">$97</span> $49</span>
                         <span class="half-off">/mo</span>
                     </div>
-                    <p>Sell access to the tool. Clients pay monthly to post their content to 500+ platforms.</p>
+                    <p>Full access to the 500+ platform dashboard. Post, schedule, and analyze.</p>
+                    <a href="#" onclick="openKofi()" class="btn-pricing">Get Started</a>
                 </div>
 
-                <div class="monetization-card">
-                    <div class="discount-ribbon">50% OFF</div>
-                    <div class="emoji">🔧</div>
-                    <h4>Custom Setup</h4>
-                    <div class="price-wrap">
-                        <span class="price"><span class="discount-strikethrough">$500</span> $250</span>
-                    </div>
-                    <p>Install and configure FED-POSTER for businesses. One-time setup fee + upsell opportunities.</p>
-                </div>
-
-                <div class="monetization-card">
+                <div class="pricing-card">
                     <div class="discount-ribbon">50% OFF</div>
                     <div class="emoji">✍️</div>
-                    <h4>Done-For-You</h4>
+                    <h4>Pro (Done-For-You)</h4>
                     <div class="price-wrap">
                         <span class="price"><span class="discount-strikethrough">$497</span> $249</span>
                         <span class="half-off">/mo</span>
                     </div>
-                    <p>Create content + distribute it. Full-service package for busy entrepreneurs.</p>
+                    <p>We create your content and distribute it to 500+ platforms. Full-service done-for-you.</p>
+                    <a href="#" onclick="openKofi()" class="btn-pricing gold">Get Started</a>
                 </div>
 
-                <div class="monetization-card">
+                <div class="pricing-card">
                     <div class="discount-ribbon">50% OFF</div>
                     <div class="emoji">🏷️</div>
-                    <h4>White-Label</h4>
+                    <h4>Agency White-Label</h4>
                     <div class="price-wrap">
                         <span class="price"><span class="discount-strikethrough">$2,000</span> $1,000</span>
                     </div>
-                    <p>Let agencies rebrand FED-POSTER as their own. They keep 100% of what they sell.</p>
+                    <p>Rebrand FED-POSTER as your own. 100% white-label solution for agencies.</p>
+                    <a href="#" onclick="openKofi()" class="btn-pricing">Get Started</a>
                 </div>
 
-                <div class="monetization-card">
-                    <div class="discount-ribbon">50% OFF</div>
-                    <div class="emoji">🤝</div>
-                    <h4>Affiliate Program</h4>
-                    <div class="price-wrap">
-                        <span class="price"><span class="discount-strikethrough">20%</span> 10%</span>
-                        <span class="half-off">rev-share</span>
-                    </div>
-                    <p>Refer paying clients and earn recurring commissions. Passive income at scale.</p>
-                </div>
-
-                <div class="monetization-card">
+                <div class="pricing-card">
                     <div class="discount-ribbon">50% OFF</div>
                     <div class="emoji">🔌</div>
-                    <h4>Custom Integrations</h4>
+                    <h4>Enterprise</h4>
                     <div class="price-wrap">
                         <span class="price"><span class="discount-strikethrough">$1,000+</span> $500+</span>
                     </div>
-                    <p>Add niche platforms for businesses that need specific integrations.</p>
-                </div>
-            </div>
-
-            <!-- Income Grid (halved) -->
-            <div class="income-grid">
-                <div class="income-item">
-                    <span class="label">Gig Platforms (Toloka/UHRS)</span>
-                    <span class="value">$750 – $1,500</span>
-                </div>
-                <div class="income-item">
-                    <span class="label">FED-POSTER SaaS</span>
-                    <span class="value">$250 – $2,500+</span>
-                </div>
-                <div class="income-item">
-                    <span class="label">Setup Services</span>
-                    <span class="value">$500 – $1,500</span>
-                </div>
-                <div class="income-item">
-                    <span class="label">Done-For-You Content</span>
-                    <span class="value">$500 – $2,500+</span>
-                </div>
-                <div class="income-item">
-                    <span class="label">White-Label Sales</span>
-                    <span class="value">$1,000 – $2,500</span>
-                </div>
-                <div class="income-total">
-                    <div class="total-label">Total Monthly Potential <span style="color: #ef4444; font-weight: 700;">(50% OFF Launch)</span></div>
-                    <div class="total-value">
-                        <span class="strike">$6,000 – $21,000+</span>
-                        <br />
-                        $3,000 – $10,500+
-                    </div>
-                    <div class="savings-badge">🔥 You save 50% on all plans</div>
+                    <p>Custom integrations, dedicated support, and tailored solutions for large teams.</p>
+                    <a href="#" onclick="openKofi()" class="btn-pricing gold">Contact Sales</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ═══════════ ACTION PLAN ═══════════ -->
-    <section class="plan-section" id="plan">
+    <!-- ═══════════ BENEFITS (replaces Action Plan) ═══════════ -->
+    <section class="benefits-section" id="benefits">
         <div class="container">
             <div class="section-header">
-                <h2>Your 30-Day Action Plan</h2>
-                <p>From zero to recurring income — one week at a time.</p>
+                <h2>Why <span style="color: var(--accent-1);">FED-POSTER</span>?</h2>
+                <p>The smartest way to distribute your content across the entire web.</p>
             </div>
-            <div class="plan-grid">
-                <div class="plan-step">
-                    <div class="week">Week 1</div>
-                    <h4>💰 Grind &amp; Build</h4>
-                    <p>Grind Toloka/Mindrift for daily cash. Post demos of FED-POSTER on X/TikTok/LinkedIn. Build awareness.</p>
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <div class="icon"><i class="fas fa-globe"></i></div>
+                    <h3>Massive Reach</h3>
+                    <p>Post to 500+ platforms including all major social networks, forums, blogs, and communities.</p>
                 </div>
-                <div class="plan-step">
-                    <div class="week">Week 2</div>
-                    <h4>📋 List &amp; Launch</h4>
-                    <p>List FED-POSTER services on Fiverr, Upwork, Contra. Offer free 7-day trial to first 10 clients. Get testimonials.</p>
+                <div class="benefit-item">
+                    <div class="icon"><i class="fas fa-clock"></i></div>
+                    <h3>Save Hours of Time</h3>
+                    <p>Write once, post everywhere. No more manual cross-posting or juggling dozens of tabs.</p>
                 </div>
-                <div class="plan-step">
-                    <div class="week">Week 3</div>
-                    <h4>🌐 Landing Page</h4>
-                    <p>Launch fedpromptly.com for FED-POSTER. Add "Book a Call" button. Start cold outreach to agencies and creators.</p>
-                </div>
-                <div class="plan-step">
-                    <div class="week">Week 4</div>
-                    <h4>🚀 Scale &amp; Recur</h4>
-                    <p>First paying clients onboard. Start recurring monthly revenue. Reduce gig hours as FED-POSTER income scales.</p>
+                <div class="benefit-item">
+                    <div class="icon"><i class="fas fa-code"></i></div>
+                    <h3>Open Source &amp; Customizable</h3>
+                    <p>Fully open source. Fork it, extend it, and make it your own. Complete freedom.</p>
                 </div>
             </div>
         </div>
@@ -1499,17 +1414,17 @@
                     <span class="big">⚡ 50% OFF</span>
                     <span>— launch pricing ends soon</span>
                 </div>
-                <h2>You Built the Engine. Now Fuel It.</h2>
+                <h2>Ready to Dominate the Internet?</h2>
                 <p>
-                    <strong>FED-POSTER</strong> is your core engine for independent income. <br />
-                    Start posting to 500+ platforms — and start earning — today at <strong style="color: #ef4444;">half price</strong>.
+                    <strong>FED-POSTER</strong> is your all-in-one distribution engine. <br />
+                    Start posting to 500+ platforms today at <strong style="color: #ef4444;">half price</strong>.
                 </p>
                 <div class="btn-group">
-                    <a href="#" class="btn-gold">
+                    <a href="#" onclick="openKofi()" class="btn-gold">
                         <i class="fas fa-dollar-sign"></i> Start Earning — 50% Off
                     </a>
-                    <a href="#" class="btn-secondary">
-                        <i class="fas fa-calendar-alt"></i> Book a Call
+                    <a href="https://www.fedpromptly.com/forum" target="_blank" class="btn-secondary">
+                        <i class="fas fa-list-ul"></i> See All Platforms
                     </a>
                 </div>
                 <div class="fine-print">
@@ -1524,6 +1439,14 @@
             </div>
         </div>
     </section>
+
+    <!-- ═══════════ KOFI MODAL ═══════════ -->
+    <div id="kofi-modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeKofi()">&times;</button>
+            <iframe id='kofiframe' src='https://ko-fi.com/fedpromptly/?hidefeed=true&widget=true&embed=true&preview=true' style='border:none;width:100%;padding:4px;background:#f9f9f9;' height='712' title='fedpromptly'></iframe>
+        </div>
+    </div>
 
     <!-- ═══════════ FOOTER ═══════════ -->
     <footer>
@@ -1584,11 +1507,29 @@
             }
         });
 
-        // ─── Card Button CTA ────────────────────────────
-        document.querySelectorAll('.btn-card').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.getElementById('cta').scrollIntoView({ behavior: 'smooth', block: 'center' });
-            });
+        // ─── Ko-fi Modal Functions ──────────────────────
+        function openKofi() {
+            document.getElementById('kofi-modal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeKofi() {
+            document.getElementById('kofi-modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside the content
+        document.getElementById('kofi-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeKofi();
+            }
+        });
+
+        // Close modal with ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeKofi();
+            }
         });
 
         console.log('🚀 FED-POSTER · 500+ platforms · 50% OFF launch pricing');
