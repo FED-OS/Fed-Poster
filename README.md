@@ -1,4 +1,4 @@
-<div align="center">
+<div align="center">[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W3T61ZU5FS)
   <img src="https://img.shields.io/badge/status-active-success?style=for-the-badge" alt="Status" />
   <img src="https://img.shields.io/badge/platforms-12-blue?style=for-the-badge" alt="Platforms" />
   <img src="https://img.shields.io/badge/license-MIT-yellow?style=for-the-badge" alt="License" />
@@ -9,7 +9,7 @@
 <br />
 
 <div align="center">
-  <h1>📨 Fed-Poster V1 </h1>[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W3T61ZU5FS)
+  <h1>📨 Fed-Poster V1 </h1>
   <p><strong>One Dashboard. Twelve Platforms. Zero Hassle.</strong></p>
   <p>Cross‑post to Telegram, Bluesky, Mastodon, Discord, GitHub, Tumblr, DeviantArt & more — all from a single, sleek interface.</p>
   <br />
