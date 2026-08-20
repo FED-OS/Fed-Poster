@@ -9,7 +9,7 @@
 <br />
 
 <div align="center">
-  <h1>📨 Fed-Poster V1 </h1> [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W3T61ZU5FS)
+  <h1>📨 Fed-Poster V1 </h1>[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W3T61ZU5FS)
   <p><strong>One Dashboard. Twelve Platforms. Zero Hassle.</strong></p>
   <p>Cross‑post to Telegram, Bluesky, Mastodon, Discord, GitHub, Tumblr, DeviantArt & more — all from a single, sleek interface.</p>
   <br />
