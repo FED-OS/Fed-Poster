@@ -1,3 +1,4 @@
+<img width="2560" height="1440" alt="fed-poster-fun-music-festival" src="https://github.com/user-attachments/assets/5685cee2-97ef-43c2-8638-2d35a861dc86" />
 <div align="center">
   <img src="https://img.shields.io/badge/status-active-success?style=for-the-badge" alt="Status" />
   <img src="https://img.shields.io/badge/platforms-12-blue?style=for-the-badge" alt="Platforms" />
